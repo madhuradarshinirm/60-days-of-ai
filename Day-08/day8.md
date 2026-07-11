@@ -2,14 +2,18 @@
 
 ## Objective
 
-Learn how AI can generate an interactive HTML dashboard using prompt engineering.
+Build an interactive Environmental Health Analyzer dashboard using AI.
 
-## Files
+## What I Did
 
-- day8.md
-- environmental_health_dashboard.html
-- dashboard_home.png
-- dashboard_charts.png
+- Generated an HTML dashboard using Claude.
+- Opened the dashboard in a browser.
+- Tested charts and filters.
+- Captured screenshots of the final dashboard.
+
+## Key Learning
+
+AI can generate complete interactive web dashboards using only natural language prompts, reducing development time.
 
 ## Status
 
