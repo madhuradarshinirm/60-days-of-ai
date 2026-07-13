@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madhuradarshini R M | Aspiring AI Engineer</title>
+<meta name="description" content="Portfolio of Madhuradarshini R M, an aspiring AI Engineer specializing in Generative AI, Machine Learning, and Cloud Computing.">
+<meta name="keywords" content="Madhuradarshini R M, AI Engineer, Machine Learning, Generative AI, Cloud Computing, Portfolio, Mysuru">
+<meta name="author" content="Madhuradarshini R M">
+<meta property="og:title" content="Madhuradarshini R M | Aspiring AI Engineer">
+<meta property="og:description" content="Computer Science Engineering student passionate about AI, Generative AI, ML and Cloud Computing.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+        colors: {
+          primary: '#8b5cf6',
+          secondary: '#06b6d4',
+        },
+        animation: {
+          'fade-up': 'fadeUp 0.8s ease forwards',
+          'blink': 'blink 0.8s step-end infinite',
+          'float': 'float 6s ease-in-out infinite',
+        },
+        keyframes: {
+          fadeUp: { '0%': { opacity: 0, transform: 'translateY(30px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+          blink: { '50%': { opacity: 0 } },
+          float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } },
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Poppins', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(#8b5cf6, #06b6d4); border-radius: 10px; }
+
+  .gradient-text {
+    background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gradient-bg {
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  }
+  .glass {
+    backdrop-filter: blur(12px);
+  }
+  .nav-link.active {
+    color: #8b5cf6;
+  }
+  .dark .nav-link.active {
+    color: #22d3ee;
+  }
+  .progress-bar {
+    width: 0%;
+    transition: width 1.4s ease-in-out;
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .card-hover {
+    transition: all 0.4s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-8px);
+  }
+  #typing-text::after {
+    content: '|';
+    animation: blink 0.8s step-end infinite;
+    color: #06b6d4;
+  }
+  .blob {
+    filter: blur(80px);
+  }
+</style>
+</head>
+<body class="font-poppins bg-white text-gray-800 dark:bg-[#0a0a14] dark:text-gray-100 transition-colors duration-500 overflow-x-hidden">
+
+<!-- NAVBAR -->
+<nav id="navbar" class="fixed top-0 w-full z-50 glass bg-white/70 dark:bg-[#0a0a14]/70 border-b border-gray-200/50 dark:border-white/10 transition-colors duration-500">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="#home" class="text-xl font-bold gradient-text">MRM<span class="text-gray-800 dark:text-white">.</span></a>
+
+    <ul class="hidden md:flex gap-8 text-sm font-medium">
+      <li><a href="#home" class="nav-link hover:text-primary transition">Home</a></li>
+      <li><a href="#about" class="nav-link hover:text-primary transition">About</a></li>
+      <li><a href="#skills" class="nav-link hover:text-primary transition">Skills</a></li>
+      <li><a href="#projects" class="nav-link hover:text-primary transition">Projects</a></li>
+      <li><a href="#experience" class="nav-link hover:text-primary transition">Experience</a></li>
+      <li><a href="#achievements" class="nav-link hover:text-primary transition">Achievements</a></li>
+      <li><a href="#contact" class="nav-link hover:text-primary transition">Contact</a></li>
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-200 dark:bg-white/10 hover:scale-110 transition">
+        <svg id="icon-sun" class="w-5 h-5 text-yellow-500 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+        <svg id="icon-moon" class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+      </button>
+      <button id="menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden md:hidden flex flex-col gap-4 px-6 pb-6 text-sm font-medium">
+    <a href="#home" class="nav-link">Home</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#skills" class="nav-link">Skills</a>
+    <a href="#projects" class="nav-link">Projects</a>
+    <a href="#experience" class="nav-link">Experience</a>
+    <a href="#achievements" class="nav-link">Achievements</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="relative min-h-screen flex items-center justify-center px-6 pt-24 overflow-hidden">
+  <div class="absolute -top-20 -left-20 w-72 h-72 bg-primary/40 rounded-full blob animate-float"></div>
+  <div class="absolute bottom-0 -right-20 w-96 h-96 bg-secondary/30 rounded-full blob animate-float" style="animation-delay:2s;"></div>
+
+  <div class="max-w-5xl mx-auto text-center relative z-10 reveal active">
+    <p class="text-secondary font-medium tracking-widest mb-4 uppercase text-sm">Welcome to my portfolio</p>
+    <h1 class="text-4xl sm:text-6xl font-extrabold mb-4">
+      Hi, I'm <span class="gradient-text">Madhuradarshini R M</span>
+    </h1>
+    <h2 class="text-xl sm:text-2xl font-medium mb-6 h-10 text-gray-600 dark:text-gray-300">
+      <span id="typing-text"></span>
+    </h2>
+    <p class="max-w-2xl mx-auto text-gray-600 dark:text-gray-400 mb-8">
+      Computer Science Engineering student passionate about building real-world AI applications from Mysuru, Karnataka, India.
+    </p>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="#projects" class="px-8 py-3 rounded-full gradient-bg text-white font-semibold hover:scale-105 transition shadow-lg shadow-primary/30">View Projects</a>
+      <a href="#contact" class="px-8 py-3 rounded-full border-2 border-primary text-primary dark:text-secondary dark:border-secondary font-semibold hover:bg-primary hover:text-white dark:hover:bg-secondary dark:hover:text-black transition">Contact Me</a>
+    </div>
+    <div class="flex gap-5 justify-center mt-10">
+      <a href="https://github.com/madhuradarshinirm" target="_blank" class="w-11 h-11 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.39 7.86 10.91.57.1.79-.25.79-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.05 11.05 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.06.74.8 1.19 1.83 1.19 3.09 0 4.43-2.7 5.4-5.28 5.69.42.36.78 1.08.78 2.18 0 1.57-.02 2.84-.02 3.23 0 .3.22.66.8.55A10.51 10.51 0 0023.5 12c0-6.27-5.23-11.5-11.5-11.5z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/madhuradarshinirm/" target="_blank" class="w-11 h-11 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.86 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.35-1.85 3.58 0 4.24 2.36 4.24 5.43v6.31zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+      </a>
+      <a href="mailto:madhuradarshinirm@gmail.com" class="w-11 h-11 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </a>
+    </div>
+  </div>
+  <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </a>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 px-6">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+    <div class="reveal">
+      <div class="relative w-full max-w-sm mx-auto">
+        <div class="absolute inset-0 gradient-bg rounded-3xl rotate-6 opacity-30"></div>
+        <div class="relative bg-gray-100 dark:bg-white/5 rounded-3xl p-10 border border-gray-200 dark:border-white/10 flex items-center justify-center aspect-square">
+          <span class="text-7xl font-extrabold gradient-text">MRM</span>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">About Me</p>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-6">Turning ideas into <span class="gradient-text">intelligent</span> solutions</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+        I am a Computer Science Engineering student passionate about Artificial Intelligence, Generative AI, Machine Learning, and Cloud Computing. I enjoy building real-world AI applications, participating in hackathons, and continuously learning emerging technologies while creating impactful projects.
+      </p>
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white">📍</div>
+          <div>
+            <p class="text-xs text-gray-500">Location</p>
+            <p class="font-medium text-sm">Mysuru, Karnataka</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white">✉️</div>
+          <div>
+            <p class="text-xs text-gray-500">Email</p>
+            <p class="font-medium text-sm break-all">madhuradarshinirm@gmail.com</p>
+          </div>
+        </div>
+      </div>
+      <a href="#contact" class="inline-block px-7 py-3 rounded-full gradient-bg text-white font-semibold hover:scale-105 transition">Let's Connect</a>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="py-24 px-6 bg-gray-50 dark:bg-white/5">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">What I Know</p>
+      <h2 class="text-3xl sm:text-4xl font-bold">My <span class="gradient-text">Skills</span></h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 mb-16">
+      <div class="reveal">
+        <h3 class="text-xl font-semibold mb-6">Technical Skills</h3>
+        <div class="space-y-5" id="technical-skills"></div>
+      </div>
+      <div class="reveal">
+        <h3 class="text-xl font-semibold mb-6">Tools</h3>
+        <div class="space-y-5" id="tools-skills"></div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3 class="text-xl font-semibold mb-6 text-center">Soft Skills</h3>
+      <div class="flex flex-wrap justify-center gap-3">
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Leadership</span>
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Communication</span>
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Teamwork</span>
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Problem Solving</span>
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Time Management</span>
+        <span class="px-5 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm font-medium shadow-sm">Quick Learning</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="py-24 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">My Work</p>
+      <h2 class="text-3xl sm:text-4xl font-bold">Featured <span class="gradient-text">Projects</span></h2>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-8" id="projects-grid"></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="py-24 px-6 bg-gray-50 dark:bg-white/5">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">My Journey</p>
+      <h2 class="text-3xl sm:text-4xl font-bold">Experience & <span class="gradient-text">Certifications</span></h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-10">
+      <div class="reveal">
+        <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><span class="w-2 h-2 rounded-full gradient-bg"></span>Internships</h3>
+        <ul class="space-y-4 text-sm text-gray-600 dark:text-gray-400" id="internships-list"></ul>
+      </div>
+      <div class="reveal">
+        <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><span class="w-2 h-2 rounded-full gradient-bg"></span>Hackathons</h3>
+        <ul class="space-y-4 text-sm text-gray-600 dark:text-gray-400" id="hackathons-list"></ul>
+      </div>
+      <div class="reveal">
+        <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><span class="w-2 h-2 rounded-full gradient-bg"></span>Certifications</h3>
+        <ul class="space-y-4 text-sm text-gray-600 dark:text-gray-400" id="certs-list"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements" class="py-24 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">Recognition</p>
+      <h2 class="text-3xl sm:text-4xl font-bold">Awards & <span class="gradient-text">Achievements</span></h2>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-8" id="achievements-grid"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-24 px-6 bg-gray-50 dark:bg-white/5">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <p class="text-secondary font-medium tracking-widest uppercase text-sm mb-2">Get In Touch</p>
+      <h2 class="text-3xl sm:text-4xl font-bold">Let's <span class="gradient-text">Connect</span></h2>
+      <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-xl mx-auto">Have an idea, project, or opportunity? I'd love to hear from you.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div class="reveal space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-white">✉️</div>
+          <div>
+            <p class="text-xs text-gray-500">Email</p>
+            <a href="mailto:madhuradarshinirm@gmail.com" class="font-medium hover:text-primary break-all">madhuradarshinirm@gmail.com</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-white">📍</div>
+          <div>
+            <p class="text-xs text-gray-500">Location</p>
+            <p class="font-medium">Mysuru, Karnataka, India</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-white">🔗</div>
+          <div>
+            <p class="text-xs text-gray-500">LinkedIn</p>
+            <a href="https://www.linkedin.com/in/madhuradarshinirm/" target="_blank" class="font-medium hover:text-primary">madhuradarshinirm</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-white">💻</div>
+          <div>
+            <p class="text-xs text-gray-500">GitHub</p>
+            <a href="https://github.com/madhuradarshinirm" target="_blank" class="font-medium hover:text-primary">madhuradarshinirm</a>
+          </div>
+        </div>
+      </div>
+
+      <form id="contact-form" class="reveal space-y-4 bg-white dark:bg-white/5 p-8 rounded-2xl border border-gray-200 dark:border-white/10">
+        <div>
+          <input type="text" required placeholder="Your Name" class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-white/10 border border-transparent focus:border-primary outline-none transition text-sm">
+        </div>
+        <div>
+          <input type="email" required placeholder="Your Email" class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-white/10 border border-transparent focus:border-primary outline-none transition text-sm">
+        </div>
+        <div>
+          <input type="text" placeholder="Subject" class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-white/10 border border-transparent focus:border-primary outline-none transition text-sm">
+        </div>
+        <div>
+          <textarea required rows="4" placeholder="Your Message" class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-white/10 border border-transparent focus:border-primary outline-none transition text-sm resize-none"></textarea>
+        </div>
+        <button type="submit" class="w-full py-3 rounded-lg gradient-bg text-white font-semibold hover:scale-[1.02] transition">Send Message</button>
+        <p id="form-msg" class="text-center text-sm text-green-500 hidden">✅ Message ready! (Demo form — connect a backend to send.)</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="py-8 px-6 text-center border-t border-gray-200 dark:border-white/10">
+  <p class="text-sm text-gray-500">© <span id="year"></span> Madhuradarshini R M. Crafted with 💜 and 🩵</p>
+</footer>
+
+<script>
+  // ---------- THEME TOGGLE ----------
+  const html = document.documentElement;
+  const themeToggle = document.getElementById('theme-toggle');
+  const iconSun = document.getElementById('icon-sun');
+  const iconMoon = document.getElementById('icon-moon');
+
+  function setTheme(dark) {
+    if (dark) {
+      html.classList.add('dark');
+      iconSun.classList.remove('hidden');
+      iconMoon.classList.add('hidden');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.classList.remove('dark');
+      iconSun.classList.add('hidden');
+      iconMoon.classList.remove('hidden');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+  themeToggle.addEventListener('click', () => setTheme(!html.classList.contains('dark')));
+
+  // ---------- MOBILE MENU ----------
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+  // ---------- TYPING ANIMATION ----------
+  const titles = [
+    "Aspiring AI Engineer",
+    "Generative AI Enthusiast",
+    "Machine Learning Explorer",
+    "Cloud Computing Learner"
+  ];
+  const typingEl = document.getElementById('typing-text');
+  let tIndex = 0, cIndex = 0, deleting = false;
+
+  function typeLoop() {
+    const current = titles[tIndex];
+    if (!deleting) {
+      typingEl.textContent = current.substring(0, cIndex + 1);
+      cIndex++;
+      if (cIndex === current.length) { deleting = true; setTimeout(typeLoop, 1400); return; }
+    } else {
+      typingEl.textContent = current.substring(0, cIndex - 1);
+      cIndex--;
+      if (cIndex === 0) { deleting = false; tIndex = (tIndex + 1) % titles.length; }
+    }
+    setTimeout(typeLoop, deleting ? 40 : 90);
+  }
+  typeLoop();
+
+  // ---------- SKILLS DATA ----------
+  const technicalSkills = [
+    { name: "Python", level: 90 },
+    { name: "Machine Learning", level: 85 },
+    { name: "Generative AI", level: 85 },
+    { name: "SQL", level: 80 },
+    { name: "HTML / CSS / JavaScript", level: 82 },
+    { name: "Firebase & Flask / Streamlit", level: 80 },
+  ];
+  const toolSkills = [
+    { name: "VS Code & Git/GitHub", level: 90 },
+    { name: "Google Colab / Jupyter", level: 88 },
+    { name: "Power BI", level: 78 },
+    { name: "Firebase", level: 80 },
+    { name: "Canva", level: 85 },
+  ];
+
+  function renderSkills(containerId, skills) {
+    const container = document.getElementById(containerId);
+    skills.forEach(skill => {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="flex justify-between mb-1 text-sm font-medium">
+          <span>${skill.name}</span>
+          <span class="text-gray-500">${skill.level}%</span>
+        </div>
+        <div class="w-full h-2.5 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
+          <div class="progress-bar h-full rounded-full gradient-bg" data-level="${skill.level}"></div>
+        </div>
+      `;
+      container.appendChild(wrap);
+    });
+  }
+  renderSkills('technical-skills', technicalSkills);
+  renderSkills('tools-skills', toolSkills);
+
+  // ---------- PROJECTS DATA ----------
+  const projects = [
+    {
+      title: "ResQAI",
+      desc: "AI-powered disaster management platform with weather monitoring, emergency alerts, and disaster prediction.",
+      tech: ["Python", "Streamlit", "Firebase", "Folium"],
+      link: "https://github.com/madhuradarshinirm/ResQAI"
+    },
+    {
+      title: "NutriAhara",
+      desc: "AI nutrition recommendation and meal planning application.",
+      tech: ["Python", "Streamlit", "Gemini AI"],
+      link: "https://github.com/madhuradarshinirm/NutriAhara"
+    },
+    {
+      title: "AI Learning Buddy",
+      desc: "Interactive AI tutor for Machine Learning concepts.",
+      tech: ["Python", "Streamlit", "Gemini AI"],
+      link: "https://github.com/madhuradarshinirm/AI-Learning-Buddy-Madhuradarshini-RM"
+    },
+    {
+      title: "Zoo Guide Agent",
+      desc: "Conversational AI guide for zoo visitors.",
+      tech: ["Python", "Google ADK", "Gemini"],
+      link: "https://github.com/madhuradarshinirm/zoo-guide-agent-adk"
+    },
+  ];
+
+  const projectsGrid = document.getElementById('projects-grid');
+  projects.forEach(p => {
+    const card = document.createElement('div');
+    card.className = "reveal card-hover bg-white dark:bg-white/5 rounded-2xl p-7 border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/10";
+    card.innerHTML = `
+      <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-white font-bold mb-5">${p.title.charAt(0)}</div>
+      <h3 class="text-xl font-semibold mb-2">${p.title}</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">${p.desc}</p>
+      <div class="flex flex-wrap gap-2 mb-6">
+        ${p.tech.map(t => `<span class="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary dark:bg-secondary/10 dark:text-secondary font-medium">${t}</span>`).join('')}
+      </div>
+      <a href="${p.link}" target="_blank" class="inline-flex items-center gap-2 text-sm font-semibold text-primary dark:text-secondary hover:gap-3 transition-all">
+        View on GitHub
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.39 7.86 10.91.57.1.79-.25.79-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.05 11.05 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.06.74.8 1.19 1.83 1.19 3.09 0 4.43-2.7 5.4-5.28 5.69.42.36.78 1.08.78 2.18 0 1.57-.02 2.84-.02 3.23 0 .3.22.66.8.55A10.51 10.51 0 0023.5 12c0-6.27-5.23-11.5-11.5-11.5z"/></svg>
+      </a>
+    `;
+    projectsGrid.appendChild(card);
+  });
+
+  // ---------- EXPERIENCE DATA ----------
+  const internships = [
+    "IBM Artificial Intelligence Internship",
+    "IBM Generative AI & Cloud Computing Internship",
+    "Microsoft Elevate Power BI Internship",
+    "EduSkills Ethical Hacking Internship"
+  ];
+  const hackathons = [
+    "Google Solution Challenge",
+    "GenAI Exchange Hackathon",
+    "Buildathon",
+    "GUVI AI Summit",
+    "GenAI Academy Cohort 1 Hackathon"
+  ];
+  const certs = [
+    "IBM SkillsBuild",
+    "Infosys Springboard",
+    "Microsoft Power BI",
+    "Google Arcade",
+    "Multiple AI, ML and Cloud Computing certifications"
+  ];
+
+  function renderList(id, items) {
+    const list = document.getElementById(id);
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = "flex items-start gap-3 bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10";
+      li.innerHTML = `<span class="mt-1 w-2 h-2 rounded-full gradient-bg flex-shrink-0"></span><span>${item}</span>`;
+      list.appendChild(li);
+    });
+  }
+  renderList('internships-list', internships);
+  renderList('hackathons-list', hackathons);
+  renderList('certs-list', certs);
+
+  // ---------- ACHIEVEMENTS ----------
+  const achievements = [
+    { title: "Top 10 Rank in Class", icon: "🏆" },
+    { title: "Google Arcade Swags", icon: "🎁" },
+    { title: "James Swags", icon: "⭐" },
+  ];
+  const achGrid = document.getElementById('achievements-grid');
+  achievements.forEach(a => {
+    const div = document.createElement('div');
+    div.className = "reveal card-hover text-center bg-white dark:bg-white/5 p-8 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm";
+    div.innerHTML = `
+      <div class="text-4xl mb-4">${a.icon}</div>
+      <h3 class="font-semibold text-lg">${a.title}</h3>
+    `;
+    achGrid.appendChild(div);
+  });
+
+  // ---------- SCROLL REVEAL ----------
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        if (entry.target.closest('#skills')) {
+          entry.target.querySelectorAll('.progress-bar').forEach(bar => {
+            bar.style.width = bar.dataset.level + '%';
+          });
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // ---------- ACTIVE NAV HIGHLIGHT ----------
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  function onScroll() {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 120;
+      if (window.scrollY >= top) current = sec.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+
+    // navbar shadow on scroll
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 20) {
+      navbar.classList.add('shadow-md');
+    } else {
+      navbar.classList.remove('shadow-md');
+    }
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  // ---------- CONTACT FORM (demo) ----------
+  const form = document.getElementById('contact-form');
+  const formMsg = document.getElementById('form-msg');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    formMsg.classList.remove('hidden');
+    form.reset();
+    setTimeout(() => formMsg.classList.add('hidden'), 4000);
+  });
+
+  // ---------- FOOTER YEAR ----------
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
