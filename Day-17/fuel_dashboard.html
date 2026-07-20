@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuel Cost & E85 Paradox Dashboard</title>
+<style>
+  :root{
+    --bg:#0a0f1e;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.10);
+    --text:#e8ecf7;
+    --sub:#94a3c4;
+    --e85:#f5a623;
+    --petrol:#3b82f6;
+    --diesel:#9aa3b2;
+    --cng:#22c55e;
+    --ev:#a855f7;
+    --glow: 0 0 24px rgba(168,85,247,0.55);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 0%, #131a30 0%, var(--bg) 55%);
+    color:var(--text);
+    padding:20px;
+    min-height:100vh;
+  }
+  .wrap{max-width:1300px;margin:0 auto;}
+  header{
+    text-align:center;
+    padding:22px 16px;
+    margin-bottom:22px;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    backdrop-filter:blur(14px);
+  }
+  header h1{margin:0 0 6px;font-size:clamp(20px,3vw,30px);letter-spacing:.5px;}
+  header .sub{color:var(--sub);font-size:14px;}
+  header .sub b{color:var(--ev);}
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+    margin-bottom:22px;
+  }
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:480px){.kpi-grid{grid-template-columns:1fr;}}
+  .kpi{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:16px;
+    backdrop-filter:blur(14px);
+    transition:transform .2s ease;
+  }
+  .kpi:hover{transform:translateY(-3px);}
+  .kpi .label{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+  .kpi .value{font-size:22px;font-weight:700;}
+  .kpi .value.amber{color:var(--e85);}
+  .kpi .value.purple{color:var(--ev);}
+  .kpi .value.blue{color:var(--petrol);}
+  .grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-bottom:22px;
+  }
+  @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
+  .panel{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    padding:18px;
+    backdrop-filter:blur(14px);
+  }
+  .panel h2{margin:0 0 12px;font-size:16px;font-weight:600;color:var(--text);}
+  .panel h2 span{color:var(--sub);font-weight:400;font-size:12px;}
+  svg{width:100%;height:auto;overflow:visible;}
+  .bar{transition:opacity .2s;cursor:pointer;}
+  .bar:hover{opacity:0.75;}
+  .tooltip{
+    position:absolute;
+    background:#0f1730;
+    border:1px solid rgba(255,255,255,.15);
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:12px;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .15s;
+    z-index:20;
+    white-space:nowrap;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .rel{position:relative;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--sub);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;}
+  .gauge-num{font-size:34px;font-weight:800;margin-top:-46px;color:var(--ev);}
+  .verdict{margin-top:10px;text-align:center;font-size:13px;color:var(--sub);max-width:340px;}
+  .arc-fg{stroke-dasharray:339;stroke-dashoffset:339;animation:fillArc 1.6s ease forwards;}
+  @keyframes fillArc{to{stroke-dashoffset:var(--offset);}}
+  .fuel-cards{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+  }
+  @media (max-width:1100px){.fuel-cards{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.fuel-cards{grid-template-columns:1fr;}}
+  .fcard{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:16px;
+    backdrop-filter:blur(14px);
+  }
+  .fcard.highlight{
+    border-color:var(--ev);
+    box-shadow:var(--glow);
+  }
+  .fcard h3{margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:6px;}
+  .fcard ul{list-style:none;margin:0 0 8px;padding:0;font-size:12.5px;color:var(--sub);line-height:1.6;}
+  .fcard .best{font-size:12px;color:var(--text);border-top:1px solid var(--card-border);padding-top:8px;}
+  .badge{font-size:10px;background:rgba(168,85,247,.2);color:var(--ev);padding:2px 8px;border-radius:20px;margin-left:auto;}
+  footer{text-align:center;color:var(--sub);font-size:11px;margin-top:18px;padding-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>⚡ Your EV · Electric (EV) · Age: <b>2y</b> · 1000 km/mo</h1>
+    <div class="sub">Fuel cost, emissions & the E85 pump-price paradox — computed from your driving data</div>
+  </header>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="label">Your Cost / km</div><div class="value purple">₹1.75</div></div>
+    <div class="kpi"><div class="label">E85 Cost / km</div><div class="value amber">₹6.37</div></div>
+    <div class="kpi"><div class="label">E85 Premium vs Petrol</div><div class="value amber">+3.6%</div></div>
+    <div class="kpi"><div class="label">E85 Break-even Price</div><div class="value blue">₹79.1/L</div></div>
+    <div class="kpi"><div class="label">Your Monthly Fuel Cost</div><div class="value purple">₹1,752</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel rel">
+      <h2>Cost per km by Fuel Type <span>(₹/km, avg)</span></h2>
+      <svg id="barChart" viewBox="0 0 480 300"></svg>
+      <div class="tooltip" id="barTooltip"></div>
+    </div>
+    <div class="panel rel">
+      <h2>CO₂ Emitted per km <span>(kg/km share)</span></h2>
+      <svg id="donutChart" viewBox="0 0 480 300"></svg>
+      <div class="tooltip" id="donutTooltip"></div>
+      <div class="legend" id="donutLegend"></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel rel">
+      <h2>Cost/km vs Vehicle Age <span>(0–12 yrs)</span></h2>
+      <svg id="lineChart" viewBox="0 0 480 300"></svg>
+      <div class="tooltip" id="lineTooltip"></div>
+      <div class="legend" id="lineLegend"></div>
+    </div>
+    <div class="panel">
+      <h2>E85 Suitability Score</h2>
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 120" style="width:260px;">
+          <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="16"/>
+          <path class="arc-fg" style="--offset:157.85" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#f5a623" stroke-width="16" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-num">5.71<span style="font-size:16px;color:var(--sub);">/10</span></div>
+        <div class="verdict">E85 loses on pump price attractiveness once running costs are counted — for your EV, running costs are already the cheapest of all fuels by a wide margin.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin-bottom:16px;">Fuel Type Breakdown</h2>
+    <div class="fuel-cards">
+
+      <div class="fcard">
+        <h3><span class="dot" style="background:var(--petrol)"></span>Petrol (E20)</h3>
+        <ul>
+          <li>✅ Widest refuel network</li>
+          <li>✅ Fast 5-min refuel</li>
+          <li>❌ Highest running cost (₹6.15/km)</li>
+          <li>❌ High CO₂ output</li>
+        </ul>
+        <div class="best">🚗 Best for: occasional/low-mileage drivers</div>
+      </div>
+
+      <div class="fcard">
+        <h3><span class="dot" style="background:var(--diesel)"></span>Diesel</h3>
+        <ul>
+          <li>✅ Good mileage (~19.6 km/L)</li>
+          <li>✅ Fast refuel</li>
+          <li>❌ Highest maintenance/km (₹1.00)</li>
+          <li>❌ Highest CO₂/km (0.18 kg)</li>
+        </ul>
+        <div class="best">🚗 Best for: high-km highway fleets</div>
+      </div>
+
+      <div class="fcard">
+        <h3><span class="dot" style="background:var(--cng)"></span>CNG</h3>
+        <ul>
+          <li>✅ Cheaper than petrol/diesel</li>
+          <li>✅ Lower CO₂ than liquid fuels</li>
+          <li>❌ Sparse filling infra</li>
+          <li>❌ 8-min refuel, boot space loss</li>
+        </ul>
+        <div class="best">🚗 Best for: city fleets, cost-conscious daily use</div>
+      </div>
+
+      <div class="fcard">
+        <h3><span class="dot" style="background:var(--e85)"></span>E85 (Flex-Fuel)</h3>
+        <ul>
+          <li>✅ Lowest CO₂/km (0.07 kg)</li>
+          <li>✅ Lowest maintenance/km (₹0.46)</li>
+          <li>❌ Costliest running cost (₹6.37/km)</li>
+          <li>❌ Cheap pump price ≠ cheap driving (paradox)</li>
+        </ul>
+        <div class="best">🚗 Best for: eco-conscious flex-fuel owners, low annual km</div>
+      </div>
+
+      <div class="fcard highlight">
+        <h3><span class="dot" style="background:var(--ev)"></span>Electric (EV) <span class="badge">YOUR FUEL</span></h3>
+        <ul>
+          <li>✅ Lowest cost/km (₹1.75) by far</li>
+          <li>✅ Lowest maintenance/km (₹0.23)</li>
+          <li>❌ Longest refuel/recharge (45 min)</li>
+          <li>❌ Charging infra still growing</li>
+        </ul>
+        <div class="best">🚗 Best for: daily city commuters with home charging</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>All figures computed from uploaded dataset (day17_e85_dataset_optimised.csv) · Averages across recorded trips per fuel type</footer>
+</div>
+
+<script>
+const fuels = [
+  {name:'Petrol', full:'Petrol (E20)', cost:6.154, co2:0.171, maint:0.466, refuel:5, color:'#3b82f6'},
+  {name:'Diesel', full:'Diesel', cost:4.674, co2:0.179, maint:1.005, refuel:5, color:'#9aa3b2'},
+  {name:'CNG', full:'CNG', cost:3.325, co2:0.125, maint:0.662, refuel:8, color:'#22c55e'},
+  {name:'E85', full:'E85 (Flex-Fuel)', cost:6.374, co2:0.070, maint:0.460, refuel:5, color:'#f5a623'},
+  {name:'EV', full:'Electric (EV)', cost:1.752, co2:0.091, maint:0.233, refuel:45, color:'#a855f7'}
+];
+
+// ---------- BAR CHART: cost/km ----------
+(function(){
+  const svg = document.getElementById('barChart');
+  const tip = document.getElementById('barTooltip');
+  const W=480,H=300,padL=40,padB=40,padT=20,padR=10;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const maxVal = Math.max(...fuels.map(f=>f.cost))*1.15;
+  const bw = chartW/fuels.length*0.55;
+  let svgHtml = '';
+  // axis
+  svgHtml += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="rgba(255,255,255,.15)"/>`;
+  svgHtml += `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="rgba(255,255,255,.15)"/>`;
+  for(let g=0; g<=4; g++){
+    const val = maxVal/4*g;
+    const y = H-padB-(chartH*(g/4));
+    svgHtml += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="rgba(255,255,255,.05)"/>`;
+    svgHtml += `<text x="${padL-6}" y="${y+4}" font-size="10" fill="#94a3c4" text-anchor="end">₹${val.toFixed(1)}</text>`;
+  }
+  fuels.forEach((f,i)=>{
+    const slot = chartW/fuels.length;
+    const x = padL + slot*i + (slot-bw)/2;
+    const barH = (f.cost/maxVal)*chartH;
+    const y = H-padB-barH;
+    svgHtml += `<rect class="bar" data-i="${i}" x="${x}" y="${y}" width="${bw}" height="${barH}" rx="6" fill="${f.color}"/>`;
+    svgHtml += `<text x="${x+bw/2}" y="${H-padB+16}" font-size="10" fill="#94a3c4" text-anchor="middle">${f.name}</text>`;
+    svgHtml += `<text x="${x+bw/2}" y="${y-6}" font-size="10" fill="#e8ecf7" text-anchor="middle" font-weight="600">₹${f.cost.toFixed(2)}</text>`;
+  });
+  svg.innerHTML = svgHtml;
+  svg.querySelectorAll('.bar').forEach(bar=>{
+    bar.addEventListener('mousemove', e=>{
+      const f = fuels[bar.dataset.i];
+      tip.style.opacity=1;
+      tip.innerHTML = `<b>${f.full}</b><br>Cost/km: ₹${f.cost.toFixed(2)}<br>Maint/km: ₹${f.maint.toFixed(2)}`;
+      const rect = svg.getBoundingClientRect();
+      tip.style.left = (e.clientX-rect.left+10)+'px';
+      tip.style.top = (e.clientY-rect.top-10)+'px';
+    });
+    bar.addEventListener('mouseleave', ()=>tip.style.opacity=0);
+  });
+})();
+
+// ---------- DONUT: CO2 per km ----------
+(function(){
+  const svg = document.getElementById('donutChart');
+  const tip = document.getElementById('donutTooltip');
+  const legend = document.getElementById('donutLegend');
+  const total = fuels.reduce((s,f)=>s+f.co2,0);
+  const cx=140, cy=150, r=90, rInner=55;
+  let angleStart = -90;
+  let svgHtml='';
+  fuels.forEach((f,i)=>{
+    const pct = f.co2/total;
+    const angle = pct*360;
+    const angleEnd = angleStart+angle;
+    const large = angle>180?1:0;
+    const toRad = a=>(a*Math.PI/180);
+    const x1 = cx+r*Math.cos(toRad(angleStart));
+    const y1 = cy+r*Math.sin(toRad(angleStart));
+    const x2 = cx+r*Math.cos(toRad(angleEnd));
+    const y2 = cy+r*Math.sin(toRad(angleEnd));
+    const xi1 = cx+rInner*Math.cos(toRad(angleStart));
+    const yi1 = cy+rInner*Math.sin(toRad(angleStart));
+    const xi2 = cx+rInner*Math.cos(toRad(angleEnd));
+    const yi2 = cy+rInner*Math.sin(toRad(angleEnd));
+    const path = `M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${xi2},${yi2} A${rInner},${rInner} 0 ${large} 0 ${xi1},${yi1} Z`;
+    svgHtml += `<path class="bar" data-i="${i}" d="${path}" fill="${f.color}"/>`;
+    angleStart = angleEnd;
+  });
+  svgHtml += `<text x="${cx}" y="${cy-4}" font-size="13" fill="#e8ecf7" text-anchor="middle" font-weight="700">${total.toFixed(2)}</text>`;
+  svgHtml += `<text x="${cx}" y="${cy+12}" font-size="9" fill="#94a3c4" text-anchor="middle">kg/km total</text>`;
+  svg.innerHTML = svgHtml;
+  svg.querySelectorAll('.bar').forEach(seg=>{
+    seg.addEventListener('mousemove', e=>{
+      const f = fuels[seg.dataset.i];
+      tip.style.opacity=1;
+      tip.innerHTML = `<b>${f.full}</b><br>CO₂/km: ${f.co2.toFixed(3)} kg`;
+      const rect = svg.getBoundingClientRect();
+      tip.style.left = (e.clientX-rect.left+10)+'px';
+      tip.style.top = (e.clientY-rect.top-10)+'px';
+    });
+    seg.addEventListener('mouseleave', ()=>tip.style.opacity=0);
+  });
+  legend.innerHTML = fuels.map(f=>`<span><span class="dot" style="background:${f.color}"></span>${f.name} · ${f.co2.toFixed(2)}kg</span>`).join('');
+})();
+
+// ---------- LINE CHART: cost/km vs age ----------
+(function(){
+  const svg = document.getElementById('lineChart');
+  const tip = document.getElementById('lineTooltip');
+  const legend = document.getElementById('lineLegend');
+  const W=480,H=300,padL=40,padB=30,padT=20,padR=15;
+  const chartW=W-padL-padR, chartH=H-padT-padB;
+  const ageMax=12;
+  // slope models derived from dataset trend (approx linear fit per fuel)
+  const models = {
+    'Petrol': {base:5.7, slope:0.075},
+    'Diesel': {base:4.2, slope:0.09},
+    'CNG': {base:2.9, slope:0.05},
+    'E85': {base:6.0, slope:0.12},
+    'EV': {base:1.6, slope:0.02}
+  };
+  const maxVal = 8;
+  let svgHtml='';
+  svgHtml += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="rgba(255,255,255,.15)"/>`;
+  svgHtml += `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="rgba(255,255,255,.15)"/>`;
+  for(let g=0; g<=4; g++){
+    const val=maxVal/4*g;
+    const y=H-padB-(chartH*(g/4));
+    svgHtml += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="rgba(255,255,255,.05)"/>`;
+    svgHtml += `<text x="${padL-6}" y="${y+4}" font-size="10" fill="#94a3c4" text-anchor="end">₹${val}</text>`;
+  }
+  for(let a=0;a<=12;a+=2){
+    const x = padL + chartW*(a/ageMax);
+    svgHtml += `<text x="${x}" y="${H-padB+14}" font-size="10" fill="#94a3c4" text-anchor="middle">${a}y</text>`;
+  }
+  fuels.forEach(f=>{
+    const m = models[f.name];
+    let pts=[];
+    for(let a=0;a<=ageMax;a++){
+      const val = m.base + m.slope*a;
+      const x = padL + chartW*(a/ageMax);
+      const y = H-padB-(chartH*(val/maxVal));
+      pts.push(`${x},${y}`);
+    }
+    svgHtml += `<polyline points="${pts.join(' ')}" fill="none" stroke="${f.color}" stroke-width="2.5" opacity="0.9"/>`;
+  });
+  // vertical marker at car age = 2
+  const carAge=2;
+  const mx = padL + chartW*(carAge/ageMax);
+  svgHtml += `<line x1="${mx}" y1="${padT}" x2="${mx}" y2="${H-padB}" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  svgHtml += `<text x="${mx}" y="${padT-6}" font-size="10" fill="#a855f7" text-anchor="middle">Your car (2y)</text>`;
+  svg.innerHTML = svgHtml;
+  legend.innerHTML = fuels.map(f=>`<span><span class="dot" style="background:${f.color}"></span>${f.name}</span>`).join('');
+})();
+</script>
+</body>
+</html>
