@@ -1,0 +1,243 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background: #f4f6fb;
+    color: #1f2430;
+    padding: 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header.top {
+    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+    border-radius: 16px;
+    padding: 28px 32px;
+    color: #fff;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(79,70,229,0.25);
+  }
+  header.top h1 { font-size: 24px; margin-bottom: 6px; }
+  header.top p { opacity: 0.9; font-size: 14px; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px;
+  }
+  .meta-chip {
+    background: rgba(255,255,255,0.18);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eef0f6;
+  }
+  section h2 {
+    font-size: 17px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #2d2f3a;
+  }
+  .summary-text { font-size: 14px; line-height: 1.6; color: #444a5a; }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 14px;
+  }
+  .card {
+    background: #f8f9fd;
+    border: 1px solid #e8eaf3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  .card b { display:block; margin-bottom:4px; color:#4f46e5; font-size:12.5px; text-transform:uppercase; letter-spacing:0.4px;}
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  th {
+    text-align: left;
+    background: #f2f3fb;
+    padding: 10px 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #5a5f73;
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eef0f6;
+  }
+  tr:hover td { background: #fafbff; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-pending { background: #fff4e5; color: #b25e00; }
+  .badge-high { background: #fdeaea; color: #c0392b; }
+  .badge-open { background: #eaf1ff; color: #1d5fd6; }
+  .badge-risk { background: #fff0f0; color: #d43d3d; }
+  ul.simple-list { list-style: none; }
+  ul.simple-list li {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eef0f6;
+    font-size: 13.5px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  ul.simple-list li:last-child { border-bottom: none; }
+  details {
+    border: 1px solid #eef0f6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: #fafbff;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: #4f46e5;
+  }
+  .not-specified { color: #9aa0af; font-style: italic; }
+  @media (max-width: 600px) {
+    header.top { padding: 20px; }
+    section { padding: 16px; }
+    th, td { padding: 8px; font-size: 12.5px; }
+  }
+</style>
+
+<div class="container">
+
+  <header class="top">
+    <h1>AI Smart Attendance System — Project Dashboard</h1>
+    <p>Meeting Notes Breakdown</p>
+    <div class="meta-row">
+      <span class="meta-chip">📅 Date: 21 July 2026</span>
+      <span class="meta-chip">📌 Project: AI Smart Attendance System</span>
+      <span class="meta-chip">👥 Participants: Madhuradarshini, Rahul, Priya</span>
+      <span class="meta-chip">⏳ Status: In Progress</span>
+      <span class="meta-chip">➡️ Next Meeting: 24 July 2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>📝 Summary</h2>
+    <p class="summary-text">
+      The team discussed the AI Smart Attendance System project. The frontend will use React and Tailwind CSS,
+      while the backend will use Flask and Firebase, with authentication handled via Firebase Authentication.
+      Tasks were assigned to Rahul, Priya, and Madhuradarshini with individual deadlines, and the goal is to
+      complete the first MVP before 31 July. Two risks were noted around Firebase integration and pending API testing,
+      and two open questions remain regarding PDF reports and email notifications. The project is currently in progress,
+      with the next meeting scheduled for 24 July 2026.
+    </p>
+  </section>
+
+  <section>
+    <h2>💡 Key Takeaways</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <b>Frontend Stack</b>
+        React and Tailwind CSS
+      </div>
+      <div class="card">
+        <b>Backend Stack</b>
+        Flask and Firebase
+      </div>
+      <div class="card">
+        <b>Authentication</b>
+        Firebase Authentication
+      </div>
+      <div class="card">
+        <b>MVP Target</b>
+        Completed before 31 July
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>✅ Action Items</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Owner</th>
+          <th>Deadline</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Complete the UI</td>
+          <td>Rahul</td>
+          <td>24 July 2026</td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+        </tr>
+        <tr>
+          <td>Create Firestore database and connect Firebase</td>
+          <td>Priya</td>
+          <td>25 July 2026</td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+        </tr>
+        <tr>
+          <td>Develop REST APIs and integrate with Firebase</td>
+          <td>Madhuradarshini</td>
+          <td>27 July 2026</td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+        </tr>
+        <tr>
+          <td>Complete first MVP</td>
+          <td class="not-specified">Not specified</td>
+          <td>Before 31 July 2026</td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>❓ Open Questions</h2>
+    <ul class="simple-list">
+      <li><span class="badge badge-open">❓ Open Question</span> Should attendance reports be downloadable as PDF?</li>
+      <li><span class="badge badge-open">❓ Open Question</span> Should email notifications be added?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>⚠️ Risks / Blockers</h2>
+    <ul class="simple-list">
+      <li><span class="badge badge-risk">⚠️ Risk</span> Firebase integration may take longer.</li>
+      <li><span class="badge badge-risk">⚠️ Risk</span> API testing is pending.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>⚔️ Conflicts</h2>
+    <p class="not-specified">Not specified</p>
+  </section>
+
+  <section>
+    <h2>📌 Additional Notes</h2>
+    <details>
+      <summary>View additional context</summary>
+      <p style="margin-top:10px; font-size:13.5px; color:#444a5a;">
+        Project status is recorded as "in progress." No additional supporting notes were provided beyond the discussion, risks, and open questions above.
+      </p>
+    </details>
+  </section>
+
+</div>
