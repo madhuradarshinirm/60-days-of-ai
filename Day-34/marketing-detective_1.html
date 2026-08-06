@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Detective</title>
+<style>
+:root{
+  --bg:#1a0e0e;
+  --board:#241414;
+  --board-edge:#150a0a;
+  --paper:#f4e9d8;
+  --paper-dark:#e8d9bd;
+  --ink:#2b1c14;
+  --accent:#c0392b;
+  --accent-glow:#ff5a3c;
+  --accent2:#8e1f1f;
+  --gold:#d9a441;
+  --pin:#9c1c1c;
+  --muted:#a68b6f;
+  --good:#3fa55e;
+  --bad:#c0392b;
+  --shadow: 0 10px 30px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:'Georgia','Times New Roman',serif;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,90,60,.06), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(192,57,43,.08), transparent 45%),
+    var(--bg);
+  color:var(--paper);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+#app{min-height:100vh; display:flex; flex-direction:column;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:var(--board-edge);}
+::-webkit-scrollbar-thumb{background:var(--accent2); border-radius:5px;}
+
+/* ---------- Header ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 28px;
+  background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.15));
+  border-bottom:1px solid rgba(217,164,65,.25);
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(4px);
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+  font-family:'Courier New', monospace;
+  letter-spacing:2px;
+}
+.brand .badge{
+  width:38px;height:38px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--accent-glow), var(--accent2) 70%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px; box-shadow:0 0 18px rgba(255,90,60,.55), inset 0 0 8px rgba(0,0,0,.4);
+  border:2px solid var(--gold);
+}
+.brand h1{font-size:20px;margin:0;color:var(--gold); text-shadow:0 0 12px rgba(217,164,65,.4);}
+.brand small{display:block; font-size:10px; color:var(--muted); letter-spacing:3px;}
+.progress-wrap{display:flex; align-items:center; gap:10px; font-family:'Courier New',monospace; font-size:12px; color:var(--muted);}
+.progress-bar{width:160px; height:8px; background:rgba(255,255,255,.08); border-radius:6px; overflow:hidden; border:1px solid rgba(217,164,65,.3);}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent-glow)); width:0%; transition:width .6s ease;}
+
+/* ---------- Screens ---------- */
+.screen{flex:1; display:flex; flex-direction:column; align-items:center; padding:32px 18px 60px; animation:fadeIn .6s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- Intro / Case Assignment ---------- */
+.intro-wrap{max-width:780px; text-align:center; margin-top:40px;}
+.intro-wrap h2{font-size:32px; color:var(--gold); margin-bottom:6px; letter-spacing:1px;}
+.intro-wrap p.sub{color:var(--muted); margin-bottom:34px; font-style:italic;}
+.case-file{
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:4px;
+  padding:34px 30px;
+  box-shadow:var(--shadow);
+  position:relative;
+  transform:rotate(-.6deg);
+  border:1px solid #cbb896;
+  text-align:left;
+}
+.case-file::before{
+  content:"CONFIDENTIAL";
+  position:absolute; top:14px; right:-38px;
+  background:var(--accent2); color:#fff;
+  padding:4px 46px; font-size:11px; letter-spacing:3px;
+  transform:rotate(35deg);
+  box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+.case-file h3{margin-top:0; font-size:22px; border-bottom:2px dashed #b8a67f; padding-bottom:10px;}
+.stamp{
+  display:inline-block; margin-top:16px; padding:8px 14px; border:3px solid var(--accent2);
+  color:var(--accent2); font-weight:bold; letter-spacing:2px; transform:rotate(-4deg);
+  border-radius:6px; font-family:'Courier New', monospace;
+}
+.btn{
+  cursor:pointer; border:none; outline:none;
+  font-family:'Courier New', monospace; letter-spacing:1.5px; font-weight:bold;
+  padding:14px 30px; border-radius:6px; font-size:14px;
+  background:linear-gradient(180deg, var(--accent-glow), var(--accent2));
+  color:#1a0e0e; box-shadow:0 6px 18px rgba(255,90,60,.35), inset 0 1px 0 rgba(255,255,255,.4);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(255,90,60,.5);}
+.btn:active{transform:translateY(0);}
+.btn.secondary{background:linear-gradient(180deg,#3a2a2a,#241414); color:var(--paper); border:1px solid var(--gold);}
+.btn.ghost{background:transparent; border:1px solid var(--muted); color:var(--muted); box-shadow:none;}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none;}
+.center-btn{margin-top:30px;}
+
+/* ---------- Theme picker (in-app, optional restyle) ---------- */
+.theme-row{display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+.theme-chip{
+  padding:8px 14px; border-radius:20px; font-size:11px; cursor:pointer;
+  border:1px solid rgba(217,164,65,.4); color:var(--muted); font-family:'Courier New',monospace;
+  transition:all .2s;
+}
+.theme-chip.active, .theme-chip:hover{background:var(--accent2); color:#fff; border-color:var(--accent-glow);}
+
+/* ---------- Investigation Board ---------- */
+.board-wrap{width:100%; max-width:1200px;}
+.board-header{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px; flex-wrap:wrap; gap:10px;}
+.board-header h2{color:var(--gold); margin:0 0 4px; font-size:24px;}
+.board-header p{margin:0; color:var(--muted);}
+
+.corkboard{
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.05) 0 2px, transparent 2px 4px),
+    radial-gradient(circle at 10% 10%, #6b4a2f, #4a3220 60%);
+  border:16px solid #2e1c10;
+  border-radius:10px;
+  box-shadow:var(--shadow), inset 0 0 60px rgba(0,0,0,.5);
+  padding:26px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+  gap:22px;
+  position:relative;
+}
+.pin{
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+  width:16px; height:16px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ff8a70, var(--pin) 70%);
+  box-shadow:0 3px 6px rgba(0,0,0,.6);
+  z-index:3;
+}
+.note{
+  background:var(--paper);
+  color:var(--ink);
+  padding:16px 14px 14px;
+  border-radius:2px;
+  position:relative;
+  box-shadow:0 8px 16px rgba(0,0,0,.4);
+  cursor:pointer;
+  transition:transform .25s ease, box-shadow .25s ease;
+  min-height:150px;
+  transform:rotate(var(--r,0deg));
+  font-size:13.5px;
+  line-height:1.5;
+  user-select:none;
+}
+.note:nth-child(4n+1){ --r:-2deg; background:#f4e9d8;}
+.note:nth-child(4n+2){ --r:1.5deg; background:#f1e3c8;}
+.note:nth-child(4n+3){ --r:-1deg; background:#eee0c9; }
+.note:nth-child(4n+4){ --r:2deg; background:#f6ecd9;}
+.note:hover{transform:rotate(0deg) translateY(-6px) scale(1.03); box-shadow:0 16px 26px rgba(0,0,0,.55);}
+.note h4{margin:6px 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:1px; color:var(--accent2);}
+.note .tag{
+  display:inline-block; font-size:10px; letter-spacing:1px; background:var(--accent2); color:#fff;
+  padding:2px 8px; border-radius:10px; margin-bottom:6px; font-family:'Courier New',monospace;
+}
+.note.examined{outline:2px solid var(--good); box-shadow:0 0 16px rgba(63,165,94,.5);}
+.note .check{position:absolute; top:8px; right:10px; color:var(--good); font-weight:bold; display:none;}
+.note.examined .check{display:block;}
+.string{
+  position:absolute; height:2px; background:repeating-linear-gradient(90deg, var(--accent-glow) 0 6px, transparent 6px 10px);
+  transform-origin:left center; opacity:.55; pointer-events:none; z-index:1;
+}
+
+/* ---------- Evidence Modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(10,4,4,.82);
+  display:flex; align-items:center; justify-content:center; z-index:200;
+  animation:fadeIn .25s ease; padding:20px;
+}
+.modal{
+  background:var(--paper); color:var(--ink); max-width:560px; width:100%;
+  border-radius:6px; padding:26px 26px 22px; box-shadow:0 20px 60px rgba(0,0,0,.7);
+  position:relative; max-height:85vh; overflow-y:auto;
+  border:1px solid #cbb896;
+}
+.modal h3{margin-top:0; color:var(--accent2); border-bottom:2px dashed #b8a67f; padding-bottom:10px;}
+.modal .close-x{position:absolute; top:14px; right:16px; cursor:pointer; font-size:20px; color:var(--accent2); background:none; border:none;}
+.kv{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dotted #cbb896; font-size:13.5px;}
+.kv b{color:#5b3d2a;}
+.metrics-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-top:12px;}
+.metric-box{background:#fffaf0; border:1px solid #d8c69f; border-radius:6px; padding:10px; text-align:center;}
+.metric-box .val{font-size:18px; font-weight:bold; color:var(--accent2);}
+.metric-box .lbl{font-size:10px; letter-spacing:1px; color:#7a6650; text-transform:uppercase;}
+.bar-row{margin:6px 0;}
+.bar-row .bar-lbl{display:flex; justify-content:space-between; font-size:11px; color:#5b3d2a; margin-bottom:3px;}
+.bar-track{background:#e3d5b3; border-radius:6px; height:10px; overflow:hidden;}
+.bar-fill{height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent-glow)); width:0; transition:width 1s ease;}
+.comment{background:#fffaf0; border-left:3px solid var(--accent2); padding:8px 12px; margin:6px 0; font-style:italic; font-size:13px; border-radius:0 6px 6px 0;}
+
+/* ---------- Suspects / accusation ---------- */
+.accuse-wrap{width:100%; max-width:800px;}
+.suspect-list{display:flex; flex-direction:column; gap:12px; margin-top:20px;}
+.suspect{
+  background:var(--paper); color:var(--ink); border-radius:6px; padding:16px 18px;
+  cursor:pointer; box-shadow:0 6px 14px rgba(0,0,0,.35); border:2px solid transparent;
+  transition:all .2s; display:flex; align-items:center; gap:14px;
+}
+.suspect:hover{border-color:var(--accent-glow); transform:translateX(6px);}
+.suspect.selected{border-color:var(--gold); background:#fff3d6;}
+.suspect .icon{font-size:22px;}
+.suspect .txt b{display:block; margin-bottom:2px;}
+.suspect .txt span{font-size:12.5px; color:#6b573f;}
+
+/* ---------- Case Closed ---------- */
+.closed-wrap{text-align:center; margin-top:50px;}
+.stamp-big{
+  font-size:52px; font-weight:bold; color:var(--accent-glow);
+  border:6px solid var(--accent-glow); border-radius:14px; padding:14px 34px;
+  display:inline-block; transform:rotate(-6deg) scale(0);
+  letter-spacing:4px; font-family:'Courier New', monospace;
+  animation:stampIn .6s cubic-bezier(.2,1.4,.5,1) forwards .2s;
+  box-shadow:0 0 40px rgba(255,90,60,.5);
+}
+@keyframes stampIn{ to{ transform:rotate(-6deg) scale(1); } }
+.closed-wrap p{color:var(--muted); margin-top:20px; font-size:15px;}
+
+/* ---------- Learning Report ---------- */
+.report-wrap{max-width:800px; width:100%;}
+.report-card{
+  background:var(--paper); color:var(--ink); border-radius:8px; padding:26px 28px; box-shadow:var(--shadow); margin-bottom:18px;
+}
+.report-card h3{color:var(--accent2); margin-top:0;}
+.improve-list{list-style:none; padding:0; margin:10px 0 0;}
+.improve-list li{padding:8px 0 8px 26px; position:relative; border-bottom:1px dotted #d8c69f;}
+.improve-list li::before{content:"✔"; position:absolute; left:0; color:var(--good); font-weight:bold;}
+.verdict{display:flex; align-items:center; gap:14px; margin-bottom:10px;}
+.verdict .result{font-size:26px; font-weight:bold;}
+.verdict.correct .result{color:var(--good);}
+.verdict.wrong .result{color:var(--bad);}
+.score-chip{background:var(--accent2); color:#fff; padding:6px 14px; border-radius:16px; font-family:'Courier New',monospace; font-size:13px;}
+
+/* ---------- Footer nav ---------- */
+.nav-row{display:flex; gap:12px; justify-content:center; margin-top:30px; flex-wrap:wrap;}
+
+/* Loader / draw animation */
+.deal-anim{
+  width:90px; height:120px; border-radius:6px; background:linear-gradient(160deg,var(--accent2),var(--accent-glow));
+  margin:0 auto 24px; box-shadow:0 10px 30px rgba(0,0,0,.5);
+  animation:flip 1.1s ease infinite;
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+}
+@keyframes flip{ 0%,100%{transform:rotateY(0);} 50%{transform:rotateY(180deg);} }
+
+@media (max-width:640px){
+  .corkboard{grid-template-columns:1fr 1fr;}
+  .brand h1{font-size:16px;}
+  .progress-bar{width:100px;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   MARKETING DETECTIVE — full vanilla JS implementation
+   ========================================================= */
+
+/* ---------------- CASE DATA (10 cases) ---------------- */
+const CASES = [
+{
+  company:"Lumière Cosmetics",
+  industry:"Beauty & Skincare",
+  objective:"Drive first-time online purchases for a new anti-aging serum line",
+  audience:"Women aged 35–55, urban, mid-to-high income, skincare enthusiasts",
+  channels:["Instagram Ads","Influencer Partnerships","Email Marketing","Google Search Ads"],
+  budget:{ "Instagram Ads":40, "Influencer":30, "Email":15, "Search Ads":15 },
+  metrics:{ reach:"2.4M", ctr:"0.6%", engagement:"3.1%", conversions:"0.4%", sales:"$38,200" },
+  comments:[
+    "The ad looked amazing but I couldn't tell what the product actually does.",
+    "I clicked three times trying to find a price. Gave up.",
+    "The influencer looked gorgeous but never explained the ingredients."
+  ],
+  social:{ instagramLikes:"142K", shares:"3.2K", commentsCount:"1.9K", sentiment:"Mixed — visually praised, confused about product" },
+  primaryMistake:"The campaign optimized entirely for aesthetic engagement (likes, saves) while omitting clear product information and pricing, causing high reach but almost no conversions.",
+  clues:[
+    "CTR is unusually low (0.6%) despite massive reach — visuals attracted attention but not clicks.",
+    "Customer comments repeatedly mention confusion about what the product does or costs.",
+    "Landing page analytics (implied) show high bounce, meaning the ad's promise wasn't matched with clarity on-site."
+  ],
+  explanation:"Lumière built a visually stunning campaign but never answered the customer's basic question: 'What is this and why should I buy it?' High reach and mediocre engagement masked a fundamental clarity gap. Beauty audiences respond to aspiration, but they still convert on information — ingredients, benefits, and price. Without those, curiosity never turned into a cart.",
+  improvements:[
+    "Add clear ingredient callouts and pricing directly in ad creative",
+    "Use influencer content that demonstrates application and results, not just aesthetics",
+    "A/B test landing pages with a benefit-first headline above the fold",
+    "Retarget engaged-but-non-converting users with an educational carousel ad"
+  ]
+},
+{
+  company:"TrailForge Outdoor Gear",
+  industry:"Outdoor & Sporting Goods",
+  objective:"Increase sales of a new waterproof hiking boot before the fall season",
+  audience:"Adventure-seekers aged 22–40, active on Reddit and YouTube",
+  channels:["YouTube Pre-roll","Reddit Ads","Affiliate Marketing","SEO Blog Content"],
+  budget:{ "YouTube":35, "Reddit":20, "Affiliate":25, "SEO":20 },
+  metrics:{ reach:"1.1M", ctr:"2.9%", engagement:"5.4%", conversions:"3.8%", sales:"$61,900" },
+  comments:[
+    "Ordered a size 10 like always and they were way too small.",
+    "Nobody warned me these run a full size down!",
+    "Great boots but I had to return and reorder — annoying experience."
+  ],
+  social:{ instagramLikes:"n/a", shares:"890", commentsCount:"2.4K", sentiment:"Positive on product, negative on fit accuracy" },
+  primaryMistake:"The campaign drove strong, relevant traffic and genuine purchase intent, but failed to communicate critical sizing information, resulting in a spike in returns that ate into net revenue and damaged trust.",
+  clues:[
+    "Conversion rate (3.8%) is actually strong — the targeting and channels worked well.",
+    "Return-related comments cluster heavily around one specific issue: sizing.",
+    "Engagement is high, suggesting people liked the product concept, not the buying experience."
+  ],
+  explanation:"TrailForge nailed audience targeting and channel selection — the ads reached the right adventurous, research-driven buyers who converted at a healthy rate. But an operational marketing gap (no sizing guidance in ads, product pages, or size charts) turned a purchase win into a fulfillment problem. This wasn't a targeting or creative failure — it was a missing piece of customer-facing information that marketing should have flagged before launch.",
+  improvements:[
+    "Add a prominent 'runs small — order up half a size' callout in ads and PDPs",
+    "Include a size comparison chart in the product description and retargeting emails",
+    "Feature affiliate/influencer content that specifically addresses fit",
+    "Set up a post-purchase email with sizing/fit confirmation to reduce returns"
+  ]
+},
+{
+  company:"NovaByte Cloud Storage",
+  industry:"SaaS / Technology",
+  objective:"Generate free-trial signups for a new business cloud storage plan",
+  audience:"Small business owners and IT managers, 28–50",
+  channels:["LinkedIn Ads","Google Search Ads","Webinars","Retargeting Display Ads"],
+  budget:{ "LinkedIn":30, "Search":30, "Webinars":20, "Retargeting":20 },
+  metrics:{ reach:"680K", ctr:"1.8%", engagement:"2.2%", conversions:"6.1%", sales:"1,240 trials" },
+  comments:[
+    "Signed up for the trial, still don't know what happens after 14 days.",
+    "I forgot I even started a trial until I got charged.",
+    "Nobody told me my card would be billed automatically."
+  ],
+  social:{ instagramLikes:"n/a", shares:"210", commentsCount:"640", sentiment:"Negative — feels like a 'trap' trial" },
+  primaryMistake:"The campaign successfully drove trial signups but failed to disclose auto-billing terms transparently, causing trust erosion, chargebacks, and a wave of negative sentiment that outweighed the acquisition win.",
+  clues:[
+    "Conversion rate (6.1%) looks excellent on paper, meaning the offer itself was compelling.",
+    "Comments consistently mention surprise billing rather than product dissatisfaction.",
+    "Social sentiment is negative despite a strong signup number — a mismatch between funnel metrics and brand perception."
+  ],
+  explanation:"NovaByte's funnel worked exactly as designed — attractive offer, easy signup, strong conversion. The mistake wasn't acquisition strategy but transparency: ads emphasized 'free trial' without equally emphasizing the auto-renewal terms. This created short-term signup wins at the cost of long-term trust, refund requests, and potential churn/chargeback costs that aren't visible in top-line conversion metrics.",
+  improvements:[
+    "State auto-billing terms clearly in ad copy and signup flow, not just fine print",
+    "Send a reminder email 3 days before trial-to-paid conversion",
+    "Offer an easy one-click cancellation path to reduce chargeback disputes",
+    "Track post-trial retention and refund rate as a core campaign KPI, not just signups"
+  ]
+},
+{
+  company:"Brewhaven Coffee Co.",
+  industry:"Food & Beverage",
+  objective:"Boost foot traffic to 12 new café locations during launch month",
+  audience:"Local urban commuters, 20–45, within 3 miles of each store",
+  channels:["Geo-targeted Facebook Ads","Local Influencers","Radio Spots","In-app Push Notifications"],
+  budget:{ "Facebook":35, "Influencers":25, "Radio":20, "Push":20 },
+  metrics:{ reach:"310K", ctr:"3.4%", engagement:"6.7%", conversions:"1.2%", sales:"$14,600" },
+  comments:[
+    "Saw the ad but the map pin showed the wrong street.",
+    "Drove there and it wasn't open yet even though the ad said 'Now Open'.",
+    "Confusing — the ad mentioned a discount but the store said they hadn't heard of it."
+  ],
+  social:{ instagramLikes:"22K", shares:"1.1K", commentsCount:"780", sentiment:"Frustrated — logistical mismatch" },
+  primaryMistake:"Strong creative and high engagement drove interest, but poor coordination between marketing timing/location data and actual store operations caused a broken customer experience at the critical moment of arrival.",
+  clues:[
+    "Engagement (6.7%) is excellent, proving the offer and creative were compelling.",
+    "Conversion into actual visits (1.2%) is very low relative to engagement — a sign of a breakdown between online promise and offline reality.",
+    "Multiple comments cite operational issues (wrong location, store not open, staff unaware of promo) rather than disinterest."
+  ],
+  explanation:"Brewhaven's marketing team executed a locally engaging, well-targeted campaign — the problem was internal alignment. Store opening dates, discount codes, and location data weren't synced between marketing and operations, so customers who were genuinely persuaded arrived to a mismatched experience. This is a case where marketing performance metrics looked healthy, but the real-world execution gap silently sabotaged conversions.",
+  improvements:[
+    "Implement a pre-launch checklist syncing marketing claims with store readiness",
+    "Verify all geo-tags and map pins before campaign go-live",
+    "Brief in-store staff on every active promotion before ads launch",
+    "Add a real-time 'store status' feed to pause ads for delayed locations"
+  ]
+},
+{
+  company:"PulseFit Wearables",
+  industry:"Consumer Electronics / Fitness Tech",
+  objective:"Launch a new fitness tracker and outsell the previous generation",
+  audience:"Health-conscious millennials and Gen Z, 18–34",
+  channels:["TikTok Ads","YouTube Shorts","Email Newsletter","Paid Search"],
+  budget:{ "TikTok":40, "YouTube Shorts":25, "Email":10, "Search":25 },
+  metrics:{ reach:"5.2M", ctr:"4.1%", engagement:"9.8%", conversions:"0.3%", sales:"$27,300" },
+  comments:[
+    "The video was hilarious but I don't even remember the brand name.",
+    "Cool trend but what does the tracker actually track?",
+    "I liked and shared it but never thought about buying anything."
+  ],
+  social:{ instagramLikes:"n/a", shares:"48K", commentsCount:"12K", sentiment:"Extremely positive but product-agnostic" },
+  primaryMistake:"The campaign went viral by leaning entirely into a trending meme format, generating massive reach and engagement, but the product and brand were so secondary to the joke that almost none of the attention converted into purchase intent.",
+  clues:[
+    "Reach (5.2M) and engagement (9.8%) are exceptional — virality was achieved.",
+    "Conversion rate (0.3%) is dramatically disproportionate to the engagement, an unusual gap even for top-of-funnel content.",
+    "Comments show people enjoyed and shared the content but couldn't recall brand or product details."
+  ],
+  explanation:"PulseFit achieved the hardest part of digital marketing — genuine virality — but the creative prioritized the meme/trend over brand and product integration. This is a classic 'entertaining but unbranded' failure: the content worked as content, not as an ad. Viewers engaged with the joke, not the product, so the funnel had no real bridge from attention to consideration.",
+  improvements:[
+    "Ensure product/brand appears within the first 3 seconds and is tied to the punchline",
+    "Add on-screen captions naming the product and its key feature",
+    "Pair viral content with a retargeting sequence that reintroduces the product clearly",
+    "Measure branded search lift and add-to-cart, not just views and shares"
+  ]
+},
+{
+  company:"Harvest & Home Meal Kits",
+  industry:"Food Delivery / Subscription",
+  objective:"Reduce subscriber churn and win back cancelled customers",
+  audience:"Busy families and young professionals, 25–45, previous subscribers",
+  channels:["Email Win-back Campaign","Facebook Retargeting","Direct Mail Coupons","SMS"],
+  budget:{ "Email":30, "Facebook":25, "Direct Mail":25, "SMS":20 },
+  metrics:{ reach:"210K", ctr:"1.1%", engagement:"1.4%", conversions:"0.2%", sales:"$8,900" },
+  comments:[
+    "I cancelled because of the price, and this email offered me the exact same price.",
+    "Nothing about this email addressed why I actually left.",
+    "Nice try but you're just repeating the same pitch that didn't work before."
+  ],
+  social:{ instagramLikes:"n/a", shares:"n/a", commentsCount:"310", sentiment:"Indifferent to mildly annoyed" },
+  primaryMistake:"The win-back campaign used a single generic offer for all churned customers instead of segmenting by cancellation reason, so the messaging failed to address the specific objections (price, variety, delivery timing) that caused each customer to leave.",
+  clues:[
+    "Conversion rate (0.2%) is exceptionally low for a win-back campaign targeting past customers who already know the brand.",
+    "Comments reveal that customers' original cancellation reasons were never acknowledged or resolved.",
+    "The same offer was sent across all four channels with no variation, suggesting no segmentation by churn reason."
+  ],
+  explanation:"Harvest & Home treated all churned customers as one audience with one motivation, when in reality subscribers cancel for very different reasons — price sensitivity, meal variety fatigue, or delivery scheduling issues. Sending a uniform discount ignored this, so customers who left over non-price issues felt unheard, and price-sensitive customers received an offer that wasn't different enough to change their mind.",
+  improvements:[
+    "Segment win-back offers by recorded cancellation reason (price, variety, logistics)",
+    "Use exit-survey data to personalize win-back messaging, not just discount amount",
+    "Test non-price incentives (free customization, flexible delivery) for non-price churners",
+    "Cap win-back frequency to avoid repeating an offer that already failed"
+  ]
+},
+{
+  company:"UrbanNest Furniture",
+  industry:"Home & Furniture Retail",
+  objective:"Drive online sales during a major Black Friday promotion",
+  audience:"First-time homeowners and renters, 25–40",
+  channels:["Google Shopping Ads","Instagram Stories","Affiliate Bloggers","Email Blast"],
+  budget:{ "Google Shopping":35, "Instagram":25, "Affiliate":20, "Email":20 },
+  metrics:{ reach:"940K", ctr:"3.9%", engagement:"4.5%", conversions:"5.2%", sales:"$212,000" },
+  comments:[
+    "Website crashed right as I tried to check out with my cart full!",
+    "Kept getting an error at payment, had to try four times.",
+    "Lost my whole cart when the site timed out during the sale."
+  ],
+  social:{ instagramLikes:"31K", shares:"2.7K", commentsCount:"1.6K", sentiment:"Excited turning to frustrated mid-day" },
+  primaryMistake:"The marketing campaign was highly effective at driving demand, but the surge in traffic overwhelmed the website's checkout infrastructure, causing lost sales and customer frustration that the marketing team hadn't planned for with IT/ops.",
+  clues:[
+    "CTR and conversions both look strong on the surface (3.9% and 5.2%), showing the campaign itself was compelling.",
+    "Customer comments focus overwhelmingly on technical failures at checkout, not on the products or offers.",
+    "Sales figures, while high, likely represent a fraction of true demand given repeated reports of abandoned carts from errors."
+  ],
+  explanation:"UrbanNest's marketing did its job — arguably too well. The campaign generated more concurrent demand than the e-commerce platform could handle, and without cross-functional planning between marketing and engineering/ops for peak load, the checkout system buckled at the exact moment of highest purchase intent. This is a reminder that campaign success can create its own operational risk if not planned holistically.",
+  improvements:[
+    "Load-test checkout infrastructure ahead of major promotional pushes",
+    "Stagger ad spend/send times to smooth traffic spikes instead of an all-at-once blast",
+    "Add a queue or 'saved cart' fallback experience for high-traffic moments",
+    "Coordinate launch timing with engineering/ops teams as a standard campaign step"
+  ]
+},
+{
+  company:"GreenLeaf Organic Foods",
+  industry:"Grocery / CPG",
+  objective:"Build brand awareness for a new organic snack line among parents",
+  audience:"Parents of young children, health-conscious, 28–45",
+  channels:["Facebook Ads","Parenting Blogs (Sponsored Posts)","Pinterest","Coupon Inserts"],
+  budget:{ "Facebook":30, "Blogs":25, "Pinterest":25, "Coupons":20 },
+  metrics:{ reach:"760K", ctr:"1.4%", engagement:"2.6%", conversions:"1.9%", sales:"$45,700" },
+  comments:[
+    "Ad said 'no added sugar' but the ingredient list shows cane sugar syrup.",
+    "Felt misled — this isn't as 'clean' as the marketing claims.",
+    "I don't trust this brand now, feels like greenwashing."
+  ],
+  social:{ instagramLikes:"18K", shares:"640", commentsCount:"2.1K", sentiment:"Trust-damaged, skeptical" },
+  primaryMistake:"The campaign made a specific, checkable health claim ('no added sugar') that didn't match the actual ingredient label, triggering a credibility backlash among a highly label-conscious audience of parents.",
+  clues:[
+    "Comments specifically quote and fact-check the ad's exact wording against the ingredient list.",
+    "Sentiment shifted from curiosity to distrust rather than simple disinterest — a sign of a broken promise, not a weak pitch.",
+    "The audience (health-conscious parents) is unusually likely to scrutinize labels, making this claim especially risky."
+  ],
+  explanation:"GreenLeaf's mistake wasn't creative or targeting — it was a factual accuracy failure in a category where trust is the entire value proposition. Health-conscious parents actively verify claims, and a single mismatched statement ('no added sugar' vs. an ingredient containing cane sugar syrup) was enough to trigger accusations of greenwashing, which spreads fast and does lasting brand damage.",
+  improvements:[
+    "Run all health/nutrition claims through legal and product review before launch",
+    "Use precise, defensible language (e.g. 'no refined white sugar') instead of broad claims",
+    "Proactively address ingredient questions with an FAQ or pinned comment",
+    "Issue a transparent correction and clarification to rebuild trust quickly"
+  ]
+},
+{
+  company:"Zenith Financial App",
+  industry:"FinTech",
+  objective:"Acquire new users for a personal budgeting and investing app",
+  audience:"Young professionals, 24–35, first-time investors",
+  channels:["Podcast Sponsorships","Instagram Reels","App Store Ads","Referral Program"],
+  budget:{ "Podcasts":30, "Reels":25, "App Store":25, "Referral":20 },
+  metrics:{ reach:"1.6M", ctr:"2.2%", engagement:"3.8%", conversions:"4.6%", sales:"38,000 downloads" },
+  comments:[
+    "Downloaded it, but the referral bonus I was promised never showed up.",
+    "Referred three friends and got nothing.",
+    "App is fine but the referral program feels broken or fake."
+  ],
+  social:{ instagramLikes:"9K", shares:"1.4K", commentsCount:"920", sentiment:"Positive on app, negative on referral program" },
+  primaryMistake:"The referral program was heavily promoted as a growth driver, but a technical/tracking failure meant many referral rewards weren't properly credited, undermining trust in the exact mechanism meant to fuel organic growth.",
+  clues:[
+    "Download numbers (38,000) look strong, but engagement around the referral program specifically is negative.",
+    "Multiple comments describe the same specific failure — referral rewards not being credited — rather than varied complaints.",
+    "Referral was allocated 20% of budget as a growth lever, making its failure disproportionately costly to overall campaign ROI."
+  ],
+  explanation:"Zenith's core acquisition channels performed well, but the referral program — designed to be a viral, low-cost-per-acquisition engine — had a tracking or attribution bug that failed to credit users. This turned a trust-building growth mechanic into a trust-eroding broken promise, likely suppressing future referrals and word-of-mouth even though the app itself was well received.",
+  improvements:[
+    "Audit and QA the referral tracking/attribution system before scaling promotion",
+    "Set up automated alerts for anomalies in referral credit issuance",
+    "Proactively resolve and compensate affected users to rebuild trust",
+    "Communicate referral terms and timelines clearly to reduce confusion"
+  ]
+},
+{
+  company:"Solstice Airlines",
+  industry:"Travel / Aviation",
+  objective:"Sell out seats on newly launched budget routes",
+  audience:"Price-sensitive leisure travelers, 20–50",
+  channels:["Google Search Ads","Facebook Ads","Travel Comparison Sites","Email Flash Sales"],
+  budget:{ "Search":30, "Facebook":25, "Comparison Sites":25, "Email":20 },
+  metrics:{ reach:"1.9M", ctr:"5.1%", engagement:"4.0%", conversions:"2.7%", sales:"$189,400" },
+  comments:[
+    "The $39 fare in the ad turned into $146 after 'fees' at checkout.",
+    "Felt like bait-and-switch pricing, won't book again.",
+    "Ad price and final price were nowhere close — misleading."
+  ],
+  social:{ instagramLikes:"n/a", shares:"3.9K", commentsCount:"2.8K", sentiment:"Angry — perceived deception" },
+  primaryMistake:"The campaign advertised a headline base fare that excluded mandatory taxes and fees, creating a large gap between the advertised and actual price that customers experienced as deceptive, damaging brand trust despite strong click-through performance.",
+  clues:[
+    "CTR (5.1%) is very high, showing the low advertised price was extremely effective at generating clicks.",
+    "Comments consistently cite a large, specific gap between advertised and final price, not general price complaints.",
+    "Conversion rate (2.7%) is decent but likely suppressed by checkout abandonment once true price is revealed — sentiment suggests many who saw the real price walked away angry rather than silently."
+  ],
+  explanation:"Solstice's low headline price was a powerful hook, generating excellent click-through rates. But the gap between that headline price and the real, fee-inclusive price was large enough that customers felt deceived rather than simply price-conscious. In travel, where price transparency regulations and customer sensitivity are both high, this kind of gap creates reputational risk that outweighs the short-term booking lift.",
+  improvements:[
+    "Display all-in pricing (including taxes/fees) in ad creative, not just base fare",
+    "Use 'starting at' language paired with a realistic average total price example",
+    "Ensure checkout flow shows fee breakdown early, not just at the final step",
+    "Monitor sentiment and complaint volume as a live campaign health metric"
+  ]
+}
+];
+
+/* ---------------- STATE ---------------- */
+const state = {
+  screen:"intro", // intro | board | solve | closed | report
+  currentCase:null,
+  examined:new Set(),
+  selectedSuspectIdx:null,
+  suspects:[],
+  correctIdx:0,
+  verdictCorrect:null,
+};
+
+function pickCase(){
+  const idx = Math.floor(Math.random()*CASES.length);
+  return CASES[idx];
+}
+
+function buildSuspects(c){
+  // one correct explanation + 3 plausible-but-wrong distractors built from other cases
+  const distractorsPool = CASES.filter(x=>x!==c).map(x=>x.primaryMistake);
+  shuffle(distractorsPool);
+  const wrong = distractorsPool.slice(0,3);
+  const options = [c.primaryMistake, ...wrong];
+  shuffle(options);
+  return options;
+}
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+/* ---------------- RENDER HELPERS ---------------- */
+const app = document.getElementById('app');
+
+function el(tag, attrs={}, children=[]){
+  const e = document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class') e.className=attrs[k];
+    else if(k==='html') e.innerHTML=attrs[k];
+    else if(k.startsWith('on')) e.addEventListener(k.substring(2).toLowerCase(), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  (Array.isArray(children)?children:[children]).forEach(c=>{
+    if(c===null||c===undefined) return;
+    if(typeof c==='string') e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  });
+  return e;
+}
+
+function progressPercent(){
+  switch(state.screen){
+    case 'intro': return 5;
+    case 'board': return 30 + (state.examined.size*10);
+    case 'solve': return 80;
+    case 'closed': return 95;
+    case 'report': return 100;
+    default: return 0;
+  }
+}
+
+function renderTopbar(){
+  const bar = el('div',{class:'topbar'},[
+    el('div',{class:'brand'},[
+      el('div',{class:'badge'},'🔍'),
+      el('div',{},[
+        el('h1',{},'MARKETING DETECTIVE'),
+        el('small',{},'CASE FILES DIVISION')
+      ])
+    ]),
+    el('div',{class:'progress-wrap'},[
+      el('span',{},'CASE PROGRESS'),
+      el('div',{class:'progress-bar'},[
+        el('div',{class:'progress-fill', id:'progFill'})
+      ])
+    ])
+  ]);
+  return bar;
+}
+
+function updateProgress(){
+  const fill = document.getElementById('progFill');
+  if(fill) fill.style.width = Math.min(progressPercent(),100)+'%';
+}
+
+/* ---------------- SCREEN: INTRO ---------------- */
+function renderIntro(){
+  const c = state.currentCase;
+  const wrap = el('div',{class:'screen'},[
+    el('div',{class:'intro-wrap'},[
+      el('h2',{},'A New Case Has Landed On Your Desk'),
+      el('p',{class:'sub'},'Somewhere, a marketing campaign went wrong. It is your job to find out why.'),
+      el('div',{class:'case-file'},[
+        el('h3',{},'📁 CASE ASSIGNMENT'),
+        el('div',{class:'kv'},[el('b',{},'Company'), el('span',{},c.company)]),
+        el('div',{class:'kv'},[el('b',{},'Industry'), el('span',{},c.industry)]),
+        el('div',{class:'kv'},[el('b',{},'Objective'), el('span',{},c.objective)]),
+        el('div',{class:'kv'},[el('b',{},'Target Audience'), el('span',{},c.audience)]),
+        el('div',{class:'stamp'},'CASE OPEN')
+      ]),
+      el('div',{class:'nav-row'},[
+        el('button',{class:'btn', onClick:()=>{ state.screen='board'; render(); }},'📌 OPEN INVESTIGATION BOARD'),
+        el('button',{class:'btn ghost', onClick:()=>{ state.currentCase=pickCase(); render(); }},'🔀 New Random Case')
+      ])
+    ])
+  ]);
+  return wrap;
+}
+
+/* ---------------- SCREEN: BOARD ---------------- */
+const EVIDENCE_TYPES = [
+  {key:'channels', title:'Marketing Channels', tag:'CHANNELS', icon:'📡'},
+  {key:'budget', title:'Budget Allocation', tag:'BUDGET', icon:'💰'},
+  {key:'metrics', title:'Campaign Metrics', tag:'METRICS', icon:'📊'},
+  {key:'comments', title:'Customer Comments', tag:'TESTIMONY', icon:'🗣️'},
+  {key:'social', title:'Social Media Performance', tag:'SOCIAL', icon:'📱'},
+  {key:'clues', title:'Field Clues', tag:'CLUES', icon:'🔎'},
+];
+
+function renderBoard(){
+  const c = state.currentCase;
+  const board = el('div',{class:'corkboard'});
+  EVIDENCE_TYPES.forEach(ev=>{
+    const examined = state.examined.has(ev.key);
+    const note = el('div',{class:'note'+(examined?' examined':''), onClick:()=>openEvidence(ev)},[
+      el('div',{class:'pin'}),
+      el('span',{class:'check'},'✔ EXAMINED'),
+      el('span',{class:'tag'},ev.tag),
+      el('h4',{},ev.icon+' '+ev.title),
+      el('div',{},'Click to examine this evidence closely…')
+    ]);
+    board.appendChild(note);
+  });
+
+  const wrap = el('div',{class:'screen'},[
+    el('div',{class:'board-wrap'},[
+      el('div',{class:'board-header'},[
+        el('div',{},[
+          el('h2',{},'🧵 Investigation Board — '+c.company),
+          el('p',{},'Examine all evidence pieces before you are ready to solve the case.')
+        ]),
+        el('div',{},[
+          el('span',{},state.examined.size+' / '+EVIDENCE_TYPES.length+' examined')
+        ])
+      ]),
+      board,
+      el('div',{class:'nav-row'},[
+        el('button',{class:'btn secondary', onClick:()=>{ state.screen='intro'; render(); }},'← Back to Case File'),
+        el('button',{class:'btn', disabled: state.examined.size < EVIDENCE_TYPES.length, onClick:()=>{
+          state.suspects = buildSuspects(c);
+          state.correctIdx = state.suspects.indexOf(c.primaryMistake);
+          state.selectedSuspectIdx = null;
+          state.screen='solve'; render();
+        }}, state.examined.size < EVIDENCE_TYPES.length ? '🔒 Examine All Evidence to Continue' : '🧩 Ready to Solve the Case')
+      ])
+    ])
+  ]);
+  return wrap;
+}
+
+function openEvidence(ev){
+  state.examined.add(ev.key);
+  const c = state.currentCase;
+  const overlay = el('div',{class:'modal-overlay', onClick:(e)=>{ if(e.target===overlay) closeModal(); }});
+  let body;
+
+  if(ev.key==='channels'){
+    body = el('div',{},[
+      el('p',{},'The following channels carried this campaign:'),
+      el('ul',{}, c.channels.map(ch=>el('li',{},ch)))
+    ]);
+  } else if(ev.key==='budget'){
+    body = el('div',{}, Object.keys(c.budget).map(k=>{
+      const pct = c.budget[k];
+      const row = el('div',{class:'bar-row'},[
+        el('div',{class:'bar-lbl'},[el('span',{},k), el('span',{},pct+'%')]),
+        el('div',{class:'bar-track'},[el('div',{class:'bar-fill', id:'bar-'+k.replace(/\\s+/g,'')})])
+      ]);
+      setTimeout(()=>{ const f=row.querySelector('.bar-fill'); if(f) f.style.width=pct+'%'; },80);
+      return row;
+    }));
+  } else if(ev.key==='metrics'){
+    const m = c.metrics;
+    const items = [['Reach',m.reach],['CTR',m.ctr],['Engagement',m.engagement],['Conversions',m.conversions],['Sales',m.sales]];
+    body = el('div',{class:'metrics-grid'}, items.map(([lbl,val])=>
+      el('div',{class:'metric-box'},[ el('div',{class:'val'},val), el('div',{class:'lbl'},lbl) ])
+    ));
+  } else if(ev.key==='comments'){
+    body = el('div',{}, c.comments.map(cm=>el('div',{class:'comment'},'"'+cm+'"')));
+  } else if(ev.key==='social'){
+    const s = c.social;
+    body = el('div',{},[
+      el('div',{class:'kv'},[el('b',{},'Likes'), el('span',{},s.instagramLikes)]),
+      el('div',{class:'kv'},[el('b',{},'Shares'), el('span',{},s.shares)]),
+      el('div',{class:'kv'},[el('b',{},'Comments'), el('span',{},s.commentsCount)]),
+      el('div',{class:'kv'},[el('b',{},'Sentiment'), el('span',{},s.sentiment)]),
+    ]);
+  } else if(ev.key==='clues'){
+    body = el('div',{}, c.clues.map((cl,i)=>el('div',{class:'comment'},'Clue '+(i+1)+': '+cl)));
+  }
+
+  const modal = el('div',{class:'modal'},[
+    el('button',{class:'close-x', onClick:closeModal},'✕'),
+    el('h3',{},ev.icon+' '+ev.title),
+    body
+  ]);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  function closeModal(){
+    overlay.remove();
+    render(); // refresh board to show "examined" state
+  }
+}
+
+/* ---------------- SCREEN: SOLVE ---------------- */
+function renderSolve(){
+  const c = state.currentCase;
+  const list = el('div',{class:'suspect-list'});
+  state.suspects.forEach((s,i)=>{
+    const row = el('div',{class:'suspect'+(state.selectedSuspectIdx===i?' selected':''), onClick:()=>{
+      state.selectedSuspectIdx = i; render();
+    }},[
+      el('div',{class:'icon'},'🗂️'),
+      el('div',{class:'txt'},[
+        el('b',{},'Theory '+String.fromCharCode(65+i)),
+        el('span',{},s)
+      ])
+    ]);
+    list.appendChild(row);
+  });
+
+  const wrap = el('div',{class:'screen'},[
+    el('div',{class:'accuse-wrap'},[
+      el('h2',{style:'color:var(--gold); margin-bottom:4px;'},'🧩 Solve the Case'),
+      el('p',{style:'color:var(--muted);'},'Which theory best explains what went wrong at '+c.company+'?'),
+      list,
+      el('div',{class:'nav-row'},[
+        el('button',{class:'btn secondary', onClick:()=>{ state.screen='board'; render(); }},'← Back to Board'),
+        el('button',{class:'btn', disabled: state.selectedSuspectIdx===null, onClick:()=>{
+          state.verdictCorrect = (state.selectedSuspectIdx === state.correctIdx);
+          state.screen='closed'; render();
+        }},'🔨 Deliver Verdict')
+      ])
+    ])
+  ]);
+  return wrap;
+}
+
+/* ---------------- SCREEN: CLOSED ---------------- */
+function renderClosed(){
+  const correct = state.verdictCorrect;
+  const wrap = el('div',{class:'screen'},[
+    el('div',{class:'closed-wrap'},[
+      el('div',{class:'stamp-big'}, correct ? 'CASE CLOSED' : 'CASE MISFILED'),
+      el('p',{}, correct ? 'Sharp instincts, detective. You cracked it.' : 'Not quite — but every good detective learns from a wrong turn.'),
+      el('div',{class:'nav-row'},[
+        el('button',{class:'btn', onClick:()=>{ state.screen='report'; render(); }},'📑 View Learning Report')
+      ])
+    ])
+  ]);
+  return wrap;
+}
+
+/* ---------------- SCREEN: REPORT ---------------- */
+function renderReport(){
+  const c = state.currentCase;
+  const wrap = el('div',{class:'screen'},[
+    el('div',{class:'report-wrap'},[
+      el('div',{class:'report-card'},[
+        el('div',{class:'verdict '+(state.verdictCorrect?'correct':'wrong')},[
+          el('span',{class:'result'}, state.verdictCorrect ? '✔ CORRECT DEDUCTION' : '✘ INCORRECT DEDUCTION'),
+          el('span',{class:'score-chip'}, state.verdictCorrect ? '+100 PTS' : '+20 PTS')
+        ]),
+        el('h3',{},'The Truth: '+c.company),
+        el('p',{}, c.explanation)
+      ]),
+      el('div',{class:'report-card'},[
+        el('h3',{},'📌 Primary Marketing Mistake'),
+        el('p',{}, c.primaryMistake)
+      ]),
+      el('div',{class:'report-card'},[
+        el('h3',{},'🛠️ Suggested Improvements'),
+        el('ul',{class:'improve-list'}, c.improvements.map(i=>el('li',{},i)))
+      ]),
+      el('div',{class:'nav-row'},[
+        el('button',{class:'btn secondary', onClick:()=>{ state.screen='board'; render(); }},'🔁 Revisit Board'),
+        el('button',{class:'btn', onClick:()=>{ newGame(); }},'🆕 Start New Case')
+      ])
+    ])
+  ]);
+  return wrap;
+}
+
+/* ---------------- MASTER RENDER ---------------- */
+function render(){
+  app.innerHTML='';
+  app.appendChild(renderTopbar());
+  let screenEl;
+  if(state.screen==='intro') screenEl = renderIntro();
+  else if(state.screen==='board') screenEl = renderBoard();
+  else if(state.screen==='solve') screenEl = renderSolve();
+  else if(state.screen==='closed') screenEl = renderClosed();
+  else if(state.screen==='report') screenEl = renderReport();
+  app.appendChild(screenEl);
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function newGame(){
+  state.screen='intro';
+  state.currentCase=pickCase();
+  state.examined=new Set();
+  state.selectedSuspectIdx=null;
+  state.suspects=[];
+  state.correctIdx=0;
+  state.verdictCorrect=null;
+  render();
+}
+
+/* ---------------- INIT ---------------- */
+newGame();
+</script>
+</body>
+</html>
