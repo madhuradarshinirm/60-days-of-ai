@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧩 Prompt Puzzle — Master AI Prompting Through Play</title>
+<style>
+  :root{
+    --bg1:#0b0f1a; --bg2:#131a2b; --panel:#151c30; --panel2:#1b2440;
+    --accent:#7c5cff; --accent2:#00e0b8; --accent3:#ff5c8a;
+    --text:#e9edf7; --muted:#8a93ac; --good:#26d97a; --bad:#ff5c6c; --warn:#ffb84d;
+    --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 0%, #1c2440 0%, var(--bg1) 55%),
+               radial-gradient(circle at 90% 100%, #221b3d 0%, var(--bg1) 60%);
+    color:var(--text); min-height:100vh; overflow-x:hidden;
+  }
+  #app{max-width:1100px;margin:0 auto;padding:24px 18px 80px;}
+  h1,h2,h3{margin:0 0 6px;}
+  .title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .brand{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .pill{background:var(--panel);border:1px solid #2a3352;padding:6px 14px;border-radius:99px;font-size:.8rem;color:var(--muted);}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid #262f4d;border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);margin-bottom:18px;position:relative;overflow:hidden;}
+  .card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(124,92,255,.06),transparent 40%);pointer-events:none;}
+  .btn{
+    background:linear-gradient(135deg,var(--accent),#5a3fe0);color:#fff;border:none;padding:12px 22px;border-radius:12px;
+    font-weight:600;cursor:pointer;font-size:.95rem;transition:transform .15s ease, box-shadow .15s ease;box-shadow:0 6px 18px rgba(124,92,255,.35);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(124,92,255,.5);}
+  .btn:active{transform:translateY(0);}
+  .btn.secondary{background:var(--panel2);border:1px solid #333e60;box-shadow:none;}
+  .btn.secondary:hover{background:#232d4d;}
+  .btn.ghost{background:transparent;border:1px solid #333e60;box-shadow:none;color:var(--muted);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:800px){.grid2{grid-template-columns:1fr;}}
+  .opt-card{
+    background:var(--panel2);border:2px solid #2a3352;border-radius:12px;padding:16px;cursor:pointer;transition:.15s;
+  }
+  .opt-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .opt-card.selected{border-color:var(--accent2);box-shadow:0 0 0 2px rgba(0,224,184,.3);}
+  .opt-card.correct{border-color:var(--good);box-shadow:0 0 0 2px rgba(38,217,122,.35);}
+  .opt-card.wrong{border-color:var(--bad);box-shadow:0 0 0 2px rgba(255,92,108,.35);}
+  .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+  .badge.build{background:rgba(124,92,255,.18);color:#b3a2ff;}
+  .badge.clean{background:rgba(0,224,184,.18);color:#7bf3d8;}
+  .badge.choose{background:rgba(255,92,138,.18);color:#ffb3c7;}
+  #startScreen .domain-tag{font-size:.85rem;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+  .progress-bar{height:8px;background:#1c2440;border-radius:99px;overflow:hidden;border:1px solid #2a3352;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:14px;}
+  .stat{background:#131a2e;border:1px solid #262f4d;border-radius:10px;padding:10px 12px;text-align:center;}
+  .stat .val{font-size:1.3rem;font-weight:800;color:var(--accent2);}
+  .stat .lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .blocks-zone{min-height:70px;border:2px dashed #34406a;border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;background:rgba(255,255,255,.02);}
+  .blocks-zone.dragover{border-color:var(--accent2);background:rgba(0,224,184,.05);}
+  .block{
+    background:linear-gradient(135deg,#232d4d,#1a2238);border:1px solid #35406a;padding:10px 14px;border-radius:10px;
+    cursor:grab;font-size:.85rem;user-select:none;transition:.15s;box-shadow:0 4px 10px rgba(0,0,0,.25);
+  }
+  .block:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .block.dragging{opacity:.4;}
+  .block.correctPlaced{border-color:var(--good);}
+  .block.wrongPlaced{border-color:var(--bad);}
+  .zone-label{font-size:.72rem;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;margin-bottom:8px;font-weight:700;}
+  textarea.promptbox{
+    width:100%;min-height:110px;background:#0f1526;border:1px solid #2a3352;border-radius:10px;color:var(--text);
+    padding:12px;font-family:inherit;font-size:.88rem;resize:vertical;
+  }
+  .flash{position:fixed;top:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:10px;}
+  .flash .note{background:var(--panel2);border:1px solid #2a3352;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);
+    animation:slidein .3s ease, fadeout .4s ease 2.4s forwards; font-size:.85rem; max-width:280px;}
+  .flash .note.good{border-color:var(--good);color:#c9ffe1;}
+  .flash .note.bad{border-color:var(--bad);color:#ffd6da;}
+  .flash .note.info{border-color:var(--accent);color:#dcd4ff;}
+  @keyframes slidein{from{transform:translateX(60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  @keyframes fadeout{to{opacity:0;transform:translateX(30px);}}
+  .hint-box{background:rgba(255,184,77,.1);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:.82rem;color:#ffe0b0;margin-top:10px;}
+  .principle-box{background:rgba(124,92,255,.08);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;font-size:.85rem;color:#d9d3ff;margin-top:12px;}
+  .dna-bar{display:flex;height:26px;border-radius:8px;overflow:hidden;border:1px solid #2a3352;margin:10px 0;}
+  .dna-seg{display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#08101f;}
+  .rank-title{font-size:2rem;font-weight:900;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  code.inline{background:#0f1526;border:1px solid #2a3352;padding:2px 6px;border-radius:6px;font-size:.85em;color:var(--accent2);}
+  .compare-col{background:#0f1526;border:1px solid #2a3352;border-radius:10px;padding:12px;font-size:.82rem;}
+  .compare-col h4{margin-top:0;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;}
+  .fade-in{animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .scorepop{position:fixed;pointer-events:none;font-weight:800;color:var(--good);z-index:1000;animation:popup 1s ease forwards;}
+  @keyframes popup{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(1.3);}}
+  .footer-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;flex-wrap:wrap;}
+  ::selection{background:var(--accent);color:#fff;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="flash" id="flashRoot"></div>
+
+<script>
+/* ============ DATA: SCENARIOS ============ */
+const DOMAIN = "Software Development";
+const DIFFICULTY = "Intermediate";
+
+const SCENARIOS = [
+{
+  id:1,
+  title:"Debugging a Memory Leak",
+  desiredOutput:"A structured root-cause analysis of a Node.js memory leak with reproduction steps and a fix.",
+  correctBlocks:[
+    "Act as a senior Node.js performance engineer.",
+    "Here is the heap snapshot summary and relevant code: [paste].",
+    "Identify the most likely source of the memory leak.",
+    "Explain your reasoning step by step before giving the fix.",
+    "Output format: Root Cause, Evidence, Fix, Prevention Tips."
+  ],
+  distractorBlocks:[
+    "Make it sound impressive.",
+    "Write it as a poem.",
+    "Use as many technical buzzwords as possible.",
+    "Don't explain anything, just give code."
+  ],
+  weakPrompt:"My app has a memory leak, fix it.",
+  optimizedPrompt:"Act as a senior Node.js performance engineer. Here is the heap snapshot summary and relevant code: [paste]. Identify the most likely source of the memory leak, explain your reasoning step by step, then provide a fix. Output format: Root Cause, Evidence, Fix, Prevention Tips.",
+  overEngineeredPrompt:"Act as the world's greatest 100x Node.js engineer with 50 years of experience who has fixed a trillion memory leaks and never makes mistakes, think ultra deeply for 10000 words, consider every possible framework, philosophy of computing, and also write a haiku about garbage collection before answering, then give the fix in 15 different formats just in case.",
+  weakOutput:"You probably have a memory leak somewhere in your event listeners or closures. Try using a profiler.",
+  optimizedOutput:"Root Cause: Detached DOM-like event listeners retained in the `cache` Map are never cleared on disconnect.\nEvidence: Heap snapshot shows steady growth in `Map` retained size correlating with connection count.\nFix: Call `cache.delete(id)` in the `on('close')` handler.\nPrevention Tips: Add automated heap snapshot diffing to CI for long-running services.",
+  principle:"Specificity + Role Assignment + Output Structure reduces ambiguity and produces actionable, structured answers instead of generic guesses."
+},
+{
+  id:2,
+  title:"Writing a REST API Endpoint",
+  desiredOutput:"A well-documented Express.js POST endpoint with validation and error handling.",
+  correctBlocks:[
+    "Act as a backend engineer using Node.js and Express.",
+    "Create a POST /users endpoint that validates email and password fields.",
+    "Include proper error handling with HTTP status codes.",
+    "Add inline comments explaining each validation step.",
+    "Return the response as a single code block with no extra commentary."
+  ],
+  distractorBlocks:[
+    "Make the code as short as possible even if it breaks.",
+    "Add unrelated animal facts as comments.",
+    "Use a random unrelated language like COBOL.",
+    "Skip error handling to save time."
+  ],
+  weakPrompt:"Write an endpoint for creating users.",
+  optimizedPrompt:"Act as a backend engineer using Node.js and Express. Create a POST /users endpoint that validates email and password fields, includes proper error handling with HTTP status codes, and adds inline comments explaining each validation step. Return only a single code block.",
+  overEngineeredPrompt:"Act as a legendary 10x backend god-tier architect who has built every API in the universe, write the most enterprise-grade, infinitely scalable, microservice-ready, blockchain-integrated, AI-powered endpoint imaginable with 500 edge cases handled and a 3000 word essay on REST philosophy first.",
+  weakOutput:"app.post('/users', (req,res)=>{ res.send('user created'); })",
+  optimizedOutput:"app.post('/users', (req, res) => {\n  const { email, password } = req.body;\n  // Validate email format\n  if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)) {\n    return res.status(400).json({ error: 'Invalid email' });\n  }\n  // Validate password length\n  if (!password || password.length < 8) {\n    return res.status(400).json({ error: 'Password too short' });\n  }\n  // Proceed to create user (pseudo)\n  return res.status(201).json({ message: 'User created' });\n});",
+  principle:"Constraint-setting (format, scope, no extra commentary) prevents scope creep and keeps AI output production-ready."
+},
+{
+  id:3,
+  title:"Code Review Request",
+  desiredOutput:"A prioritized code review highlighting bugs, style issues, and security concerns.",
+  correctBlocks:[
+    "Act as a strict but constructive senior code reviewer.",
+    "Here is the pull request diff: [paste diff].",
+    "Review for bugs, security issues, and readability, in that priority order.",
+    "Rate severity of each issue as Critical, Moderate, or Minor.",
+    "Summarize with a final Approve/Request Changes recommendation."
+  ],
+  distractorBlocks:[
+    "Only compliment the code, never criticize.",
+    "Ignore security completely.",
+    "Respond only in emojis.",
+    "Rewrite the entire codebase from scratch instead of reviewing."
+  ],
+  weakPrompt:"Review my code.",
+  optimizedPrompt:"Act as a strict but constructive senior code reviewer. Here is the pull request diff: [paste diff]. Review for bugs, security issues, and readability, in that priority order. Rate severity of each issue as Critical, Moderate, or Minor, then give a final Approve/Request Changes recommendation.",
+  overEngineeredPrompt:"Act as the harshest, most nitpicky reviewer in Silicon Valley history who rejects everything, write a 5000-word dissertation on every possible coding philosophy, cite 20 academic papers, and refuse to approve anything under any circumstance no matter what.",
+  weakOutput:"Looks okay, maybe clean it up a bit.",
+  optimizedOutput:"Critical: SQL query on line 42 is vulnerable to injection — use parameterized queries.\nModerate: `getUser()` lacks null checks, could throw on missing records.\nMinor: Inconsistent naming (`usr` vs `user`) reduces readability.\nRecommendation: Request Changes — resolve the Critical issue before merge.",
+  principle:"Priority ordering and severity tagging turn vague feedback into an actionable, triage-ready review."
+},
+{
+  id:4,
+  title:"Writing Unit Tests",
+  desiredOutput:"A Jest test suite covering edge cases for a discount calculation function.",
+  correctBlocks:[
+    "Act as a QA engineer specializing in Jest testing.",
+    "Here is the function to test: [paste function].",
+    "Write unit tests covering normal cases, edge cases, and invalid inputs.",
+    "Use descriptive test names following the 'should...when...' pattern.",
+    "Output only the test file code."
+  ],
+  distractorBlocks:[
+    "Skip edge cases, only test the happy path.",
+    "Write tests in Python unittest instead of Jest.",
+    "Add jokes inside test descriptions.",
+    "Don't use any assertions."
+  ],
+  weakPrompt:"Write tests for this function.",
+  optimizedPrompt:"Act as a QA engineer specializing in Jest testing. Here is the function to test: [paste function]. Write unit tests covering normal cases, edge cases, and invalid inputs, using descriptive test names following the 'should...when...' pattern. Output only the test file code.",
+  overEngineeredPrompt:"Act as the ultimate testing overlord who has tested every function in existence across every language ever invented, write 200 tests covering literally every conceivable input including alien data types, and include a philosophical essay on the meaning of software correctness.",
+  weakOutput:"test('discount works', () => { expect(applyDiscount(100,10)).toBe(90); });",
+  optimizedOutput:"describe('applyDiscount', () => {\n  it('should return discounted price when valid inputs given', () => {\n    expect(applyDiscount(100, 10)).toBe(90);\n  });\n  it('should return original price when discount is 0', () => {\n    expect(applyDiscount(100, 0)).toBe(100);\n  });\n  it('should throw when discount exceeds 100', () => {\n    expect(() => applyDiscount(100, 150)).toThrow();\n  });\n  it('should throw when price is negative', () => {\n    expect(() => applyDiscount(-10, 10)).toThrow();\n  });\n});",
+  principle:"Explicit coverage requirements (normal/edge/invalid) ensure the AI doesn't stop at the trivial happy-path test."
+},
+{
+  id:5,
+  title:"Refactoring Legacy Code",
+  desiredOutput:"A refactor plan and cleaned-up version of a tangled legacy function.",
+  correctBlocks:[
+    "Act as a software architect specializing in legacy modernization.",
+    "Here is the legacy function: [paste code].",
+    "First explain what the code currently does and its problems.",
+    "Then refactor it to be modular, readable, and testable without changing behavior.",
+    "Present as: Analysis, Refactor Plan, Refactored Code."
+  ],
+  distractorBlocks:[
+    "Change the function's behavior to add new features.",
+    "Rewrite it in a completely different programming language.",
+    "Delete comments and shorten variable names to single letters.",
+    "Skip explaining, just dump code."
+  ],
+  weakPrompt:"Clean up this code.",
+  optimizedPrompt:"Act as a software architect specializing in legacy modernization. Here is the legacy function: [paste code]. First explain what the code currently does and its problems, then refactor it to be modular, readable, and testable without changing behavior. Present as: Analysis, Refactor Plan, Refactored Code.",
+  overEngineeredPrompt:"Act as a mythical 200-IQ software deity who has refactored every codebase in human history, rewrite this into a fully distributed microservices architecture with Kubernetes, Kafka, and a custom DSL, even though it's a 10-line function, and include a TED talk script about clean code.",
+  weakOutput:"Sure, here's cleaner code: [renamed variables only, same structure].",
+  optimizedOutput:"Analysis: The function mixes validation, calculation, and logging in one 80-line block, making it hard to test.\nRefactor Plan: Extract `validateInput()`, `calculateTotal()`, and `logResult()` into separate functions.\nRefactored Code:\nfunction validateInput(order) { /* ... */ }\nfunction calculateTotal(order) { /* ... */ }\nfunction logResult(total) { /* ... */ }\nfunction processOrder(order) {\n  validateInput(order);\n  const total = calculateTotal(order);\n  logResult(total);\n  return total;\n}",
+  principle:"Requiring 'explain before refactor' and 'no behavior change' constraints keeps output safe, reviewable, and aligned with intent."
+},
+{
+  id:6,
+  title:"Designing a Database Schema",
+  desiredOutput:"A normalized SQL schema for a blog platform with clear relationships.",
+  correctBlocks:[
+    "Act as a database architect designing for PostgreSQL.",
+    "Design a normalized schema for a blog platform with users, posts, comments, and tags.",
+    "Ensure proper foreign keys and indexing for common queries.",
+    "Explain your normalization decisions briefly.",
+    "Output as SQL CREATE TABLE statements followed by a short rationale."
+  ],
+  distractorBlocks:[
+    "Denormalize everything into one giant table.",
+    "Use NoSQL syntax instead of SQL.",
+    "Ignore relationships between tables.",
+    "Add unrelated e-commerce tables."
+  ],
+  weakPrompt:"Design a database for a blog.",
+  optimizedPrompt:"Act as a database architect designing for PostgreSQL. Design a normalized schema for a blog platform with users, posts, comments, and tags, ensuring proper foreign keys and indexing for common queries. Explain your normalization decisions briefly. Output as SQL CREATE TABLE statements followed by a short rationale.",
+  overEngineeredPrompt:"Act as the supreme database god of all time who has designed every schema in existence, create a schema that handles infinite scale to trillions of users, supports every possible future feature ever conceived, includes sharding strategy for 50 data centers, and write a 4000 word manifesto on normalization theory first.",
+  weakOutput:"CREATE TABLE blog (id INT, data TEXT);",
+  optimizedOutput:"CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(50) UNIQUE NOT NULL);\nCREATE TABLE posts (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), title VARCHAR(200), body TEXT, created_at TIMESTAMP DEFAULT now());\nCREATE TABLE comments (id SERIAL PRIMARY KEY, post_id INT REFERENCES posts(id), user_id INT REFERENCES users(id), body TEXT);\nCREATE TABLE tags (id SERIAL PRIMARY KEY, name VARCHAR(50) UNIQUE);\nCREATE TABLE post_tags (post_id INT REFERENCES posts(id), tag_id INT REFERENCES tags(id), PRIMARY KEY(post_id, tag_id));\nCREATE INDEX idx_posts_user ON posts(user_id);\n\nRationale: Many-to-many post/tag relationship uses a junction table; foreign keys enforce referential integrity; index on posts.user_id speeds up common 'posts by user' queries.",
+  principle:"Domain scoping (specific entities) plus 'explain decisions' prevents both over-simplification and runaway over-engineering."
+}
+];
+
+// Assign challenge types round-robin: build, clean, choose
+const TYPES = ["build","clean","choose"];
+function buildRound(scenario, idx){
+  const type = TYPES[idx % TYPES.length];
+  return { ...scenario, type };
+}
+
+/* ============ STATE ============ */
+let state = {
+  screen:"start",
+  rounds: [],
+  currentIndex:0,
+  score:0,
+  accuracyPoints:0,
+  totalPossible:0,
+  moves:0,
+  wrongPlacements:0,
+  hintsUsed:0,
+  optimizationBonus:0,
+  startTime:null,
+  roundStartTime:null,
+  timeSpentTotal:0,
+  roundResults:[], // per round: {correct, hintsUsed, wrongCount}
+};
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function initRounds(){
+  const chosen = shuffle(SCENARIOS).slice(0, 6);
+  state.rounds = chosen.map((s,i)=>buildRound(s,i));
+  state.currentIndex = 0;
+  state.score = 0;
+  state.accuracyPoints = 0;
+  state.totalPossible = state.rounds.length * 100;
+  state.moves = 0;
+  state.wrongPlacements = 0;
+  state.hintsUsed = 0;
+  state.optimizationBonus = 0;
+  state.startTime = Date.now();
+  state.roundResults = [];
+}
+
+/* ============ NOTIFICATIONS ============ */
+function flash(msg, type="info"){
+  const root = document.getElementById("flashRoot");
+  const div = document.createElement("div");
+  div.className = "note " + type;
+  div.textContent = msg;
+  root.appendChild(div);
+  setTimeout(()=>div.remove(), 2900);
+}
+function scorePop(amount, x, y){
+  const el = document.createElement("div");
+  el.className = "scorepop";
+  el.style.left = x+"px";
+  el.style.top = y+"px";
+  el.textContent = (amount>=0?"+":"")+amount;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1000);
+}
+
+/* ============ RENDER ROOT ============ */
+function render(){
+  const app = document.getElementById("app");
+  if(state.screen==="start") app.innerHTML = renderStart();
+  else if(state.screen==="play") { app.innerHTML = renderPlay(); attachPlayHandlers(); }
+  else if(state.screen==="report") app.innerHTML = renderReport();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ============ START SCREEN ============ */
+function renderStart(){
+  return `
+  <div class="title-row">
+    <div class="brand">🧩 Prompt Puzzle</div>
+    <div class="pill">Master AI Prompting Through Play</div>
+  </div>
+  <div class="card fade-in">
+    <div class="domain-tag">${DOMAIN} • ${DIFFICULTY}</div>
+    <h1>Ready to sharpen your prompting skills?</h1>
+    <p style="color:var(--muted);line-height:1.6;">You'll face 6 randomized challenges pulled from real-world <b>${DOMAIN}</b> scenarios at <b>${DIFFICULTY}</b> difficulty. Each round tests a different skill:</p>
+    <div class="grid2" style="margin-top:14px;">
+      <div class="opt-card"><span class="badge build">Build</span><p style="margin:8px 0 0;font-size:.85rem;color:var(--muted);">Drag correct blocks into place to construct an optimal prompt, avoiding distractors.</p></div>
+      <div class="opt-card"><span class="badge clean">Clean</span><p style="margin:8px 0 0;font-size:.85rem;color:var(--muted);">Given a messy over-engineered prompt, identify and remove the unnecessary clutter.</p></div>
+    </div>
+    <div class="opt-card" style="margin-top:14px;"><span class="badge choose">Choose</span><p style="margin:8px 0 0;font-size:.85rem;color:var(--muted);">Compare Weak vs Optimized vs Over-Engineered prompts and pick the best one, backed by reasoning.</p></div>
+    <div style="margin-top:22px;display:flex;justify-content:center;">
+      <button class="btn" onclick="startGame()">🚀 Start Challenge</button>
+    </div>
+  </div>`;
+}
+
+function startGame(){
+  initRounds();
+  state.screen = "play";
+  beginRound();
+  render();
+}
+
+/* ============ PLAY SCREEN ============ */
+let roundUI = {}; // transient per-round state
+
+function beginRound(){
+  const r = state.rounds[state.currentIndex];
+  state.roundStartTime = Date.now();
+  roundUI = {
+    hintUsedThisRound:false,
+    wrongThisRound:0,
+    finished:false,
+    // build-type
+    placedBlocks:[],
+    poolBlocks: r.type==="build" ? shuffle([...r.correctBlocks, ...r.distractorBlocks]) : [],
+    // clean-type
+    cleanSelections:[],
+    cleanTokens: r.type==="clean" ? shuffle(splitPromptTokens(r.overEngineeredPrompt)) : [],
+    // choose-type
+    chosenOption: null,
+    revealed:false
+  };
+}
+
+function splitPromptTokens(text){
+  // split into clause-ish chunks by commas/periods for the "clean" game
+  return text.split(/(?<=[,.])\s+/).filter(Boolean);
+}
+
+function renderPlay(){
+  const r = state.rounds[state.currentIndex];
+  const progressPct = Math.round((state.currentIndex/state.rounds.length)*100);
+  let body = "";
+  if(r.type==="build") body = renderBuild(r);
+  else if(r.type==="clean") body = renderClean(r);
+  else body = renderChoose(r);
+
+  return `
+  <div class="title-row">
+    <div class="brand">🧩 Prompt Puzzle</div>
+    <div class="pill">Round ${state.currentIndex+1} / ${state.rounds.length}</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+  <div class="stat-grid">
+    <div class="stat"><div class="val">${state.score}</div><div class="lbl">Score</div></div>
+    <div class="stat"><div class="val">${state.moves}</div><div class="lbl">Moves</div></div>
+    <div class="stat"><div class="val">${state.wrongPlacements}</div><div class="lbl">Wrong</div></div>
+    <div class="stat"><div class="val">${state.hintsUsed}</div><div class="lbl">Hints</div></div>
+  </div>
+  <div class="card fade-in" style="margin-top:18px;">
+    <span class="badge ${r.type}">${r.type==="build"?"Build the Prompt":r.type==="clean"?"Clean the Prompt":"Choose the Best Prompt"}</span>
+    <h2 style="margin-top:10px;">${r.title}</h2>
+    <p style="color:var(--muted);font-size:.9rem;"><b>Desired Output:</b> ${r.desiredOutput}</p>
+    ${body}
+    <div id="hintArea"></div>
+  </div>
+  <div class="footer-nav">
+    <button class="btn ghost" onclick="useHint()">💡 Use Hint (-5 pts)</button>
+    <div id="nextArea"></div>
+  </div>
+  `;
+}
+
+/* ---- BUILD CHALLENGE ---- */
+function renderBuild(r){
+  return `
+  <div class="zone-label">Available Blocks (drag into the zone below)</div>
+  <div class="blocks-zone" id="poolZone">
+    ${roundUI.poolBlocks.map((b,i)=>`<div class="block" draggable="true" data-idx="${i}" data-src="pool">${b}</div>`).join("")}
+  </div>
+  <div class="zone-label" style="margin-top:16px;">Your Prompt (drop blocks here in order)</div>
+  <div class="blocks-zone" id="dropZone" style="min-height:120px;">
+    ${roundUI.placedBlocks.map((b,i)=>`<div class="block ${b.status||''}" draggable="true" data-idx="${i}" data-src="drop">${b.text}</div>`).join("")}
+  </div>
+  <div style="margin-top:14px;display:flex;gap:10px;">
+    <button class="btn" onclick="checkBuild()">✅ Submit Prompt</button>
+    <button class="btn secondary" onclick="resetBuild()">↺ Reset</button>
+  </div>`;
+}
+
+function attachPlayHandlers(){
+  const r = state.rounds[state.currentIndex];
+  if(r.type!=="build") return;
+  const blocks = document.querySelectorAll('.block[draggable="true"]');
+  blocks.forEach(b=>{
+    b.addEventListener('dragstart', e=>{
+      b.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', JSON.stringify({idx:b.dataset.idx, src:b.dataset.src}));
+    });
+    b.addEventListener('dragend', ()=> b.classList.remove('dragging'));
+  });
+  ['poolZone','dropZone'].forEach(zid=>{
+    const zone = document.getElementById(zid);
+    if(!zone) return;
+    zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', ()=> zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e=>{
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      moveBlock(data.src, parseInt(data.idx), zid==='dropZone'?'drop':'pool');
+    });
+  });
+}
+
+function moveBlock(fromSrc, idx, toZone){
+  const r = state.rounds[state.currentIndex];
+  if(fromSrc==='pool' && toZone==='drop'){
+    const text = roundUI.poolBlocks[idx];
+    if(text===undefined) return;
+    roundUI.poolBlocks.splice(idx,1);
+    roundUI.placedBlocks.push({text});
+    state.moves++;
+  } else if(fromSrc==='drop' && toZone==='pool'){
+    const item = roundUI.placedBlocks[idx];
+    if(!item) return;
+    roundUI.placedBlocks.splice(idx,1);
+    roundUI.poolBlocks.push(item.text);
+    state.moves++;
+  }
+  render();
+}
+
+function resetBuild(){
+  const r = state.rounds[state.currentIndex];
+  roundUI.poolBlocks = shuffle([...r.correctBlocks, ...r.distractorBlocks]);
+  roundUI.placedBlocks = [];
+  render();
+}
+
+function checkBuild(){
+  const r = state.rounds[state.currentIndex];
+  if(roundUI.placedBlocks.length===0){ flash("Place some blocks first!","bad"); return; }
+  let correctCount = 0;
+  roundUI.placedBlocks.forEach(item=>{
+    if(r.correctBlocks.includes(item.text)){ item.status='correctPlaced'; correctCount++; }
+    else { item.status='wrongPlaced'; state.wrongPlacements++; roundUI.wrongThisRound++; }
+  });
+  const missed = r.correctBlocks.length - correctCount + roundUI.placedBlocks.filter(i=>i.status==='wrongPlaced').length;
+  const accuracy = correctCount / r.correctBlocks.length;
+  const usedAllCorrect = correctCount === r.correctBlocks.length;
+  const noDistractors = roundUI.placedBlocks.every(i=>i.status==='correctPlaced');
+  let pts = Math.round(accuracy*70);
+  if(usedAllCorrect && noDistractors) pts += 30; // optimization bonus
+  if(usedAllCorrect && noDistractors) state.optimizationBonus += 30;
+  pts -= roundUI.hintUsedThisRound? 5:0;
+  pts = Math.max(0,pts);
+  finishRound(pts, usedAllCorrect && noDistractors, r);
+}
+
+/* ---- CLEAN CHALLENGE ---- */
+function renderClean(r){
+  return `
+  <p style="color:var(--muted);font-size:.85rem;">This prompt is <b>over-engineered</b>. Click every clause that is unnecessary clutter (fluff, exaggeration, irrelevant asks) to remove it. Keep only what's essential.</p>
+  <div class="blocks-zone" id="cleanZone">
+    ${roundUI.cleanTokens.map((t,i)=>`<div class="block ${roundUI.cleanSelections.includes(i)?'wrongPlaced':''}" data-idx="${i}" onclick="toggleClean(${i})" style="cursor:pointer;">${t}</div>`).join("")}
+  </div>
+  <div style="margin-top:14px;">
+    <button class="btn" onclick="checkClean()">✅ Submit Cleaned Prompt</button>
+  </div>`;
+}
+
+function toggleClean(i){
+  const idx = roundUI.cleanSelections.indexOf(i);
+  if(idx>=0) roundUI.cleanSelections.splice(idx,1);
+  else roundUI.cleanSelections.push(i);
+  state.moves++;
+  render();
+}
+
+function checkClean(){
+  const r = state.rounds[state.currentIndex];
+  // "Essential" tokens = ones that share meaningful overlap with optimizedPrompt clauses
+  const optimizedClauses = splitPromptTokens(r.optimizedPrompt).map(c=>c.toLowerCase());
+  const isEssential = (token)=>{
+    const t = token.toLowerCase().replace(/[^a-z0-9 ]/g,'');
+    return optimizedClauses.some(oc=>{
+      const words = t.split(' ').filter(w=>w.length>3);
+      const hitCount = words.filter(w=>oc.includes(w)).length;
+      return hitCount >= Math.max(1, Math.floor(words.length*0.4));
+    });
+  };
+  let correctRemovals=0, wrongRemovals=0, missedRemovals=0;
+  roundUI.cleanTokens.forEach((tok,i)=>{
+    const removed = roundUI.cleanSelections.includes(i);
+    const essential = isEssential(tok);
+    if(removed && !essential) correctRemovals++;
+    else if(removed && essential){ wrongRemovals++; state.wrongPlacements++; roundUI.wrongThisRound++; }
+    else if(!removed && !essential) missedRemovals++;
+  });
+  const totalClutter = roundUI.cleanTokens.filter((t,i)=>!isEssential(t)).length || 1;
+  const accuracy = correctRemovals/totalClutter;
+  let pts = Math.round(accuracy*70);
+  const perfect = correctRemovals===totalClutter && wrongRemovals===0;
+  if(perfect){ pts+=30; state.optimizationBonus+=30; }
+  pts -= roundUI.hintUsedThisRound?5:0;
+  pts = Math.max(0,pts);
+  finishRound(pts, perfect, r);
+}
+
+/* ---- CHOOSE CHALLENGE ---- */
+function renderChoose(r){
+  const options = roundUI._choiceOrder || (roundUI._choiceOrder = shuffle([
+    {key:'weak', label:'Prompt A', text:r.weakPrompt},
+    {key:'optimized', label:'Prompt B', text:r.optimizedPrompt},
+    {key:'over', label:'Prompt C', text:r.overEngineeredPrompt}
+  ]));
+  return `
+  <p style="color:var(--muted);font-size:.85rem;">Which prompt will most reliably produce the <b>Desired Output</b> above, efficiently and precisely?</p>
+  <div class="grid2" style="margin-top:10px;">
+    ${options.map(o=>`
+      <div class="opt-card ${roundUI.chosenOption===o.key?'selected':''} ${roundUI.revealed && o.key==='optimized'?'correct':''} ${roundUI.revealed && roundUI.chosenOption===o.key && o.key!=='optimized'?'wrong':''}"
+        onclick="chooseOption('${o.key}')">
+        <b>${o.label}</b>
+        <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0;white-space:pre-wrap;">${o.text}</p>
+      </div>`).join("")}
+  </div>
+  <div style="margin-top:14px;">
+    <button class="btn" onclick="checkChoose()" ${roundUI.chosenOption?'':'disabled'}>✅ Submit Choice</button>
+  </div>`;
+}
+
+function chooseOption(key){
+  if(roundUI.revealed) return;
+  roundUI.chosenOption = key;
+  state.moves++;
+  render();
+}
+
+function checkChoose(){
+  const r = state.rounds[state.currentIndex];
+  roundUI.revealed = true;
+  const correct = roundUI.chosenOption === 'optimized';
+  if(!correct){ state.wrongPlacements++; roundUI.wrongThisRound++; }
+  let pts = correct ? 90 : 30;
+  if(correct){ pts+=10; state.optimizationBonus+=10; }
+  pts -= roundUI.hintUsedThisRound?5:0;
+  pts = Math.max(0,pts);
+  finishRound(pts, correct, r);
+}
+
+/* ---- HINT ---- */
+function useHint(){
+  const r = state.rounds[state.currentIndex];
+  if(roundUI.finished) return;
+  roundUI.hintUsedThisRound = true;
+  state.hintsUsed++;
+  const area = document.getElementById('hintArea');
+  if(area) area.innerHTML = `<div class="hint-box">💡 Hint: ${r.principle}</div>`;
+  flash("Hint used (−5 pts)","info");
+}
+
+/* ---- FINISH ROUND ---- */
+function finishRound(points, wasOptimal, r){
+  if(roundUI.finished) return;
+  roundUI.finished = true;
+  state.score += points;
+  state.accuracyPoints += points;
+  state.roundResults.push({
+    title:r.title, type:r.type, points, wasOptimal,
+    hints: roundUI.hintUsedThisRound?1:0, wrong: roundUI.wrongThisRound
+  });
+  scorePop(points, window.innerWidth/2, 120);
+  flash(wasOptimal ? `🎯 Excellent! +${points} pts` : `👍 Round complete. +${points} pts`, wasOptimal?"good":"info");
+
+  // show comparison + next button
+  const app = document.getElementById('app');
+  const nextArea = document.getElementById('nextArea');
+  const isLast = state.currentIndex === state.rounds.length-1;
+  if(nextArea){
+    nextArea.innerHTML = `<button class="btn" onclick="goNext()">${isLast?'📊 View Report':'Next Round →'}</button>`;
+  }
+  // Append comparison panel
+  const card = document.querySelector('.card');
+  const compare = document.createElement('div');
+  compare.className = 'fade-in';
+  compare.style.marginTop = '18px';
+  compare.innerHTML = `
+    <div class="principle-box"><b>Prompt Principle:</b> ${r.principle}</div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="compare-col"><h4 style="color:var(--bad);">Weak Prompt Output</h4>${escapeHtml(r.weakOutput)}</div>
+      <div class="compare-col"><h4 style="color:var(--good);">Optimized Prompt Output</h4>${escapeHtml(r.optimizedOutput)}</div>
+    </div>`;
+  card.appendChild(compare);
+  disableRoundInputs(r);
+}
+
+function disableRoundInputs(r){
+  if(r.type==='build'){
+    document.querySelectorAll('#poolZone .block, #dropZone .block').forEach(b=>b.setAttribute('draggable','false'));
+    const btns = document.querySelectorAll('.card button');
+    btns.forEach(b=>{ if(b.textContent.includes('Submit')||b.textContent.includes('Reset')) b.disabled=true; });
+  } else if(r.type==='clean'){
+    document.querySelectorAll('#cleanZone .block').forEach(b=> b.onclick=null);
+    document.querySelectorAll('.card button').forEach(b=>{ if(b.textContent.includes('Submit')) b.disabled=true; });
+  } else {
+    document.querySelectorAll('.opt-card').forEach(b=> b.onclick=null);
+    document.querySelectorAll('.card button').forEach(b=>{ if(b.textContent.includes('Submit')) b.disabled=true; });
+  }
+  const hintBtn = document.querySelector('.footer-nav .btn.ghost');
+  if(hintBtn) hintBtn.disabled = true;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function goNext(){
+  state.timeSpentTotal += (Date.now()-state.roundStartTime);
+  if(state.currentIndex < state.rounds.length-1){
+    state.currentIndex++;
+    beginRound();
+    render();
+  } else {
+    state.screen = "report";
+    render();
+  }
+}
+
+/* ============ REPORT SCREEN ============ */
+function computeReport(){
+  const totalTimeSec = Math.round(state.timeSpentTotal/1000) || Math.round((Date.now()-state.startTime)/1000);
+  const maxScore = state.rounds.length * 100;
+  const pct = Math.min(100, Math.round((state.score/maxScore)*100));
+  let rating, rank;
+  if(pct>=90){ rating="Prompt Master"; rank="S"; }
+  else if(pct>=75){ rating="Prompt Pro"; rank="A"; }
+  else if(pct>=60){ rating="Prompt Adept"; rank="B"; }
+  else if(pct>=40){ rating="Prompt Apprentice"; rank="C"; }
+  else { rating="Prompt Novice"; rank="D"; }
+
+  // Prompt DNA: distribution across skill dimensions
+  const clarity = Math.max(10, 100 - state.wrongPlacements*8);
+  const efficiency = Math.max(10, 100 - state.hintsUsed*10 - Math.round(state.moves/2));
+  const structure = Math.round((state.roundResults.filter(r=>r.wasOptimal).length / state.rounds.length)*100);
+  const optimization = Math.min(100, Math.round((state.optimizationBonus/ (state.rounds.length*30))*100));
+
+  return {totalTimeSec, pct, rating, rank, clarity, efficiency, structure, optimization};
+}
+
+function renderReport(){
+  const rep = computeReport();
+  const bestRound = [...state.roundResults].sort((a,b)=>b.points-a.points)[0];
+  const worstRound = [...state.roundResults].sort((a,b)=>a.points-b.points)[0];
+  const finalOptimized = state.rounds[0]?.optimizedPrompt || "";
+  const nextMilestoneMap = {S:"You've maxed the mastery track — try Expert difficulty next!",A:"Reach 90%+ to unlock Prompt Master rank.",B:"Cut hint usage and wrong placements to climb to A rank.",C:"Focus on Prompt Principles to reduce wrong placements.",D:"Review the Prompt Principles after each round — they hold the key patterns."};
+
+  return `
+  <div class="title-row">
+    <div class="brand">🧩 Prompt Puzzle</div>
+    <div class="pill">Performance Report</div>
+  </div>
+  <div class="card fade-in" style="text-align:center;">
+    <div style="font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Final Result</div>
+    <div class="rank-title">${rep.rating}</div>
+    <div style="font-size:3rem;font-weight:900;margin:6px 0;">${rep.rank}</div>
+    <div class="stat-grid" style="max-width:520px;margin:16px auto 0;">
+      <div class="stat"><div class="val">${state.score}</div><div class="lbl">Prompt Score</div></div>
+      <div class="stat"><div class="val">${rep.pct}%</div><div class="lbl">Accuracy</div></div>
+      <div class="stat"><div class="val">${rep.totalTimeSec}s</div><div class="lbl">Time</div></div>
+      <div class="stat"><div class="val">${state.moves}</div><div class="lbl">Moves</div></div>
+      <div class="stat"><div class="val">${state.wrongPlacements}</div><div class="lbl">Wrong</div></div>
+      <div class="stat"><div class="val">${state.hintsUsed}</div><div class="lbl">Hints</div></div>
+    </div>
+  </div>
+
+  <div class="card fade-in">
+    <h3>🧬 Prompt DNA</h3>
+    <p style="color:var(--muted);font-size:.85rem;">Your unique prompting profile across four core dimensions.</p>
+    ${dnaRow("Clarity", rep.clarity, "#7c5cff")}
+    ${dnaRow("Efficiency", rep.efficiency, "#00e0b8")}
+    ${dnaRow("Structure", rep.structure, "#ff5c8a")}
+    ${dnaRow("Optimization", rep.optimization, "#ffb84d")}
+  </div>
+
+  <div class="grid2">
+    <div class="card fade-in">
+      <h3>🌟 Strongest Round</h3>
+      <p style="color:var(--muted);font-size:.9rem;">${bestRound? bestRound.title+" — +"+bestRound.points+" pts":"—"}</p>
+      <h3 style="margin-top:16px;">🔧 Needs Practice</h3>
+      <p style="color:var(--muted);font-size:.9rem;">${worstRound? worstRound.title+" — +"+worstRound.points+" pts":"—"}</p>
+    </div>
+    <div class="card fade-in">
+      <h3>🎯 Next Milestone</h3>
+      <p style="color:var(--muted);font-size:.9rem;">${nextMilestoneMap[rep.rank]}</p>
+      <h3 style="margin-top:16px;">📌 Personalized Feedback</h3>
+      <p style="color:var(--muted);font-size:.9rem;">${feedbackText(rep)}</p>
+    </div>
+  </div>
+
+  <div class="card fade-in">
+    <h3>✅ Example Final Optimized Prompt</h3>
+    <p style="color:var(--muted);font-size:.85rem;">A model of what "optimized" looks like from this session:</p>
+    <textarea class="promptbox" readonly>${finalOptimized}</textarea>
+  </div>
+
+  <div class="footer-nav" style="justify-content:center;">
+    <button class="btn" onclick="replay()">🔁 Play Again (New Scenarios)</button>
+  </div>
+  `;
+}
+
+function dnaRow(label, val, color){
+  return `<div style="margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);"><span>${label}</span><span>${val}%</span></div>
+    <div class="dna-bar"><div class="dna-seg" style="width:${val}%;background:${color};">&nbsp;</div></div>
+  </div>`;
+}
+
+function feedbackText(rep){
+  if(rep.pct>=90) return "Outstanding work — you consistently chose specific, well-structured prompts and avoided over-engineering. You're operating at an expert level.";
+  if(rep.pct>=75) return "Strong performance. You understand core prompting principles well; tighten up hint usage to push into master territory.";
+  if(rep.pct>=60) return "Solid foundation. You're identifying good structure but occasionally miss distractors — review the Prompt Principle callouts closely.";
+  if(rep.pct>=40) return "You're building intuition. Focus on specificity, role assignment, and output formatting — these are the biggest score drivers.";
+  return "Keep practicing! Re-read each Prompt Principle carefully — they contain the exact patterns that separate weak prompts from optimized ones.";
+}
+
+function replay(){
+  state.screen = "start";
+  render();
+}
+
+/* ============ INIT ============ */
+render();
+</script>
+</body>
+</html>
