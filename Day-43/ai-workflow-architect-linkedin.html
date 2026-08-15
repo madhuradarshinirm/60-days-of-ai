@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Workflow Architect — LinkedIn Thought Leadership</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink:#12151c;
+  --surface:#1a2029;
+  --surface-2:#222937;
+  --rule:#333c4d;
+  --text:#e9e6df;
+  --text-dim:#a8adb8;
+  --gold:#d4a34a;
+  --gold-soft:#e7c789;
+  --teal:#5ec8b8;
+  --danger:#e07a5f;
+  --radius:10px;
+  --shadow: 0 12px 32px rgba(0,0,0,.35);
+  --maxw:1180px;
+}
+[data-theme="light"]{
+  --ink:#f7f5f0;
+  --surface:#ffffff;
+  --surface-2:#f0ede4;
+  --rule:#ddd7c8;
+  --text:#20221f;
+  --text-dim:#6b6a5f;
+  --gold:#a9762a;
+  --gold-soft:#8a5f1f;
+  --teal:#1f7a6b;
+  --danger:#b6432b;
+  --shadow: 0 12px 28px rgba(20,18,10,.08);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  transition:background .35s ease,color .35s ease;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;margin:0;letter-spacing:-.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:var(--teal);}
+::selection{background:var(--gold);color:#12151c;}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px clamp(16px,4vw,40px);
+  background:color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .mark{
+  width:30px;height:30px;border-radius:6px;
+  background:linear-gradient(135deg,var(--gold),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;color:#12151c;font-size:15px;
+}
+.brand-name{font-family:'Fraunces',serif;font-size:17px;font-weight:600;}
+.brand-sub{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.btn{
+  border:1px solid var(--rule);background:var(--surface);color:var(--text);
+  padding:8px 14px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold-soft);}
+.btn.primary{background:var(--gold);color:#1a1206;border-color:var(--gold);font-weight:600;}
+.btn.primary:hover{background:var(--gold-soft);color:#1a1206;}
+.icon-btn{width:36px;height:36px;padding:0;justify-content:center;border-radius:50%;}
+
+/* ---------- Hero ---------- */
+.hero{
+  max-width:var(--maxw);margin:0 auto;padding:64px clamp(16px,4vw,40px) 40px;
+  display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;
+}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--teal);}
+.hero h1{font-size:clamp(34px,4.6vw,54px);line-height:1.06;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p.lede{margin-top:18px;font-size:16px;line-height:1.65;color:var(--text-dim);max-width:52ch;}
+.hero-cta{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;}
+
+.ladder-preview{position:relative;padding:20px 0;}
+.rung{
+  display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:8px;
+  border:1px solid var(--rule);background:var(--surface);margin-bottom:10px;
+  font-size:13px;position:relative;
+}
+.rung .num{font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:12px;width:20px;}
+.rung::after{
+  content:'';position:absolute;left:31px;bottom:-10px;width:1px;height:10px;background:var(--rule);
+}
+.rung:last-child::after{display:none;}
+
+/* ---------- Layout with sidebar nav ---------- */
+.app-body{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,4vw,40px) 80px;display:grid;grid-template-columns:250px 1fr;gap:36px;}
+@media (max-width:900px){.app-body{grid-template-columns:1fr;} .hero{grid-template-columns:1fr;} .ladder-preview{display:none;}}
+
+.side-nav{position:sticky;top:80px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;padding-right:6px;}
+.side-nav h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-weight:500;margin-bottom:12px;}
+.nav-ladder{list-style:none;margin:0;padding:0;position:relative;}
+.nav-ladder li{position:relative;padding:0 0 22px 24px;border-left:1px solid var(--rule);}
+.nav-ladder li:last-child{border-left:1px solid transparent;padding-bottom:0;}
+.nav-ladder li::before{
+  content:'';position:absolute;left:-5px;top:2px;width:9px;height:9px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--rule);transition:.2s;
+}
+.nav-ladder li.done::before{background:var(--teal);border-color:var(--teal);}
+.nav-ladder li.active::before{background:var(--gold);border-color:var(--gold);}
+.nav-ladder a{
+  color:var(--text-dim);text-decoration:none;font-size:13.5px;display:block;line-height:1.3;
+}
+.nav-ladder li.active a{color:var(--gold-soft);font-weight:600;}
+.nav-ladder a small{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);opacity:.7;margin-top:2px;}
+
+.progress-box{margin-top:24px;padding:14px;border:1px solid var(--rule);border-radius:8px;background:var(--surface);}
+.progress-box .pct{font-family:'Fraunces',serif;font-size:28px;color:var(--gold);}
+.progress-bar{height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-top:8px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--teal));width:0%;transition:width .4s;}
+
+/* ---------- Main content ---------- */
+main{min-width:0;}
+section.stage{
+  border:1px solid var(--rule);border-radius:14px;background:var(--surface);
+  padding:clamp(20px,3vw,36px);margin-bottom:28px;scroll-margin-top:90px;box-shadow:var(--shadow);
+}
+.stage-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+.stage-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);letter-spacing:.06em;}
+.stage-title{font-size:clamp(22px,2.6vw,30px);margin-top:4px;}
+.stage-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-dim);margin-top:10px;font-family:'IBM Plex Mono',monospace;}
+.stage-meta span{display:flex;align-items:center;gap:6px;}
+.check-wrap{display:flex;align-items:center;gap:8px;}
+.check-wrap input{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;}
+.check-wrap label{font-size:12.5px;color:var(--text-dim);cursor:pointer;}
+
+.stage-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px;}
+@media (max-width:720px){.stage-grid{grid-template-columns:1fr;}}
+.block h5{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--gold-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;font-weight:500;}
+.block ul{margin:0;padding-left:18px;font-size:14px;line-height:1.65;color:var(--text);}
+.block ul li{margin-bottom:5px;}
+.block p{font-size:14px;line-height:1.65;color:var(--text);margin:0;}
+
+.tool-card{border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:10px;background:var(--surface-2);position:relative;}
+.tool-card .tool-top{display:flex;justify-content:space-between;align-items:center;}
+.tool-card .tool-name{font-weight:600;font-size:14.5px;}
+.tool-card .tool-why{font-size:13px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
+.tool-card .tool-alt{font-size:12px;margin-top:8px;color:var(--teal);}
+.star{background:none;border:none;cursor:pointer;font-size:16px;color:var(--rule);}
+.star.on{color:var(--gold);}
+
+.prompt-box{
+  background:var(--ink);border:1px dashed var(--rule);border-radius:8px;padding:12px 14px;
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.6;color:var(--teal);
+  position:relative;margin-bottom:10px;white-space:pre-wrap;
+}
+[data-theme="light"] .prompt-box{color:#1f7a6b;}
+.copy-btn{
+  position:absolute;top:8px;right:8px;background:var(--surface);border:1px solid var(--rule);
+  color:var(--text-dim);font-size:10.5px;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.copy-btn:hover{color:var(--gold);}
+
+.mistake{color:var(--danger);}
+.notes-area{
+  width:100%;min-height:70px;background:var(--ink);border:1px solid var(--rule);border-radius:8px;
+  color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:10px;resize:vertical;margin-top:8px;
+}
+.notes-area:focus{outline:1px solid var(--gold);}
+
+/* comparison table */
+table.compare{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+table.compare th, table.compare td{border:1px solid var(--rule);padding:8px 10px;text-align:left;}
+table.compare th{background:var(--surface-2);font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--gold-soft);}
+table.compare td.best{color:var(--teal);font-weight:600;}
+
+/* decision tree */
+.dtree{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+.dtree .q{border:1px solid var(--rule);border-radius:8px;padding:12px;background:var(--surface-2);}
+.dtree .q b{font-size:13.5px;}
+.dtree .choices{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.dtree button.choice{
+  background:var(--ink);border:1px solid var(--rule);color:var(--text);padding:7px 12px;border-radius:6px;
+  font-size:12.5px;cursor:pointer;
+}
+.dtree button.choice:hover{border-color:var(--teal);color:var(--teal);}
+.dtree .result{margin-top:8px;font-size:13px;color:var(--gold-soft);display:none;padding-top:8px;border-top:1px dashed var(--rule);}
+.dtree .result.show{display:block;}
+
+/* diagram */
+.diagram-wrap{overflow-x:auto;margin-top:10px;padding:8px 0;}
+.diagram-wrap svg{display:block;min-width:640px;}
+.node-box{fill:var(--surface-2);stroke:var(--rule);}
+.node-box.active{stroke:var(--gold);}
+.node-text{font-family:'Inter',sans-serif;font-size:11px;fill:var(--text);}
+.node-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;fill:var(--teal);}
+.edge{stroke:var(--rule);stroke-width:1.5;fill:none;marker-end:url(#arrow);}
+
+/* bottom summary sections */
+.summary-section{
+  border:1px solid var(--rule);border-radius:14px;background:var(--surface);padding:clamp(20px,3vw,36px);margin-bottom:24px;scroll-margin-top:90px;
+}
+.summary-section h2{font-size:26px;margin-bottom:16px;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.pill{
+  border:1px solid var(--rule);border-radius:999px;padding:6px 14px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;
+  color:var(--teal);background:var(--surface-2);
+}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px;}
+.stack-item{border:1px solid var(--rule);border-radius:10px;padding:14px;background:var(--surface-2);}
+.stack-item .role{font-size:10.5px;text-transform:uppercase;color:var(--gold-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;}
+.stack-item .tool{font-weight:600;margin-top:4px;font-size:14.5px;}
+
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px;}
+.link-card{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;background:var(--surface-2);font-size:13px;}
+.link-card .cat{font-size:10.5px;color:var(--teal);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;margin-bottom:4px;}
+
+footer{max-width:var(--maxw);margin:0 auto;padding:30px clamp(16px,4vw,40px) 60px;color:var(--text-dim);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+@media print{
+  .topbar,.side-nav,.hero-cta,.icon-btn,.copy-btn,.star,.check-wrap,.dtree button{display:none !important;}
+  .app-body{display:block;}
+  section.stage,.summary-section{break-inside:avoid;box-shadow:none;border:1px solid #ccc;}
+  body{background:#fff;color:#111;}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="topbar">
+  <div class="brand">
+    <div class="mark">AI</div>
+    <div>
+      <div class="brand-name">Workflow Architect</div>
+      <div class="brand-sub">LINKEDIN · PERSONAL BRAND GROWTH</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn" id="printBtn" title="Print / Save as PDF">🖨 Print Guide</button>
+    <button class="btn icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div>
+    <div class="eyebrow">End-to-end workflow · 7 stages</div>
+    <h1>Build a LinkedIn presence people actually <em>follow</em>.</h1>
+    <p class="lede">A complete, execution-ready pipeline for turning a LinkedIn profile into a recognized voice in your field — from positioning through publishing to the compounding engagement loop, with the AI tools, prompts, and pitfalls for every step.</p>
+    <div class="hero-cta">
+      <button class="btn primary" onclick="document.getElementById('stage-1').scrollIntoView()">Start at Stage 01 →</button>
+      <button class="btn" onclick="document.getElementById('summary').scrollIntoView()">Jump to summary</button>
+    </div>
+  </div>
+  <div class="ladder-preview">
+    <div class="rung"><span class="num">01</span> Strategy &amp; Positioning</div>
+    <div class="rung"><span class="num">02</span> Content Pillars &amp; Calendar</div>
+    <div class="rung"><span class="num">03</span> Writing &amp; Drafting</div>
+    <div class="rung"><span class="num">04</span> Visual Production</div>
+    <div class="rung"><span class="num">05</span> Publishing &amp; Optimization</div>
+    <div class="rung"><span class="num">06</span> Engagement &amp; Network</div>
+    <div class="rung"><span class="num">07</span> Analytics &amp; Iteration</div>
+  </div>
+</div>
+
+<div class="app-body">
+  <nav class="side-nav">
+    <h4>Workflow Stages</h4>
+    <ul class="nav-ladder" id="navLadder">
+      <li data-stage="1"><a href="#stage-1">Strategy &amp; Positioning<small>Define who you are, for whom</small></a></li>
+      <li data-stage="2"><a href="#stage-2">Content Pillars &amp; Calendar<small>Plan what to say, when</small></a></li>
+      <li data-stage="3"><a href="#stage-3">Writing &amp; Drafting<small>Turn ideas into posts</small></a></li>
+      <li data-stage="4"><a href="#stage-4">Visual Production<small>Carousels, graphics, video</small></a></li>
+      <li data-stage="5"><a href="#stage-5">Publishing &amp; Optimization<small>Timing, hooks, formatting</small></a></li>
+      <li data-stage="6"><a href="#stage-6">Engagement &amp; Network<small>Comments, DMs, community</small></a></li>
+      <li data-stage="7"><a href="#stage-7">Analytics &amp; Iteration<small>Measure and compound</small></a></li>
+    </ul>
+    <div class="progress-box">
+      <div class="pct" id="progressPct">0%</div>
+      <div style="font-size:11.5px;color:var(--text-dim);">stages completed</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ================= WORKFLOW DIAGRAM ================= -->
+    <section class="stage" id="diagram-section">
+      <div class="stage-tag">OVERVIEW</div>
+      <h2 class="stage-title">The full pipeline, at a glance</h2>
+      <p style="color:var(--text-dim);font-size:14px;margin-top:8px;">Each stage feeds the next. Analytics feeds back into Strategy — this is a loop, not a line.</p>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1180 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--rule)"/>
+            </marker>
+          </defs>
+          <!-- nodes -->
+          <g id="diagramNodes"></g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 1 ================= -->
+    <section class="stage" id="stage-1">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 01 / 07</div>
+          <h3 class="stage-title">Strategy &amp; Positioning</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="1" id="chk1">
+          <label for="chk1">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta">
+        <span>⏱ 3–5 hrs (one-time)</span>
+        <span>🎯 Foundation stage</span>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Define a niche narrow enough to be memorable, wide enough to sustain a year of posts</li>
+            <li>Identify your ideal reader and the one transformation your content offers them</li>
+            <li>Audit 5–10 competitors/peers to find a gap you can own</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Write a one-line positioning statement (role + audience + outcome)</li>
+            <li>List 3 content pillars that support that positioning</li>
+            <li>Rewrite headline, About section, and featured section around the new angle</li>
+            <li>Build a swipe file of 15 posts (in and out of niche) that resonate with you</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card" data-tool="claude-positioning">
+            <div class="tool-top"><span class="tool-name">Claude</span><button class="star">★</button></div>
+            <div class="tool-why">Strongest at open-ended strategic reasoning — good for stress-testing a positioning statement against your actual experience and pointing out where it's generic.</div>
+            <div class="tool-alt">Alternatives: ChatGPT (GPT-5), Gemini</div>
+          </div>
+          <div class="tool-card" data-tool="perplexity-audit">
+            <div class="tool-top"><span class="tool-name">Perplexity</span><button class="star">★</button></div>
+            <div class="tool-why">Fast, cited web research for competitor and market scans — good for pulling recent examples rather than stale training data.</div>
+            <div class="tool-alt">Alternatives: ChatGPT with browsing, Google Gemini</div>
+          </div>
+          <div class="tool-card" data-tool="shieldapp-audit">
+            <div class="tool-top"><span class="tool-name">Shield Analytics</span><button class="star">★</button></div>
+            <div class="tool-why">Purpose-built LinkedIn analytics for benchmarking peers' post cadence and format mix before you commit to pillars.</div>
+            <div class="tool-alt">Alternatives: Favikon, Taplio's analytics view</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">I'm a [role] with [X years] experience in [industry]. Interview me with 8 questions to uncover a specific, differentiated LinkedIn niche — avoid generic advice, push back on anything that sounds like every other post in this space.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Here are 10 LinkedIn posts I admire [paste text]. Identify the underlying pattern in hook, structure, and voice across them, and tell me which patterns I could credibly adapt given my background in [X].<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Pick pillars you can talk about for a year without repeating yourself</li>
+            <li>Anchor positioning in real experience — AI can sharpen it, not invent it</li>
+            <li>Write the positioning statement down somewhere you'll actually revisit</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Choosing a niche identical to five competitors' — no wedge</li>
+            <li class="mistake">Positioning around a title ("marketer") instead of a point of view</li>
+            <li class="mistake">Skipping this stage and going straight to posting</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A one-line positioning statement, 3 documented content pillars, an updated profile (headline/About/Featured), and a swipe file.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Do this once well — a shaky foundation forces you to redo profile copy and pillar decisions every few months, which costs far more time than getting it right up front.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="1" placeholder="Positioning statement draft, pillar ideas, competitor notes..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 2 ================= -->
+    <section class="stage" id="stage-2">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 02 / 07</div>
+          <h3 class="stage-title">Content Pillars &amp; Calendar</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="2" id="chk2">
+          <label for="chk2">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 2–3 hrs (monthly refresh)</span><span>🎯 Planning stage</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Convert 3 pillars into a running bank of specific post ideas</li>
+            <li>Balance formats: text posts, carousels, polls, video, comments-as-content</li>
+            <li>Set a sustainable cadence (most successful thought-leaders post 3–5x/week)</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Generate 30 post ideas per pillar per quarter</li>
+            <li>Slot ideas into a 4-week rolling calendar</li>
+            <li>Tag each idea with format and a rough hook angle</li>
+            <li>Reserve 20% of slots for reactive/trending topics</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">ChatGPT (GPT-5)</span><button class="star">★</button></div>
+            <div class="tool-why">Fast at bulk ideation and turning a pillar into a long list of angles without repeating itself as much as smaller models.</div>
+            <div class="tool-alt">Alternatives: Claude, Gemini</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Notion AI</span><button class="star">★</button></div>
+            <div class="tool-why">Ideas and calendar live in the same workspace — database views turn a flat idea list into a filterable content calendar.</div>
+            <div class="tool-alt">Alternatives: Airtable + AI extension, Trello</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Taplio</span><button class="star">★</button></div>
+            <div class="tool-why">LinkedIn-specific idea generator and scheduler that shows what's currently performing in your niche while you plan.</div>
+            <div class="tool-alt">Alternatives: Supergrow, AuthoredUp</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">My LinkedIn pillars are: [pillar 1], [pillar 2], [pillar 3]. Generate 15 specific post ideas per pillar — each one a concrete claim, story, or question, not a vague topic. Mark which would work best as a text post vs a carousel.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Turn this list of 20 raw post ideas [paste] into a 4-week calendar, 4 posts/week, alternating formats, with no two similar ideas within 5 days of each other.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Batch-generate ideas monthly, not post-by-post — protects momentum</li>
+            <li>Keep a running "idea inbox" for things you notice during the week</li>
+            <li>Vary hook type (contrarian, story, data, question) across the week</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Over-planning 3 months out, then abandoning it when reality shifts</li>
+            <li class="mistake">Every idea sounding like generic "5 tips" listicle content</li>
+            <li class="mistake">No room in the calendar for timely/reactive posts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A rolling idea bank (60–90 ideas), a 4-week content calendar with format tags, and a lightweight weekly review ritual.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Generate ideas in one big monthly batch instead of daily — batching cuts context-switching and produces more original angles than one-off requests.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="2" placeholder="Idea bank links, calendar cadence decisions..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 3 ================= -->
+    <section class="stage" id="stage-3">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 03 / 07</div>
+          <h3 class="stage-title">Writing &amp; Drafting</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="3" id="chk3">
+          <label for="chk3">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 20–40 min / post</span><span>🎯 Execution stage</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Turn a one-line idea into a full draft with a strong hook and clear payoff</li>
+            <li>Preserve a recognizable, human voice — not detectable AI phrasing</li>
+            <li>Produce drafts fast enough to sustain the calendar's cadence</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Draft the hook (first 1–2 lines) separately, test 3 variants</li>
+            <li>Write the body: story/argument/data, then the payoff or CTA</li>
+            <li>Run it through a voice pass so it matches your swipe-file style</li>
+            <li>Trim to the length the idea actually needs — no padding</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Claude</span><button class="star">★</button></div>
+            <div class="tool-why">Best-in-class at holding a specific voice across a draft when fed a few reference posts — less prone to generic "AI-speak" than most alternatives.</div>
+            <div class="tool-alt">Alternatives: ChatGPT (GPT-5), Jasper</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">AuthoredUp</span><button class="star">★</button></div>
+            <div class="tool-why">Writes and formats directly for LinkedIn's line-break and preview rules, so what you draft matches what readers will actually see.</div>
+            <div class="tool-alt">Alternatives: Supergrow editor, Taplio editor</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Grammarly</span><button class="star">★</button></div>
+            <div class="tool-why">Fast final-pass proofing for tone and clarity without rewriting your voice, unlike a full AI rewrite.</div>
+            <div class="tool-alt">Alternatives: ProWritingAid, Hemingway Editor</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">Here are 5 posts in my voice [paste]. Using that voice, draft a LinkedIn post from this idea: [idea]. Hook must earn a click on "see more" in the first line. No em-dash-heavy AI cadence, no generic conclusions.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Give me 5 alternative hooks (first 1-2 lines only) for this post idea: [idea]. Vary the approach: one contrarian, one story-based, one data-led, one question, one bold claim.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Always feed the model real examples of your voice — never write from a blank prompt</li>
+            <li>Write the hook last, after you know what the post actually proves</li>
+            <li>Edit AI output by hand — treat it as a first draft, not a final one</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Publishing raw AI output without a human edit pass</li>
+            <li class="mistake">Burying the point in paragraph 4 instead of the hook</li>
+            <li class="mistake">Letting every post default to the same "3 lessons I learned" template</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A polished draft per calendar slot, formatted for LinkedIn's line breaks, in your own edited voice.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Draft a week of posts in one sitting using the same voice-reference prompt — reusing context is faster than re-explaining your voice every time.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="3" placeholder="Voice guidelines, hook formulas that worked..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 4 ================= -->
+    <section class="stage" id="stage-4">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 04 / 07</div>
+          <h3 class="stage-title">Visual Production</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="4" id="chk4">
+          <label for="chk4">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 30–60 min / asset</span><span>🎯 Execution stage</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Build a lightweight visual system so posts are recognizable at a glance</li>
+            <li>Turn high-value text posts into carousels for reach and saves</li>
+            <li>Produce short video/talking-head content for a fuller format mix</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Design a simple carousel template (font, colors, layout) once, reuse it</li>
+            <li>Convert your top-performing text posts into 6–10 slide carousels</li>
+            <li>Batch-record short vertical video clips monthly</li>
+            <li>Create 2–3 reusable graphic formats (quote card, stat card, framework diagram)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Canva (Magic Design)</span><button class="star">★</button></div>
+            <div class="tool-why">Fastest way to apply a consistent template to a batch of carousels without a design background.</div>
+            <div class="tool-alt">Alternatives: Figma + plugins, Pitch</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Claude / ChatGPT</span><button class="star">★</button></div>
+            <div class="tool-why">Best for turning a finished post into a slide-by-slide carousel outline (one idea per slide, clear slide-to-slide flow) before you touch a design tool.</div>
+            <div class="tool-alt">Alternatives: Gemini</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Descript</span><button class="star">★</button></div>
+            <div class="tool-why">Edits talking-head video by editing a transcript, and auto-generates captions — meaningfully faster than timeline-based editors for short clips.</div>
+            <div class="tool-alt">Alternatives: CapCut, OpusClip (for repurposing longer video)</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">Turn this LinkedIn post [paste] into a 8-slide carousel outline. One idea per slide, slide 1 is the hook, slide 8 is a CTA. Keep each slide under 25 words.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Write a 60-second talking-head video script from this post idea [idea], structured for someone speaking straight to camera with no visual aids — natural spoken rhythm, not written prose.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Lock a template early — visual consistency builds recognition faster than novelty</li>
+            <li>Reserve carousels for posts that already proved themselves as text</li>
+            <li>Keep on-slide text minimal; let the caption carry nuance</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Changing the visual template every few posts — no brand recall</li>
+            <li class="mistake">Overcrowding slides with text nobody will read on mobile</li>
+            <li class="mistake">Treating video as an afterthought instead of a monthly batch</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A reusable carousel template, 2–4 carousels/month, and 2–4 short video clips/month, all on-brand.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Batch-produce visuals monthly against the calendar from Stage 2, rather than designing reactively the day a post goes out.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="4" placeholder="Template links, brand colors/fonts..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 5 ================= -->
+    <section class="stage" id="stage-5">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 05 / 07</div>
+          <h3 class="stage-title">Publishing &amp; Optimization</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="5" id="chk5">
+          <label for="chk5">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 10–15 min / post</span><span>🎯 Execution stage</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Publish at times your specific audience is actually active</li>
+            <li>Format each post so the "see more" fold doesn't kill it</li>
+            <li>Seed early engagement in the critical first 60–90 minutes</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Check your own analytics for best posting windows (not generic advice)</li>
+            <li>Format with intentional line breaks, no walls of text</li>
+            <li>Add one thoughtful comment yourself right after publishing to kick off the thread</li>
+            <li>Alert 3–5 close connections when something particularly matters</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Taplio</span><button class="star">★</button></div>
+            <div class="tool-why">Schedules posts at data-backed optimal times for your specific audience and previews exactly where the "see more" cut lands.</div>
+            <div class="tool-alt">Alternatives: Supergrow, Buffer</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">AuthoredUp</span><button class="star">★</button></div>
+            <div class="tool-why">Shows a live preview of line breaks and the fold exactly as LinkedIn will render them — avoids awkward mid-sentence cuts.</div>
+            <div class="tool-alt">Alternatives: Shield's post preview tool</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Claude / ChatGPT</span><button class="star">★</button></div>
+            <div class="tool-why">Good for a final "does this hook survive the fold" check and tightening the first two lines before scheduling.</div>
+            <div class="tool-alt">Alternatives: Gemini</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">Here's my draft post [paste]. The first 2 lines are all that shows before "see more" on mobile. Rewrite just those 2 lines to be a standalone hook that creates a genuine reason to click, without misleading clickbait.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Suggest 3 short, specific first-comment questions I could post myself right after publishing this to invite genuine responses: [paste post].<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Post consistently at 2–3 tested times rather than chasing "best time" advice online</li>
+            <li>Stay near your device for the first hour to reply to early comments quickly</li>
+            <li>Avoid external links in the main post body; put them in the first comment</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Scheduling and walking away — missing the critical early-engagement window</li>
+            <li class="mistake">Weak first two lines that don't survive the "see more" fold</li>
+            <li class="mistake">Posting at generic "9am Tuesday" advice instead of your audience's actual activity</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A published, well-formatted post with a survived hook, an early self-comment, and a documented best-time slot.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Schedule a week of posts in one sitting on Sunday, then block 60–90 minutes after each goes live purely for engagement — don't multitask that window.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="5" placeholder="Best posting times you've found, formatting notes..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 6 ================= -->
+    <section class="stage" id="stage-6">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 06 / 07</div>
+          <h3 class="stage-title">Engagement &amp; Network</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="6" id="chk6">
+          <label for="chk6">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 20–30 min / day</span><span>🎯 Compounding stage</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Grow reach through genuine engagement, not vanity commenting</li>
+            <li>Turn commenters and DMs into a recognizable community over time</li>
+            <li>Build relationships with a handful of peers whose audiences overlap with yours</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Reply substantively to every comment on your own posts</li>
+            <li>Leave 5–10 genuine comments daily on posts in your niche</li>
+            <li>Track and follow up on meaningful DMs</li>
+            <li>Identify 10–15 peer accounts for regular, real engagement</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Claude / ChatGPT</span><button class="star">★</button></div>
+            <div class="tool-why">Useful for drafting a thoughtful comment starting point on complex posts, especially outside your core expertise — always edit before posting.</div>
+            <div class="tool-alt">Alternatives: Gemini</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Shield Analytics</span><button class="star">★</button></div>
+            <div class="tool-why">Surfaces which of your comments actually drove profile visits, helping you focus engagement effort where it compounds.</div>
+            <div class="tool-alt">Alternatives: Taplio's engagement tracker</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Notion / Airtable</span><button class="star">★</button></div>
+            <div class="tool-why">A simple CRM-style tracker for meaningful connections and DM follow-ups, so relationship-building doesn't rely on memory.</div>
+            <div class="tool-alt">Alternatives: Folk, a plain spreadsheet</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">Here's a post from someone in my niche [paste]. Draft a genuine, specific comment that adds a perspective or example from my experience in [X] — not generic praise, no more than 3 sentences.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">Someone DM'd me: [paste]. Draft a warm, specific reply that continues the conversation and offers one genuinely useful next step, without being salesy.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Always personalize AI-drafted comments before posting — copy-paste is detectable</li>
+            <li>Prioritize replying to your own post's comments over commenting elsewhere</li>
+            <li>Engage consistently, not in bursts — algorithms and relationships both reward steadiness</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Posting AI comments verbatim across dozens of threads — reads as spam</li>
+            <li class="mistake">Only engaging with big accounts, ignoring your own commenters</li>
+            <li class="mistake">Treating engagement as a numbers game instead of relationship-building</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A daily engagement habit, a tracked list of meaningful connections, and a growing set of peer relationships in your niche.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Time-box engagement to a fixed 20–30 minute window daily — open-ended scrolling for "engagement" is the single biggest time sink in this workflow.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="6" placeholder="Peer accounts to engage with, DM follow-ups..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= STAGE 7 ================= -->
+    <section class="stage" id="stage-7">
+      <div class="stage-head">
+        <div>
+          <div class="stage-tag">STAGE 07 / 07</div>
+          <h3 class="stage-title">Analytics &amp; Iteration</h3>
+        </div>
+        <div class="check-wrap">
+          <input type="checkbox" class="stage-check" data-stage="7" id="chk7">
+          <label for="chk7">Mark complete</label>
+        </div>
+      </div>
+      <div class="stage-meta"><span>⏱ 1 hr / week, 2 hrs / month</span><span>🎯 Feedback loop</span></div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>
+            <li>Identify which pillars, formats, and hooks actually perform for your audience</li>
+            <li>Feed findings back into Stage 1–2 so the strategy keeps sharpening</li>
+            <li>Track profile-level growth, not just single-post metrics</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>
+            <li>Weekly: review impressions, engagement rate, and comments-per-post by pillar</li>
+            <li>Monthly: identify top 3 and bottom 3 posts and diagnose why</li>
+            <li>Quarterly: revisit positioning and pillars against what's actually resonating</li>
+            <li>Track follower quality (relevant profiles) not just follower count</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best AI Tools</h5>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Shield Analytics</span><button class="star">★</button></div>
+            <div class="tool-why">The most complete LinkedIn-native analytics layer — breaks down performance by pillar, format, and posting time beyond native LinkedIn data.</div>
+            <div class="tool-alt">Alternatives: Favikon, native LinkedIn analytics</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Claude / ChatGPT (Data Analysis)</span><button class="star">★</button></div>
+            <div class="tool-why">Good at spotting patterns across a month of exported post data that are easy to miss scanning a spreadsheet by eye.</div>
+            <div class="tool-alt">Alternatives: Gemini, Julius AI</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-top"><span class="tool-name">Google Sheets + AI extensions</span><button class="star">★</button></div>
+            <div class="tool-why">Free, flexible way to keep a running post-performance log once you outgrow relying on a single tool's dashboard.</div>
+            <div class="tool-alt">Alternatives: Notion database, Airtable</div>
+          </div>
+        </div>
+        <div class="block">
+          <h5>Prompt Examples</h5>
+          <div class="prompt-box">Here is a month of my post data (topic, format, hook type, impressions, engagement rate): [paste table]. Identify the 3 clearest patterns in what performed well vs poorly, and suggest 2 concrete changes for next month.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+          <div class="prompt-box">My top 3 posts this quarter were about [X, Y, Z] and my bottom 3 were about [A, B, C]. Given my original positioning statement [paste], should I adjust my pillars? Argue both sides before recommending.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Best Practices</h5>
+          <ul>
+            <li>Judge performance against your own baseline, not viral outliers from strangers</li>
+            <li>Weight comments and saves higher than raw likes — they signal real resonance</li>
+            <li>Give a new pillar or format at least 4–6 posts before judging it</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h5>Common Mistakes</h5>
+          <ul>
+            <li class="mistake">Reacting to a single underperforming post by abandoning the pillar entirely</li>
+            <li class="mistake">Only tracking vanity metrics (likes) instead of profile visits and DMs</li>
+            <li class="mistake">Never closing the loop back to Stage 1 positioning</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <div class="block">
+          <h5>Expected Outputs</h5>
+          <p>A weekly performance snapshot, a monthly pattern report, and a quarterly positioning review that updates Stage 1–2.</p>
+        </div>
+        <div class="block">
+          <h5>Efficiency Tip</h5>
+          <p>Keep one running spreadsheet of every post's core stats instead of re-deriving insights from scratch each month — pattern recognition compounds with more history.</p>
+        </div>
+      </div>
+
+      <div class="block" style="margin-top:18px;">
+        <h5>Your Notes</h5>
+        <textarea class="notes-area" data-stage="7" placeholder="Recurring patterns, pillar performance..."></textarea>
+      </div>
+    </section>
+
+    <!-- ================= TOOL COMPARISON ================= -->
+    <section class="summary-section">
+      <div class="stage-tag">COMPARISON</div>
+      <h2>Which writing assistant should you use?</h2>
+      <table class="compare">
+        <tr><th>Tool</th><th>Voice consistency</th><th>Speed for bulk ideation</th><th>Cost</th><th>Best for</th></tr>
+        <tr><td>Claude</td><td class="best">Strongest</td><td>Good</td><td>$ / $$</td><td class="best">Final drafts in your voice</td></tr>
+        <tr><td>ChatGPT (GPT-5)</td><td>Good</td><td class="best">Fastest</td><td>$ / $$</td><td class="best">Bulk idea generation</td></tr>
+        <tr><td>Gemini</td><td>Good</td><td>Good</td><td>Free / $</td><td>Research + drafting combo</td></tr>
+        <tr><td>Jasper</td><td>Good (with brand voice trained)</td><td>Good</td><td>$$$</td><td>Teams needing brand-voice guardrails</td></tr>
+      </table>
+
+      <h2 style="margin-top:28px;">Decision tree: which tool for this task?</h2>
+      <div class="dtree" id="dtree">
+        <div class="q" data-q="1">
+          <b>What are you trying to do right now?</b>
+          <div class="choices">
+            <button class="choice" data-next="2">Write/edit a post</button>
+            <button class="choice" data-result="Use Canva Magic Design for the layout, and Claude/ChatGPT to write the slide-by-slide outline first.">Design a carousel</button>
+            <button class="choice" data-result="Use Shield Analytics or your native LinkedIn dashboard, then Claude/ChatGPT to summarize patterns across the export.">Analyze performance</button>
+          </div>
+        </div>
+        <div class="q" data-q="2" style="display:none;">
+          <b>Do you already have a rough idea, or need a batch of new ones?</b>
+          <div class="choices">
+            <button class="choice" data-result="Use Claude — feed it your swipe-file voice examples and draft the full post around that one idea.">I have one idea to develop</button>
+            <button class="choice" data-result="Use ChatGPT (GPT-5) for fast bulk ideation across your content pillars, then move winners to Claude for drafting.">I need many new ideas</button>
+          </div>
+        </div>
+        <div class="result" id="dtreeResult"></div>
+      </div>
+    </section>
+
+    <!-- ================= SUMMARY ================= -->
+    <section class="summary-section" id="summary">
+      <div class="stage-tag">CONCLUSION</div>
+      <h2>Workflow Summary</h2>
+      <p style="font-size:14.5px;line-height:1.7;color:var(--text-dim);">This workflow moves from a one-time strategic foundation (positioning, pillars) into a repeating monthly-to-weekly production loop: plan → write → design → publish → engage → measure → refine. The loop compounds because Stage 7's analytics feed directly back into Stage 1's positioning and Stage 2's pillar mix, so each quarter's content should get sharper than the last. Most of the time cost sits in Stages 3–6 (writing, design, publishing, engagement); Stages 1 and 7 are lower-frequency but highest-leverage — get those right and the rest gets easier.</p>
+
+      <h3 style="margin-top:26px;font-size:19px;">Recommended AI Stack</h3>
+      <div class="stack-grid">
+        <div class="stack-item"><div class="role">Strategy &amp; drafting</div><div class="tool">Claude</div></div>
+        <div class="stack-item"><div class="role">Bulk ideation</div><div class="tool">ChatGPT (GPT-5)</div></div>
+        <div class="stack-item"><div class="role">Research</div><div class="tool">Perplexity</div></div>
+        <div class="stack-item"><div class="role">Scheduling &amp; formatting</div><div class="tool">Taplio or AuthoredUp</div></div>
+        <div class="stack-item"><div class="role">Design</div><div class="tool">Canva</div></div>
+        <div class="stack-item"><div class="role">Video editing</div><div class="tool">Descript</div></div>
+        <div class="stack-item"><div class="role">Analytics</div><div class="tool">Shield Analytics</div></div>
+        <div class="stack-item"><div class="role">Organization</div><div class="tool">Notion</div></div>
+      </div>
+
+      <h3 style="margin-top:26px;font-size:19px;">Learning Resources</h3>
+      <div class="link-grid">
+        <div class="link-card"><div class="cat">Guide</div>LinkedIn's own Creator Guidelines and algorithm updates (LinkedIn Editorial blog)</div>
+        <div class="link-card"><div class="cat">Course</div>Justin Welsh's "The LinkedIn Operating System"</div>
+        <div class="link-card"><div class="cat">Newsletter</div>Creator Economy newsletters covering LinkedIn-specific format trends</div>
+        <div class="link-card"><div class="cat">Practice</div>Weekly "swipe file" review of 10 posts outside your niche for structure ideas</div>
+      </div>
+
+      <h3 style="margin-top:26px;font-size:19px;">Communities</h3>
+      <div class="pill-row">
+        <span class="pill">LinkedIn Creator communities (platform-native groups)</span>
+        <span class="pill">r/LinkedInLunatics (what NOT to do, useful contrast)</span>
+        <span class="pill">Creator-focused Slack/Discord cohorts</span>
+        <span class="pill">Local in-person creator meetups</span>
+      </div>
+
+      <h3 style="margin-top:26px;font-size:19px;">Search Keywords</h3>
+      <div class="pill-row">
+        <span class="pill">"LinkedIn hook formulas"</span>
+        <span class="pill">"LinkedIn carousel templates"</span>
+        <span class="pill">"personal brand positioning statement"</span>
+        <span class="pill">"LinkedIn algorithm 2026 changes"</span>
+        <span class="pill">"content pillars framework"</span>
+      </div>
+
+      <h3 style="margin-top:26px;font-size:19px;">Additional AI Prompts</h3>
+      <div class="prompt-box">Audit my last 10 LinkedIn posts [paste] against my stated positioning [paste]. Flag any that drift off-pillar and explain why in one sentence each.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      <div class="prompt-box">Rewrite this post [paste] three ways: shorter and punchier, a personal story version, and a data/contrarian version. Keep the core point identical across all three.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+
+      <h3 style="margin-top:26px;font-size:19px;">Future Automation Opportunities</h3>
+      <ul style="font-size:14px;line-height:1.7;">
+        <li>Auto-tag published posts with pillar/format/hook-type as they go live, feeding Stage 7's tracker without manual entry</li>
+        <li>Auto-draft a first-comment prompt the moment a post is scheduled, queued for you to review, not auto-post</li>
+        <li>Monthly auto-generated performance digest (top/bottom posts, pillar breakdown) delivered before your planning session</li>
+        <li>A standing "voice profile" document that self-updates from your best-performing recent posts, so drafting prompts stay current</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>AI Workflow Architect · generated for LinkedIn Personal Brand Growth</span>
+  <span>Progress and notes are saved locally in your browser only.</span>
+</footer>
+
+<script>
+// ---------------- Theme toggle ----------------
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(t){
+  document.body.setAttribute('data-theme', t);
+  themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('awa_theme', t);
+}
+applyTheme(localStorage.getItem('awa_theme') || 'dark');
+themeToggle.addEventListener('click', ()=>{
+  applyTheme(document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ---------------- Print ----------------
+document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+// ---------------- Copy prompt ----------------
+function copyPrompt(btn){
+  const box = btn.parentElement;
+  const text = box.textContent.replace('Copy','').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(()=>btn.textContent = old, 1200);
+  });
+}
+
+// ---------------- Progress tracking ----------------
+const checks = document.querySelectorAll('.stage-check');
+const navItems = document.querySelectorAll('#navLadder li');
+const progressPct = document.getElementById('progressPct');
+const progressFill = document.getElementById('progressFill');
+
+function loadProgress(){
+  const saved = JSON.parse(localStorage.getItem('awa_progress') || '{}');
+  checks.forEach(c=>{
+    if(saved[c.dataset.stage]) c.checked = true;
+  });
+  updateProgressUI();
+}
+function saveProgress(){
+  const state = {};
+  checks.forEach(c=>state[c.dataset.stage] = c.checked);
+  localStorage.setItem('awa_progress', JSON.stringify(state));
+}
+function updateProgressUI(){
+  let done = 0;
+  checks.forEach(c=>{
+    const nav = document.querySelector('#navLadder li[data-stage="'+c.dataset.stage+'"]');
+    if(c.checked){ done++; nav && nav.classList.add('done'); }
+    else{ nav && nav.classList.remove('done'); }
+  });
+  const pct = Math.round((done/checks.length)*100);
+  progressPct.textContent = pct + '%';
+  progressFill.style.width = pct + '%';
+}
+checks.forEach(c=>c.addEventListener('change', ()=>{ saveProgress(); updateProgressUI(); }));
+loadProgress();
+
+// ---------------- Active stage highlight on scroll ----------------
+const stages = document.querySelectorAll('section.stage[id^="stage-"]');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const num = e.target.id.split('-')[1];
+      navItems.forEach(li=>li.classList.remove('active'));
+      const nav = document.querySelector('#navLadder li[data-stage="'+num+'"]');
+      nav && nav.classList.add('active');
+    }
+  });
+}, {rootMargin: '-30% 0px -55% 0px'});
+stages.forEach(s=>io.observe(s));
+
+// ---------------- Notes autosave ----------------
+document.querySelectorAll('.notes-area').forEach(area=>{
+  const key = 'awa_note_' + area.dataset.stage;
+  area.value = localStorage.getItem(key) || '';
+  area.addEventListener('input', ()=>localStorage.setItem(key, area.value));
+});
+
+// ---------------- Bookmarks (star tools) ----------------
+document.querySelectorAll('.star').forEach((s,i)=>{
+  s.dataset.id = 'tool_'+i;
+  if(localStorage.getItem('awa_star_'+s.dataset.id) === '1') s.classList.add('on');
+  s.addEventListener('click', ()=>{
+    s.classList.toggle('on');
+    localStorage.setItem('awa_star_'+s.dataset.id, s.classList.contains('on') ? '1':'0');
+  });
+});
+
+// ---------------- Decision tree ----------------
+document.querySelectorAll('#dtree .choice').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const result = document.getElementById('dtreeResult');
+    if(btn.dataset.result){
+      result.textContent = btn.dataset.result;
+      result.classList.add('show');
+      document.querySelectorAll('#dtree .q').forEach(q=>q.style.display='none');
+    } else if(btn.dataset.next){
+      document.querySelectorAll('#dtree .q').forEach(q=>q.style.display='none');
+      document.querySelector('#dtree .q[data-q="'+btn.dataset.next+'"]').style.display='block';
+      result.classList.remove('show');
+    }
+  });
+});
+
+// ---------------- Diagram build (SVG nodes) ----------------
+(function(){
+  const svgns = "http://www.w3.org/2000/svg";
+  const g = document.getElementById('diagramNodes');
+  const labels = ["Strategy","Pillars & Calendar","Writing","Visual Prod.","Publishing","Engagement","Analytics"];
+  const codes = ["01","02","03","04","05","06","07"];
+  const n = labels.length;
+  const boxW = 140, boxH = 60, gap = 30;
+  const totalW = n*boxW + (n-1)*gap;
+  const startX = (1180 - totalW)/2;
+  const y = 70;
+  let positions = [];
+  for(let i=0;i<n;i++){
+    const x = startX + i*(boxW+gap);
+    positions.push(x);
+    const rect = document.createElementNS(svgns,'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', boxW); rect.setAttribute('height', boxH);
+    rect.setAttribute('rx', 8);
+    rect.setAttribute('class','node-box');
+    g.appendChild(rect);
+
+    const code = document.createElementNS(svgns,'text');
+    code.setAttribute('x', x+12); code.setAttribute('y', y+20);
+    code.setAttribute('class','node-label');
+    code.textContent = codes[i];
+    g.appendChild(code);
+
+    const text = document.createElementNS(svgns,'text');
+    text.setAttribute('x', x+12); text.setAttribute('y', y+40);
+    text.setAttribute('class','node-text');
+    text.textContent = labels[i];
+    g.appendChild(text);
+
+    if(i < n-1){
+      const edge = document.createElementNS(svgns,'path');
+      const x1 = x+boxW, x2 = positions[i]+boxW+gap;
+      edge.setAttribute('d', `M${x1},${y+boxH/2} L${x1+gap},${y+boxH/2}`);
+      edge.setAttribute('class','edge');
+      g.appendChild(edge);
+    }
+  }
+  // feedback loop arrow from last to first
+  const loop = document.createElementNS(svgns,'path');
+  const lastX = positions[n-1]+boxW/2;
+  const firstX = positions[0]+boxW/2;
+  loop.setAttribute('d', `M${lastX},${y+boxH} C ${lastX},${y+boxH+70} ${firstX},${y+boxH+70} ${firstX},${y+boxH}`);
+  loop.setAttribute('class','edge');
+  g.appendChild(loop);
+  const loopLabel = document.createElementNS(svgns,'text');
+  loopLabel.setAttribute('x', 1180/2); loopLabel.setAttribute('y', y+boxH+55);
+  loopLabel.setAttribute('class','node-label');
+  loopLabel.setAttribute('text-anchor','middle');
+  loopLabel.textContent = 'feeds back into strategy';
+  g.appendChild(loopLabel);
+})();
+</script>
+</body>
+</html>
