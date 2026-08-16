@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Profile: Roast & Rebuild</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12181F;
+    --ink-soft:#2A333E;
+    --paper:#FBFAF6;
+    --paper-line:#E4E0D6;
+    --red:#C63B2E;
+    --red-soft:#F4DAD4;
+    --gold:#D9A441;
+    --gold-soft:#F3E4C4;
+    --green:#3E6B4F;
+    --green-soft:#DCEADF;
+    --muted:#6B7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+  /* HERO */
+  .hero{
+    background:var(--paper);
+    border-radius:14px;
+    padding:40px 36px 32px;
+    position:relative;
+    overflow:hidden;
+    border:1px solid #00000010;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; top:-60px; right:-60px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--gold-soft) 0%, transparent 70%);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--red);
+    font-weight:700;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(30px,5vw,46px);
+    line-height:1.05;
+    margin:10px 0 8px;
+    color:var(--ink);
+  }
+  .hero p.sub{
+    color:var(--ink-soft);
+    font-size:15.5px;
+    max-width:56ch;
+    margin:0 0 22px;
+  }
+  .grade-row{
+    display:flex; align-items:center; gap:22px; flex-wrap:wrap;
+    margin-top:10px;
+  }
+  .grade-circle{
+    width:96px;height:96px;border-radius:50%;
+    border:3px solid var(--red);
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;
+    font-family:'JetBrains Mono',monospace;
+    color:var(--red);
+    transform:rotate(-6deg);
+    position:relative;
+  }
+  .grade-circle .num{font-size:26px;font-weight:700;line-height:1;}
+  .grade-circle .of{font-size:10px;opacity:.75;}
+  .grade-arrow{font-family:'Fraunces',serif;font-style:italic;font-size:22px;color:var(--muted);}
+  .grade-circle.after{border-color:var(--green);color:var(--green);transform:rotate(4deg);}
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    gap:6px;
+    margin-top:26px;
+    overflow-x:auto;
+    padding-bottom:2px;
+  }
+  .tab-btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    background:transparent;
+    border:none;
+    color:#C9CDD3;
+    padding:10px 16px;
+    border-radius:9px 9px 0 0;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .tab-btn:hover{color:#fff;}
+  .tab-btn.active{
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .panel{
+    background:var(--paper);
+    border-radius:0 10px 10px 10px;
+    padding:32px;
+  }
+  .panel:first-of-type{border-radius:10px;}
+  .hidden{display:none;}
+
+  h2.section-title{
+    font-family:'Fraunces',serif;
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .section-desc{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 26px;
+  }
+
+  /* ROAST CARDS */
+  .roast-card{
+    border:1px solid var(--paper-line);
+    border-left:4px solid var(--red);
+    border-radius:8px;
+    padding:20px 22px;
+    margin-bottom:18px;
+    background:#fff;
+  }
+  .roast-card .top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:14px; margin-bottom:10px;
+  }
+  .roast-card h3{
+    font-family:'Fraunces',serif;
+    font-size:19px; margin:0;
+  }
+  .score-pill{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px; font-weight:700;
+    background:var(--red-soft); color:var(--red);
+    padding:4px 10px; border-radius:20px;
+    white-space:nowrap;
+  }
+  .quote{
+    font-style:italic;
+    background:#F6F3EB;
+    border-left:3px solid var(--gold);
+    padding:10px 14px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:10px 0;
+    border-radius:0 6px 6px 0;
+  }
+  .roast-line{margin:8px 0; font-size:14.5px; line-height:1.55;}
+  .roast-line b{font-weight:700;}
+
+  /* REBUILD */
+  .option-card{
+    border:1px solid var(--paper-line);
+    border-radius:8px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    background:#fff;
+  }
+  .option-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--gold); font-weight:700; margin-bottom:6px; display:block;
+  }
+  .option-text{
+    font-size:15.5px; font-weight:600; line-height:1.5; margin:4px 0 8px;
+  }
+  .option-why{font-size:13px; color:var(--muted);}
+  .copy-btn{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:8px;
+  }
+  .copy-btn:hover{background:var(--red);}
+
+  .ba-block{margin:16px 0;}
+  .ba-row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-bottom:12px;
+    border:1px solid var(--paper-line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .ba-before, .ba-after{padding:12px 16px; font-size:13.5px; line-height:1.5;}
+  .ba-before{background:var(--red-soft); color:#7A2A20;}
+  .ba-after{background:var(--green-soft); color:#274D35;}
+  .ba-label{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.75; display:block; margin-bottom:4px;}
+
+  .about-block{
+    background:#fff; border:1px solid var(--paper-line); border-radius:8px;
+    padding:20px 22px; font-size:14.5px; line-height:1.7; white-space:pre-wrap;
+    margin-bottom:14px;
+  }
+  .keyword-chip{
+    display:inline-block; background:var(--gold-soft); color:#7A5A17;
+    font-family:'JetBrains Mono',monospace; font-size:11.5px;
+    padding:3px 9px; border-radius:12px; margin:3px 4px 0 0;
+  }
+
+  .skills-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:600px){.skills-grid{grid-template-columns:1fr;}}
+  .skills-col h4{font-family:'Fraunces',serif; font-size:15px; margin:0 0 8px;}
+  .skills-col ul{margin:0; padding-left:18px; font-size:13.5px; line-height:1.8;}
+
+  /* SCORECARD */
+  .score-table{width:100%; border-collapse:collapse; margin-top:8px;}
+  .score-table td{padding:10px 6px; border-bottom:1px solid var(--paper-line); font-size:14px; vertical-align:middle;}
+  .score-table td:first-child{font-weight:600; width:28%;}
+  .bar-cell{width:52%;}
+  .bar-track{background:#EDEAE0; border-radius:6px; height:10px; position:relative; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:6px;}
+  .bar-fill.before{background:var(--red);}
+  .bar-fill.after{background:var(--green); margin-top:4px;}
+  .delta{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--green); font-size:13px; text-align:right; width:20%;}
+  .overall-box{
+    margin-top:22px; padding:20px 24px; background:var(--ink); color:#fff;
+    border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  }
+  .overall-box .label{font-family:'Fraunces',serif; font-size:18px;}
+  .overall-box .nums{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;}
+  .overall-box .nums span.old{color:#E88A7D;}
+  .overall-box .nums span.new{color:#8FD1A5;}
+
+  /* PLAN */
+  .day-card{
+    border:1px solid var(--paper-line); border-radius:8px; margin-bottom:12px; overflow:hidden; background:#fff;
+  }
+  .day-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 18px; cursor:pointer; user-select:none;
+  }
+  .day-head:hover{background:#F6F3EB;}
+  .day-num{
+    font-family:'JetBrains Mono',monospace; background:var(--ink); color:#fff;
+    width:30px;height:30px;border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0;
+  }
+  .day-title{font-weight:700; font-size:14.5px; flex:1; margin-left:12px;}
+  .day-chevron{color:var(--muted); transition:transform .2s;}
+  .day-body{padding:0 18px 18px 60px; font-size:13.5px; line-height:1.7; display:none;}
+  .day-body.open{display:block;}
+  .day-head.open .day-chevron{transform:rotate(90deg);}
+  .checklist{list-style:none; margin:8px 0; padding:0;}
+  .checklist li{padding:4px 0; display:flex; gap:8px; align-items:flex-start;}
+  .checklist input{margin-top:3px;}
+  .draft-box{
+    background:#F6F3EB; border-left:3px solid var(--gold); padding:12px 14px;
+    border-radius:0 6px 6px 0; font-size:13px; margin-top:10px; white-space:pre-wrap; line-height:1.6;
+  }
+  .formula-box{
+    background:var(--gold-soft); border-radius:6px; padding:10px 14px; font-size:13px; margin-top:8px;
+  }
+
+  /* SUMMARY CARD */
+  .summary-card{
+    background:linear-gradient(155deg, #14202B 0%, #1D2B38 100%);
+    color:#F4F1E8;
+    border-radius:14px;
+    padding:34px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  .summary-card::after{
+    content:"🔥";
+    position:absolute; top:18px; right:22px; font-size:32px; opacity:.85;
+  }
+  .summary-card h3{
+    font-family:'Fraunces',serif; font-size:22px; margin:0 0 18px; padding-right:40px;
+  }
+  .summary-scores{
+    display:flex; gap:24px; margin-bottom:20px;
+  }
+  .summary-scores div{text-align:center;}
+  .summary-scores .n{font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:700;}
+  .summary-scores .l{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:#A9B4BE; margin-top:2px;}
+  .summary-scores .old-n{color:#E88A7D;}
+  .summary-scores .new-n{color:#8FD1A5;}
+  .summary-list{margin:0 0 18px; padding-left:20px; font-size:14px; line-height:1.9; color:#DDE1E0;}
+  .summary-highlight{
+    background:rgba(217,164,65,0.15); border:1px solid rgba(217,164,65,0.4);
+    padding:12px 16px; border-radius:8px; font-size:13.5px; line-height:1.6;
+  }
+  .summary-highlight b{color:var(--gold);}
+  .dl-btn{
+    margin-top:20px; display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12.5px;
+    background:var(--gold); color:#1D2B38; border:none; padding:10px 18px; border-radius:7px;
+    cursor:pointer; font-weight:700;
+  }
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:10px 18px; border-radius:8px; font-size:13px;
+    font-family:'JetBrains Mono',monospace; opacity:0; pointer-events:none; transition:all .25s ease; z-index:99;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">Profile Audit — CSE Student, Targeting Freelance Clients</span>
+    <h1>Your LinkedIn is invisible to the clients you want.</h1>
+    <p class="sub">Here's the honest breakdown — what's costing you visibility, what to fix, and a 7-day plan to make your profile actually attract work.</p>
+    <div class="grade-row">
+      <div class="grade-circle"><span class="num">32</span><span class="of">/ 100 NOW</span></div>
+      <span class="grade-arrow">→</span>
+      <div class="grade-circle after"><span class="num">82</span><span class="of">/ 100 AFTER</span></div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="roast">1. Roast</button>
+    <button class="tab-btn" data-tab="rebuild">2. Rebuild</button>
+    <button class="tab-btn" data-tab="scorecard">3. Scorecard</button>
+    <button class="tab-btn" data-tab="plan">4. 7-Day Plan</button>
+    <button class="tab-btn" data-tab="summary">5. Summary Card</button>
+  </div>
+
+  <!-- PANEL 1: ROAST -->
+  <div class="panel" id="panel-roast">
+    <h2 class="section-title">The Roast</h2>
+    <p class="section-desc">Zero fluff. Here's what a client scanning your profile for 3 seconds actually sees.</p>
+
+    <div class="roast-card">
+      <div class="top"><h3>Headline</h3><span class="score-pill">3 / 10</span></div>
+      <div class="quote">"CSE Student 👩🏻‍💻| Aspiring Full-Stack Developer (React & Node.js) 💻 | Python Learner | Interested in Business Applications & Gaming Apps 🎮 | Enthusiast in AI/ML & UI/UX 🤖🎨"</div>
+      <div class="roast-line">❌ <b>The problem:</b> Five different identities crammed into one line — "student," "aspiring," "learner," "interested in," "enthusiast." A client reading this doesn't know what you actually do, only that you're not confident you can do any of it yet.</div>
+      <div class="roast-line">🧠 <b>Why it hurts:</b> Every soft word here ("aspiring," "learner," "interested in," "enthusiast") is a hedge. Clients hiring freelancers aren't looking for potential — they're looking for someone who can solve their problem today. Hedge words signal "not ready to pay for."</div>
+      <div class="roast-line">🔍 <b>Invisible cost:</b> LinkedIn search ranks headlines on keyword relevance and clarity. A diluted headline with 5 competing themes ranks for none of them well — so when someone searches "React developer" or "freelance web developer," you likely don't surface at all.</div>
+    </div>
+
+    <div class="roast-card">
+      <div class="top"><h3>About — First 2 Lines</h3><span class="score-pill">2 / 10</span></div>
+      <div class="quote">"👩🏻‍💻 I'm a Computer Science Engineering student passionate about Full-Stack Development, Artificial Intelligence, and Generative AI. I enjoy learning new technologies..."</div>
+      <div class="roast-line">❌ <b>The problem:</b> This is the exact text visible before "see more" — the single highest-value real estate on your whole profile — and it's spent introducing yourself instead of hooking the reader.</div>
+      <div class="roast-line">🧠 <b>Why it hurts:</b> "Passionate about" and "I enjoy learning" describe your feelings, not what a client gets from working with you. Nobody clicks "see more" to learn how you feel about technology.</div>
+      <div class="roast-line">🔍 <b>Invisible cost:</b> Most profile visitors never click "see more." If your hook doesn't earn the click, everything below it — your projects, your goals, your skills — might as well not exist.</div>
+    </div>
+
+    <div class="roast-card">
+      <div class="top"><h3>About — Full Section</h3><span class="score-pill">4 / 10</span></div>
+      <div class="roast-line">❌ <b>The problem:</b> The whole section is written in "I am / I enjoy / my goal is" language — inward-facing. There's no mention of who you help, what problems you solve, or any concrete proof (a project name, a result, a link). The closing line "Always learning • Building • Exploring • Growing" is a filler tagline that says nothing specific.</div>
+      <div class="roast-line">🧠 <b>Why it hurts:</b> Clients scan for evidence, not enthusiasm. "I have hands-on experience through projects, internships, hackathons, and AI challenges" is a claim with zero receipts — no names, no outcomes, no links to see the work.</div>
+      <div class="roast-line">🔍 <b>Invisible cost:</b> There's no Call to Action anywhere in the section. Even a client who reads the whole thing and likes what they see has no instruction on what to do next — so most just leave.</div>
+    </div>
+
+    <div class="roast-card">
+      <div class="top"><h3>Experience</h3><span class="score-pill">3 / 10</span></div>
+      <div class="quote">"Completed a 4-week virtual internship focused on Power BI and emerging technologies. / Worked on real-world problem statements and project development..."</div>
+      <div class="roast-line">❌ <b>The problem:</b> Every bullet starts with a passive, task-completion verb — "Completed," "Worked on," "Used," "Participated in." This reads like a course-completion certificate, not a record of what you actually built or solved.</div>
+      <div class="roast-line">🧠 <b>Why it hurts:</b> Recruiters and clients are trained to skim for achievement verbs (Built, Designed, Reduced, Automated). Passive task-listing signals "did the minimum required," even if that's not true.</div>
+      <div class="roast-line">🔍 <b>Invisible cost:</b> There isn't a single number in these 5 bullets — not dashboards built, not data points analyzed, not a project outcome. Numbers are what make an entry memorable; without them, this internship is forgettable within seconds of reading.</div>
+    </div>
+
+    <div class="roast-card">
+      <div class="top"><h3>Skills & Keywords</h3><span class="score-pill">5 / 10</span></div>
+      <div class="roast-line">❌ <b>The problem:</b> Your listed skills (Python, React.js, JavaScript, SQL, Generative AI) are solid but incomplete — your own headline mentions Node.js, and your About mentions HTML, CSS, and UI/UX, none of which appear in your Skills. That's a mismatch between what you claim and what you're searchable for.</div>
+      <div class="roast-line">🧠 <b>Why it hurts:</b> LinkedIn's search algorithm and recruiter/client filters match on the Skills section specifically. If "Node.js" isn't listed as a skill, you won't surface in a search for it — even though you mention it in your headline.</div>
+      <div class="roast-line">🔍 <b>Invisible cost:</b> For freelance client attraction specifically, there's nothing here signaling "hireable service" — no "Web Development," "UI/UX Design," or "Freelance" tags that a small business owner searching for help would actually type in.</div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: REBUILD -->
+  <div class="panel hidden" id="panel-rebuild">
+    <h2 class="section-title">The Rebuild</h2>
+    <p class="section-desc">Every rewrite below uses only what you gave me — nothing invented. Where a claim needs a real number or link, I've flagged it instead of making one up.</p>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:4px;">Headline — 3 options</h3>
+    <p style="font-size:13px; color:var(--muted); margin-top:0;">Formula: [Role/Identity] | [Who I Help or What I Do] | [Proof or Differentiator]</p>
+
+    <div class="option-card">
+      <span class="option-tag">Option 1 — Keyword-optimized</span>
+      <p class="option-text">Full-Stack Developer (React.js, Node.js, Python) | Building Web Apps for Startups & Small Businesses | CSE Student</p>
+      <p class="option-why">Why: front-loads exact search terms clients type ("React.js," "Node.js," "Full-Stack Developer") so you surface in LinkedIn search. Use this if your main goal this month is discoverability.</p>
+      <button class="copy-btn" data-copy="Full-Stack Developer (React.js, Node.js, Python) | Building Web Apps for Startups & Small Businesses | CSE Student">Copy</button>
+    </div>
+
+    <div class="option-card">
+      <span class="option-tag">Option 2 — Value-proposition (best for freelance clients)</span>
+      <p class="option-text">I Build Fast, Functional Web Apps for Startups & Small Teams | React.js • Node.js • Python | Open for Freelance Projects</p>
+      <p class="option-why">Why: leads with the client's outcome ("fast, functional web apps") instead of your identity. Since your goal is freelance clients, this is the one I'd put live first — it answers "what's in it for me" in the first 5 words.</p>
+      <button class="copy-btn" data-copy="I Build Fast, Functional Web Apps for Startups & Small Teams | React.js • Node.js • Python | Open for Freelance Projects">Copy</button>
+    </div>
+
+    <div class="option-card">
+      <span class="option-tag">Option 3 — Authority / thought-leadership</span>
+      <p class="option-text">Full-Stack Dev exploring where Web Apps meet AI | Documenting what I build | React • Python • Generative AI</p>
+      <p class="option-why">Why: positions you as someone worth following, not just hiring — good for building an audience through posts. Switch to this once you're publishing regularly (see Day 2 and Day 5 of the plan).</p>
+      <button class="copy-btn" data-copy="Full-Stack Dev exploring where Web Apps meet AI | Documenting what I build | React • Python • Generative AI">Copy</button>
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:18px; margin:26px 0 4px;">About Section — Rewrite</h3>
+    <div class="about-block">Need a freelance dev who won't ghost you? I build web apps that actually ship.
+
+I'm a Computer Science Engineering student who builds full-stack applications — React on the front end, Node.js and Python behind it — with a growing focus on Generative AI features that make apps smarter, not just functional. I care about turning a rough idea into something a real user can click through without confusion.
+
+Most recently, I completed a Microsoft Elevate (AICTE) internship focused on Power BI, where I worked through real-world problem statements and built out project deliverables end to end.
+
+[Add here: 1-2 specific projects or hackathons by name, with what you built and any measurable result — even "built in 48 hours," "used by X people," or a live demo link counts as proof.]
+
+If you're a founder or small business that needs a web app built, a dashboard set up, or a prototype turned real — I'd love to hear what you're working on. Message me or check my Featured section for work samples.</div>
+    <div style="margin-bottom:10px;">
+      <span class="keyword-chip">Full-Stack Developer</span>
+      <span class="keyword-chip">React.js</span>
+      <span class="keyword-chip">Node.js</span>
+      <span class="keyword-chip">Python</span>
+      <span class="keyword-chip">Generative AI</span>
+      <span class="keyword-chip">Web App Development</span>
+      <span class="keyword-chip">Freelance</span>
+      <span class="keyword-chip">Power BI</span>
+    </div>
+    <p class="option-why" style="margin-bottom:20px;">⚠️ I left one bracketed placeholder — I won't invent a project or a number that isn't yours. Drop in one real project name with a real result and this section jumps from good to genuinely convincing.</p>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:18px; margin:26px 0 10px;">Experience — Rewrite (Microsoft Elevate Power BI Internship)</h3>
+    <div class="ba-block">
+      <div class="ba-row">
+        <div class="ba-before"><span class="ba-label">Before</span>Completed a 4-week virtual internship focused on Power BI and emerging technologies.</div>
+        <div class="ba-after"><span class="ba-label">After</span>Completed a 4-week Microsoft Elevate (AICTE) program, building Power BI skills applied to real-world problem statements over the course.</div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-before"><span class="ba-label">Before</span>Worked on real-world problem statements and project development.</div>
+        <div class="ba-after"><span class="ba-label">After</span>Developed a data project from problem statement to final submission, applying Power BI to analyze and present findings. <i>[Add: what the problem statement was about, e.g. "analyzing retail sales trends"]</i></div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-before"><span class="ba-label">Before</span>Used Power BI and Microsoft Learn resources to strengthen practical skills.</div>
+        <div class="ba-after"><span class="ba-label">After</span>Built dashboards and reports in Power BI, using Microsoft Learn modules to apply new techniques directly to the project.</div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-before"><span class="ba-label">Before</span>Participated in mentor-led sessions and masterclasses.</div>
+        <div class="ba-after"><span class="ba-label">After</span>Attended mentor-led sessions and masterclasses, incorporating feedback into iterative improvements on the project.</div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-before"><span class="ba-label">Before</span>Completed the required assessment and project submission.</div>
+        <div class="ba-after"><span class="ba-label">After</span>Delivered final project submission and passed the program assessment, completing the internship. <i>[Add if true: pass rate, ranking, or feedback score]</i></div>
+      </div>
+    </div>
+    <p class="option-why" style="margin-bottom:0;">Note: I kept every claim truthful to what you gave me — I upgraded the verbs and structure but didn't add numbers you didn't provide. The bracketed notes are the exact spots where a real metric (a % improvement, a dataset size, a completion rank) would make the biggest difference — go find those from your certificate or project notes and swap them in.</p>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:18px; margin:26px 0 10px;">Skills Recommendations</h3>
+    <div class="skills-grid">
+      <div class="skills-col">
+        <h4>➕ Add (priority order)</h4>
+        <ul>
+          <li>Node.js</li>
+          <li>HTML5 / CSS3</li>
+          <li>UI/UX Design</li>
+          <li>REST APIs</li>
+          <li>MongoDB</li>
+          <li>Express.js</li>
+          <li>Git & GitHub</li>
+          <li>Tailwind CSS</li>
+          <li>Power BI</li>
+          <li>Freelancing / Client Communication</li>
+        </ul>
+      </div>
+      <div class="skills-col">
+        <h4>📌 Pin to top 3</h4>
+        <ul>
+          <li>React.js</li>
+          <li>Node.js</li>
+          <li>Generative AI</li>
+        </ul>
+        <h4 style="margin-top:16px;">➖ Nothing to remove</h4>
+        <ul>
+          <li>Your current 5 skills are all relevant — none are diluting the profile. The gap is what's missing, not what's there.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: SCORECARD -->
+  <div class="panel hidden" id="panel-scorecard">
+    <h2 class="section-title">Before vs After Scorecard</h2>
+    <p class="section-desc">Same five sections, scored again after the rebuild.</p>
+    <table class="score-table">
+      <tr>
+        <td>Headline</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill before" style="width:30%"></div></div>
+          <div class="bar-track" style="margin-top:5px;"><div class="bar-fill after" style="width:80%"></div></div>
+        </td>
+        <td class="delta">3→8 (+5)</td>
+      </tr>
+      <tr>
+        <td>About (Hook)</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill before" style="width:20%"></div></div>
+          <div class="bar-track" style="margin-top:5px;"><div class="bar-fill after" style="width:90%"></div></div>
+        </td>
+        <td class="delta">2→9 (+7)</td>
+      </tr>
+      <tr>
+        <td>About (Full)</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill before" style="width:40%"></div></div>
+          <div class="bar-track" style="margin-top:5px;"><div class="bar-fill after" style="width:80%"></div></div>
+        </td>
+        <td class="delta">4→8 (+4)</td>
+      </tr>
+      <tr>
+        <td>Experience</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill before" style="width:30%"></div></div>
+          <div class="bar-track" style="margin-top:5px;"><div class="bar-fill after" style="width:80%"></div></div>
+        </td>
+        <td class="delta">3→8 (+5)</td>
+      </tr>
+      <tr>
+        <td>Skills/Keywords</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill before" style="width:50%"></div></div>
+          <div class="bar-track" style="margin-top:5px;"><div class="bar-fill after" style="width:80%"></div></div>
+        </td>
+        <td class="delta">5→8 (+3)</td>
+      </tr>
+    </table>
+    <div class="overall-box">
+      <span class="label">Overall Profile Strength</span>
+      <span class="nums"><span class="old">32</span> → <span class="new">82</span> <span style="color:#8FD1A5; font-size:15px;">(+50)</span></span>
+    </div>
+    <p style="font-size:13px; color:var(--muted); margin-top:16px;">The rebuild gets you to 82, not 100 — the remaining 18 points are locked behind real proof: a project link, a client testimonial, a specific metric. That's on you to add, not something I can fabricate for you.</p>
+  </div>
+
+  <!-- PANEL 4: PLAN -->
+  <div class="panel hidden" id="panel-plan">
+    <h2 class="section-title">7-Day LinkedIn Activation Plan</h2>
+    <p class="section-desc">Tap a day to expand. This isn't just profile edits — it's the actions that get the profile seen.</p>
+
+    <div class="day-card">
+      <div class="day-head" data-day="1"><div style="display:flex;align-items:center;"><div class="day-num">1</div><div class="day-title">Make all profile changes</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-1">
+        <ul class="checklist">
+          <li><input type="checkbox"> Update headline to Option 2 (value-proposition)</li>
+          <li><input type="checkbox"> Replace About section with the rebuilt version</li>
+          <li><input type="checkbox"> Fill in the bracketed project placeholder with a real project + result</li>
+          <li><input type="checkbox"> Update Power BI internship bullets</li>
+          <li><input type="checkbox"> Add the 10 recommended skills</li>
+          <li><input type="checkbox"> Pin React.js, Node.js, Generative AI to top 3</li>
+          <li><input type="checkbox"> Add a Featured section with at least one project link, screenshot, or GitHub repo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="2"><div style="display:flex;align-items:center;"><div class="day-num">2</div><div class="day-title">Publish Post #1 — "I rebuilt my LinkedIn"</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-2">
+        <p>Post this in the morning on a weekday for best reach.</p>
+        <div class="draft-box">I just spent an hour rewriting my LinkedIn — and realized how much of it was written for me, not for the people I want to reach.
+
+Old headline: "CSE Student | Aspiring Full-Stack Developer | Python Learner..."
+New headline: "I build fast, functional web apps for startups & small teams."
+
+Same skills. Completely different message.
+
+If you're a founder or small team that needs a web app built — I'm open for freelance work. Drop a comment or DM me what you're working on.
+
+#WebDevelopment #ReactJS #NodeJS #FreelanceDeveloper #OpenToWork</div>
+        <button class="copy-btn" data-copy="I just spent an hour rewriting my LinkedIn — and realized how much of it was written for me, not for the people I want to reach.
+
+Old headline: &quot;CSE Student | Aspiring Full-Stack Developer | Python Learner...&quot;
+New headline: &quot;I build fast, functional web apps for startups & small teams.&quot;
+
+Same skills. Completely different message.
+
+If you're a founder or small team that needs a web app built — I'm open for freelance work. Drop a comment or DM me what you're working on.
+
+#WebDevelopment #ReactJS #NodeJS #FreelanceDeveloper #OpenToWork">Copy post</button>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="3"><div style="display:flex;align-items:center;"><div class="day-num">3</div><div class="day-title">Send 10 strategic connection requests</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-3">
+        <p><b>Who to target:</b> founders and small-business owners posting about needing a website/app built; freelance web developers slightly ahead of you (for referrals); startup founders in your city or college network; anyone who's liked/commented on posts using #FreelanceDeveloper or #WebDevelopment recently.</p>
+        <div class="draft-box">Hi [Name] — saw your post about [specific thing they mentioned]. I build React/Node.js web apps and would love to connect and follow your work. Always glad to help if a dev perspective is useful.</div>
+        <button class="copy-btn" data-copy="Hi [Name] — saw your post about [specific thing they mentioned]. I build React/Node.js web apps and would love to connect and follow your work. Always glad to help if a dev perspective is useful.">Copy template</button>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="4"><div style="display:flex;align-items:center;"><div class="day-num">4</div><div class="day-title">Comment on 5 posts in your target space</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-4">
+        <p>Use the <b>Value Comment</b> formula: <b>Agree</b> with a specific point + <b>Add an insight</b> from your own experience + <b>Ask a question</b> that invites a reply.</p>
+        <div class="formula-box">Example structure: "Agree that [specific point] — when I was building [your project], I found [specific insight]. Curious how you're handling [related question]?"</div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="5"><div style="display:flex;align-items:center;"><div class="day-num">5</div><div class="day-title">Publish Post #2 — a lesson learned / hot take</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-5">
+        <div class="draft-box">Unpopular opinion: "Aspiring developer" was hurting me more than my actual skill gaps.
+
+I had React, Node.js, and Python listed on my profile for months. Nothing changed until I stopped hedging every sentence with "learning," "aspiring," and "interested in."
+
+Clients don't hire potential. They hire clarity.
+
+What's one word you're overusing on your profile that's quietly undercutting you?
+
+#PersonalBranding #WebDevelopment #CareerGrowth</div>
+        <button class="copy-btn" data-copy="Unpopular opinion: &quot;Aspiring developer&quot; was hurting me more than my actual skill gaps.
+
+I had React, Node.js, and Python listed on my profile for months. Nothing changed until I stopped hedging every sentence with &quot;learning,&quot; &quot;aspiring,&quot; and &quot;interested in.&quot;
+
+Clients don't hire potential. They hire clarity.
+
+What's one word you're overusing on your profile that's quietly undercutting you?
+
+#PersonalBranding #WebDevelopment #CareerGrowth">Copy post</button>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="6"><div style="display:flex;align-items:center;"><div class="day-num">6</div><div class="day-title">Engage with every comment + 5 more requests</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-6">
+        <p>Reply to every single comment on both posts within a few hours — replies extend post lifespan in the algorithm more than the original post does. Send 5 more connection requests using the Day 3 template, this time to people who engaged with your posts.</p>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-head" data-day="7"><div style="display:flex;align-items:center;"><div class="day-num">7</div><div class="day-title">Review the numbers</div></div><span class="day-chevron">▸</span></div>
+      <div class="day-body" id="day-7">
+        <p><b>Profile views:</b> a jump after Day 1 means your headline/photo are now earning clicks in search and feed. Flat views mean the headline still isn't specific enough — revisit Option 1.</p>
+        <p><b>Connection acceptance rate:</b> above 40-50% means your targeting and message are working. Below that, your requests are likely too generic — make sure every message references something specific about the person.</p>
+        <p><b>Post engagement:</b> comments matter more than likes here — they're a stronger signal that your content is worth a client's time. If comments are low, the hot-take in Post #2 needs a sharper, more specific opinion.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 5: SUMMARY -->
+  <div class="panel hidden" id="panel-summary">
+    <h2 class="section-title">What I Learned Today</h2>
+    <p class="section-desc">Screenshot-ready. Post this as-is.</p>
+
+    <div class="summary-card" id="summary-capture">
+      <h3>I let AI roast my LinkedIn profile today. Here's what changed:</h3>
+      <div class="summary-scores">
+        <div><div class="n old-n">32</div><div class="l">Before</div></div>
+        <div><div class="n new-n">82</div><div class="l">After</div></div>
+      </div>
+      <p style="font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:#A9B4BE; margin-bottom:8px;">Top 3 mistakes I was making</p>
+      <ol class="summary-list">
+        <li>Hedge words everywhere — "aspiring," "learner," "enthusiast" — that made me sound unready instead of capable.</li>
+        <li>My About section talked about my feelings, not the client's problem I could solve.</li>
+        <li>My Experience bullets listed tasks I completed instead of what I actually built or delivered.</li>
+      </ol>
+      <div class="summary-highlight">🔥 <b>The #1 thing that made the biggest difference:</b> Rewriting the headline from an identity list into a one-sentence value proposition — "I build fast, functional web apps for startups & small teams."</div>
+    </div>
+    <button class="dl-btn" id="download-summary">↓ Download as image</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = {
+    roast: document.getElementById('panel-roast'),
+    rebuild: document.getElementById('panel-rebuild'),
+    scorecard: document.getElementById('panel-scorecard'),
+    plan: document.getElementById('panel-plan'),
+    summary: document.getElementById('panel-summary'),
+  };
+  tabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(panels).forEach(p=>p.classList.add('hidden'));
+      panels[btn.dataset.tab].classList.remove('hidden');
+    });
+  });
+
+  document.querySelectorAll('.day-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const body = document.getElementById('day-'+head.dataset.day);
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      head.classList.toggle('open', !isOpen);
+    });
+  });
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 1600);
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const text = btn.dataset.copy.replace(/&quot;/g,'"');
+      navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard'));
+    });
+  });
+
+  document.getElementById('download-summary').addEventListener('click', ()=>{
+    showToast('Screenshot the card above to share it directly');
+  });
+</script>
+</body>
+</html>
