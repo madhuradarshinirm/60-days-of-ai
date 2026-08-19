@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Intelligence Studio</title>
+<style>
+  :root{
+    --bg:#0B0D0B;
+    --surface:#14170F;
+    --surface2:#1B1F16;
+    --surface3:#22271C;
+    --border:#2B3125;
+    --text:#EDEFE7;
+    --text-muted:#8C9382;
+    --text-dim:#5F6657;
+    --accent:#C8FF3D;
+    --accent-dim:#8FB829;
+    --warn:#FF6B3D;
+    --info:#4FD1C5;
+    --danger:#FF4D4D;
+    --radius:14px;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    --disp: "Segoe UI Semibold", "Helvetica Neue", Arial, sans-serif;
+    --body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  body.light{
+    --bg:#F3F4EE;
+    --surface:#FFFFFF;
+    --surface2:#F7F8F2;
+    --surface3:#EEF0E6;
+    --border:#DBDFCF;
+    --text:#161811;
+    --text-muted:#5A6150;
+    --text-dim:#8A9080;
+    --shadow: 0 20px 50px -25px rgba(20,30,10,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease,color .3s ease;
+    min-height:100vh;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; transition-duration:.01ms !important;}
+  }
+
+  /* background texture */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.035;
+    background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0);
+    background-size:22px 22px;
+  }
+  body.light .grain{opacity:.05; background-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 120px;position:relative;z-index:1;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:22px;margin-bottom:26px;border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{
+    width:38px;height:38px;border-radius:9px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;color:#0B0D0B;font-weight:800;font-family:var(--mono);
+    flex-shrink:0;
+  }
+  .brand h1{font-family:var(--disp);font-size:19px;letter-spacing:-.02em;margin:0;font-weight:700;}
+  .brand .tag{font-size:11.5px;color:var(--text-muted);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+  .brandtext{display:flex;flex-direction:column;}
+  .top-actions{display:flex;gap:10px;align-items:center;}
+  .icon-btn{
+    width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);
+    color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;
+    transition:.15s;
+  }
+  .icon-btn:hover{border-color:var(--accent-dim);color:var(--accent);}
+
+  /* ---------- SETUP CHIPS ---------- */
+  .brief{
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;
+  }
+  .chip{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;
+    background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);
+    padding:6px 11px;border-radius:100px;display:flex;align-items:center;gap:6px;
+  }
+  .chip b{color:var(--text);font-weight:600;}
+  .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+  section{margin-bottom:34px;}
+  h2.sec-title{
+    font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-muted);margin:0 0 14px;display:flex;align-items:center;gap:10px;font-weight:700;
+  }
+  h2.sec-title::after{content:"";flex:1;height:1px;background:var(--border);}
+
+  /* ---------- UPLOAD PANEL ---------- */
+  .panel{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);
+  }
+  .grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;}
+  @media (max-width:800px){.grid2{grid-template-columns:1fr;}}
+
+  label.field-label{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--text-dim);display:block;margin-bottom:8px;
+  }
+  textarea#captionInput{
+    width:100%;min-height:150px;resize:vertical;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;color:var(--text);padding:14px;
+    font-family:var(--body);font-size:14.5px;line-height:1.55;outline:none;transition:.15s;
+  }
+  textarea#captionInput:focus{border-color:var(--accent-dim);}
+  .charcount{font-family:var(--mono);font-size:10.5px;color:var(--text-dim);text-align:right;margin-top:6px;}
+
+  .dropzone{
+    border:1.5px dashed var(--border);border-radius:10px;min-height:150px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    cursor:pointer;transition:.15s;padding:16px;text-align:center;background:var(--surface2);position:relative;overflow:hidden;
+  }
+  .dropzone:hover, .dropzone.drag{border-color:var(--accent);background:var(--surface3);}
+  .dropzone .dz-icon{font-size:22px;color:var(--text-dim);}
+  .dropzone .dz-txt{font-size:13px;color:var(--text-muted);}
+  .dropzone .dz-sub{font-size:11px;color:var(--text-dim);font-family:var(--mono);}
+  .dropzone img{max-width:100%;max-height:230px;border-radius:8px;object-fit:contain;}
+  .dropzone .remove-img{
+    position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:none;
+    width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;
+  }
+
+  .run-row{display:flex;align-items:center;gap:14px;margin-top:20px;}
+  button.primary{
+    background:var(--accent);color:#0B0D0B;border:none;font-weight:700;font-family:var(--disp);
+    font-size:14.5px;padding:13px 26px;border-radius:10px;cursor:pointer;letter-spacing:-.01em;
+    transition:transform .15s ease, box-shadow .15s ease;box-shadow:0 8px 24px -8px rgba(200,255,61,.4);
+  }
+  button.primary:hover{transform:translateY(-1px);}
+  button.primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+  button.ghost{
+    background:transparent;border:1px solid var(--border);color:var(--text-muted);
+    padding:12px 18px;border-radius:10px;font-family:var(--body);font-size:13.5px;cursor:pointer;transition:.15s;
+  }
+  button.ghost:hover{border-color:var(--accent-dim);color:var(--accent);}
+  .run-hint{font-size:12px;color:var(--text-dim);font-family:var(--mono);}
+
+  /* ---------- PIPELINE ---------- */
+  .pipeline{
+    display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:6px 2px 14px;
+  }
+  .pnode{
+    flex:1;min-width:130px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding:0 6px;
+  }
+  .pnode .connector{
+    position:absolute;top:23px;left:-50%;width:100%;height:2px;background:var(--border);z-index:0;
+  }
+  .pnode:first-child .connector{display:none;}
+  .pnode .connector.done{background:var(--accent);}
+  .pnode .circle{
+    width:46px;height:46px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:18px;z-index:1;transition:.25s;color:var(--text-dim);
+  }
+  .pnode.active .circle{border-color:var(--accent);color:var(--accent);animation:pulse 1.4s infinite;}
+  .pnode.done .circle{background:var(--accent);border-color:var(--accent);color:#0B0D0B;}
+  .pnode.error .circle{border-color:var(--danger);color:var(--danger);}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,255,61,.35);}50%{box-shadow:0 0 0 8px rgba(200,255,61,0);}}
+  .pnode .pname{font-size:11.5px;margin-top:9px;color:var(--text-muted);font-weight:600;line-height:1.3;}
+  .pnode .pstate{font-size:10px;font-family:var(--mono);color:var(--text-dim);margin-top:3px;text-transform:uppercase;letter-spacing:.04em;}
+
+  /* ---------- LOG ---------- */
+  .log{
+    background:#0A0B08;border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+    font-family:var(--mono);font-size:12px;line-height:1.75;max-height:180px;overflow-y:auto;color:#9AAE7E;
+  }
+  body.light .log{background:#10130C;}
+  .log .line{opacity:0;animation:fadein .3s forwards;}
+  .log .t{color:var(--text-dim);margin-right:8px;}
+  @keyframes fadein{to{opacity:1;}}
+  .log .warn-l{color:var(--warn);}
+  .log .ok-l{color:var(--accent);}
+
+  /* ---------- SCORE GAUGE ---------- */
+  .score-hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;}
+  .gauge-wrap{position:relative;width:170px;height:170px;flex-shrink:0;}
+  .gauge-wrap svg{transform:rotate(-90deg);}
+  .gauge-label{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .gauge-label .num{font-family:var(--disp);font-size:40px;font-weight:800;letter-spacing:-.02em;}
+  .gauge-label .of{font-family:var(--mono);font-size:11px;color:var(--text-dim);}
+  .score-meta{flex:1;min-width:240px;}
+  .score-meta .verdict{font-family:var(--disp);font-size:20px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em;}
+  .score-meta p{color:var(--text-muted);font-size:14px;line-height:1.6;margin:0;}
+
+  /* ---------- CATEGORY CARDS ---------- */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+    transition:border-color .2s;
+  }
+  .card:hover{border-color:var(--accent-dim);}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;}
+  .card-head h3{font-family:var(--disp);font-size:15px;margin:0;font-weight:700;}
+  .card-score{font-family:var(--mono);font-weight:700;font-size:20px;color:var(--accent);flex-shrink:0;}
+  .card-verdict{font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;}
+  .bar{height:5px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:14px;}
+  .bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width 1s ease;}
+  details.reason{margin-top:8px;}
+  details.reason summary{cursor:pointer;font-size:12px;color:var(--info);font-family:var(--mono);text-transform:uppercase;letter-spacing:.03em;list-style:none;}
+  details.reason summary::-webkit-details-marker{display:none;}
+  details.reason summary:before{content:"▸ ";}
+  details.reason[open] summary:before{content:"▾ ";}
+  details.reason .reason-body{font-size:13px;color:var(--text-muted);line-height:1.6;margin-top:8px;}
+  .taglist{margin-top:12px;}
+  .taglist h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);font-family:var(--mono);margin:12px 0 6px;}
+  .taglist ul{margin:0;padding-left:16px;}
+  .taglist li{font-size:13px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;}
+  .taglist.strength li::marker{color:var(--accent);}
+  .taglist.weak li::marker{color:var(--warn);}
+  .taglist.miss li::marker{color:var(--info);}
+  .taglist.reco li::marker{color:var(--accent);}
+
+  /* ---------- FINAL REPORT ---------- */
+  .report-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;}
+  @media (max-width:800px){.report-grid{grid-template-columns:1fr;}}
+  .report-block h3{font-family:var(--disp);font-size:14px;margin:0 0 10px;color:var(--text);}
+  .report-block p{font-size:13.5px;color:var(--text-muted);line-height:1.65;}
+
+  .impact-list{display:flex;flex-direction:column;gap:10px;}
+  .impact-item{
+    display:flex;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;align-items:flex-start;
+  }
+  .impact-rank{
+    font-family:var(--mono);font-weight:800;color:var(--accent);font-size:15px;flex-shrink:0;width:22px;
+  }
+  .impact-item p{margin:0;font-size:13.5px;color:var(--text-muted);line-height:1.5;}
+
+  .predict-box{
+    background:linear-gradient(155deg,var(--surface2),var(--surface3));
+    border:1px solid var(--border);border-radius:12px;padding:16px;
+  }
+  .predict-box .est-tag{
+    font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);
+    border:1px solid var(--border);display:inline-block;padding:3px 8px;border-radius:100px;margin-bottom:10px;
+  }
+
+  .ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:700px){.ba-grid{grid-template-columns:1fr;}}
+  .ba-col{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+  .ba-col.after{border-color:var(--accent-dim);}
+  .ba-col h4{margin:0 0 8px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);}
+  .ba-col.after h4{color:var(--accent);}
+  .ba-col .txt{font-size:13.5px;line-height:1.6;color:var(--text-muted);white-space:pre-wrap;}
+  .copy-mini{
+    margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--text-dim);
+    font-family:var(--mono);font-size:10.5px;padding:5px 10px;border-radius:100px;cursor:pointer;
+  }
+  .copy-mini:hover{color:var(--accent);border-color:var(--accent-dim);}
+
+  .hooks-row{display:flex;flex-direction:column;gap:8px;}
+  .hook-item{
+    background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;
+    display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13.5px;color:var(--text);
+  }
+
+  .checklist{display:flex;flex-direction:column;gap:8px;}
+  .check-item{
+    display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);
+    padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--text-muted);
+  }
+  .check-item input{margin-top:2px;accent-color:var(--accent);}
+  .check-item.checked{color:var(--text-dim);text-decoration:line-through;opacity:.6;}
+
+  .prompt-chip{
+    display:block;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border);
+    border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--text-muted);font-family:var(--mono);
+    cursor:pointer;margin-bottom:8px;line-height:1.5;
+  }
+  .prompt-chip:hover{border-color:var(--accent-dim);color:var(--text);}
+
+  .empty-state{
+    text-align:center;padding:50px 20px;color:var(--text-dim);font-size:13.5px;font-family:var(--mono);
+  }
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--surface3);border:1px solid var(--accent-dim);color:var(--text);
+    padding:11px 20px;border-radius:100px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .err-box{
+    background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.35);color:#FF8A8A;
+    border-radius:10px;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .err-box button{background:transparent;border:1px solid rgba(255,77,77,.4);color:#FF8A8A;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;}
+
+  .fade-in{animation:fu .5s ease both;}
+  @keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="mark">CI</div>
+      <div class="brandtext">
+        <h1>Content Intelligence Studio</h1>
+        <div class="tag">AI Content Consultant</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <div class="brief" id="briefChips">
+    <span class="chip"><span class="dot"></span>Content: <b>Social caption</b></span>
+    <span class="chip"><span class="dot"></span>Platform: <b>Instagram</b></span>
+    <span class="chip"><span class="dot"></span>Goal: <b>Drive clicks / conversions</b></span>
+    <span class="chip"><span class="dot"></span>Input: <b>Screenshot + caption</b></span>
+    <span class="chip"><span class="dot"></span>Review mode: <b>Brutally honest</b></span>
+  </div>
+
+  <section>
+    <h2 class="sec-title">Upload</h2>
+    <div class="panel">
+      <div class="grid2">
+        <div>
+          <label class="field-label">Caption text</label>
+          <textarea id="captionInput" placeholder="Paste the exact caption text that goes with your screenshot...">Stop scrolling. This one changes everything 🔥
+
+We just dropped something you didn't know you needed. Link in bio to check it out before it's gone!
+
+#growth #mindset #newdrop #linkinbio</textarea>
+          <div class="charcount" id="charCount">0 characters</div>
+        </div>
+        <div>
+          <label class="field-label">Screenshot of the post</label>
+          <div class="dropzone" id="dropzone">
+            <div id="dzEmpty">
+              <div class="dz-icon">⤒</div>
+              <div class="dz-txt">Drop screenshot here or click to upload</div>
+              <div class="dz-sub">PNG / JPG / WEBP</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <div class="run-row">
+        <button class="primary" id="runBtn">Run Full Analysis</button>
+        <button class="ghost" id="resetBtn">Reset</button>
+        <span class="run-hint" id="runHint">5-stage AI review pipeline · live results below</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipelineSection" style="display:none;">
+    <h2 class="sec-title">Review Pipeline</h2>
+    <div class="panel">
+      <div class="pipeline" id="pipeline"></div>
+      <div class="log" id="logBox"></div>
+    </div>
+  </section>
+
+  <section id="resultsSection" style="display:none;">
+    <h2 class="sec-title">Overall Content Score</h2>
+    <div class="panel score-hero" id="scoreHero"></div>
+  </section>
+
+  <section id="categorySection" style="display:none;">
+    <h2 class="sec-title">Reviewer Breakdown</h2>
+    <div class="cat-grid" id="catGrid"></div>
+  </section>
+
+  <section id="finalSection" style="display:none;">
+    <h2 class="sec-title">Executive Report</h2>
+    <div class="panel">
+      <div class="report-grid">
+        <div>
+          <div class="report-block" style="margin-bottom:22px;">
+            <h3>Executive summary</h3>
+            <p id="execSummary"></p>
+          </div>
+          <div class="report-block" style="margin-bottom:22px;">
+            <h3>Content health report</h3>
+            <p id="healthReport"></p>
+          </div>
+          <div class="report-block">
+            <h3>Highest-impact improvements</h3>
+            <div class="impact-list" id="impactList"></div>
+          </div>
+        </div>
+        <div>
+          <div class="report-block" style="margin-bottom:22px;">
+            <h3>Predicted performance</h3>
+            <div class="predict-box">
+              <span class="est-tag">AI estimate — not a guarantee</span>
+              <p id="predictText" style="margin:0;font-size:13.5px;color:var(--text-muted);line-height:1.6;"></p>
+            </div>
+          </div>
+          <div class="report-block">
+            <h3>Alternative hooks</h3>
+            <div class="hooks-row" id="hooksRow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="baSection" style="display:none;">
+    <h2 class="sec-title">Before vs. After</h2>
+    <div class="panel">
+      <div class="ba-grid">
+        <div class="ba-col">
+          <h4>Before (your caption)</h4>
+          <div class="txt" id="beforeTxt"></div>
+        </div>
+        <div class="ba-col after">
+          <h4>After (rewritten)</h4>
+          <div class="txt" id="afterTxt"></div>
+          <button class="copy-mini" id="copyAfter">Copy rewritten caption</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="checklistSection" style="display:none;">
+    <h2 class="sec-title">Publishing Checklist</h2>
+    <div class="panel">
+      <div class="checklist" id="checklistBox"></div>
+    </div>
+  </section>
+
+  <section id="promptSection" style="display:none;">
+    <h2 class="sec-title">Go Deeper</h2>
+    <div class="panel">
+      <p style="font-size:12.5px;color:var(--text-muted);margin-top:0;">Tap a prompt to copy it — paste into a new session for deeper, focused optimization.</p>
+      <div id="promptList"></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------------- THEME ---------------- */
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', ()=>{
+    document.body.classList.toggle('light');
+    themeToggle.textContent = document.body.classList.contains('light') ? '◑' : '◐';
+  });
+
+  /* ---------------- STATE ---------------- */
+  let imageData = null; // {mediaType, base64}
+  const captionInput = document.getElementById('captionInput');
+  const charCount = document.getElementById('charCount');
+  const dropzone = document.getElementById('dropzone');
+  const dzEmpty = document.getElementById('dzEmpty');
+  const fileInput = document.getElementById('fileInput');
+  const runBtn = document.getElementById('runBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const runHint = document.getElementById('runHint');
+  const toastEl = document.getElementById('toast');
+
+  function updateCharCount(){ charCount.textContent = captionInput.value.length + ' characters'; }
+  captionInput.addEventListener('input', updateCharCount);
+  updateCharCount();
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=>toastEl.classList.remove('show'), 2400);
+  }
+
+  /* ---------------- IMAGE UPLOAD ---------------- */
+  dropzone.addEventListener('click', ()=> fileInput.click());
+  dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e=>{
+    e.preventDefault(); dropzone.classList.remove('drag');
+    if(e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e=>{
+    if(e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file){
+    if(!file.type.startsWith('image/')){ toast('Please upload an image file.'); return; }
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const dataUrl = ev.target.result;
+      const base64 = dataUrl.split(',')[1];
+      imageData = { mediaType: file.type, base64: base64 };
+      dropzone.innerHTML = '<button class="remove-img" id="removeImg" title="Remove">✕</button><img src="'+dataUrl+'" alt="Uploaded screenshot">';
+      document.getElementById('removeImg').addEventListener('click', function(ev2){
+        ev2.stopPropagation();
+        imageData = null;
+        dropzone.innerHTML = '';
+        dropzone.appendChild(dzEmpty);
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ---------------- RESET ---------------- */
+  resetBtn.addEventListener('click', ()=>{
+    location.reload();
+  });
+
+  /* ---------------- REVIEWER PIPELINE DEFINITION ---------------- */
+  const REVIEWERS = [
+    {
+      id:'hook', name:'Hook & Copy Analyst', icon:'✎',
+      system: `You are a senior social media copywriter and hook specialist who has reviewed thousands of Instagram captions for scroll-stopping power and clarity. You are conducting a BRUTALLY HONEST, high-standards review — flattery is a disservice. The client's stated goal for this post is to DRIVE CLICKS AND CONVERSIONS (link in bio / sales / signups), on INSTAGRAM.
+
+Evaluate the caption text on: opening hook strength (first line, before "more"), clarity of value proposition, specificity vs vagueness, tone/brand voice, call-to-action strength and placement, hashtag quality, and whether the copy actually earns a click.
+
+Be specific and reference the actual words used. Do not soften real weaknesses. Do not use JSON or markdown code fences. Respond ONLY in this exact plain-text format, with these exact ALL-CAPS field names each on their own line:
+
+SCORE: <integer 0-100>
+VERDICT: <one punchy sentence verdict>
+STRENGTHS:
+- <specific strength>
+- <specific strength>
+WEAKNESSES:
+- <specific weakness, brutally honest>
+- <specific weakness, brutally honest>
+MISSED_OPPORTUNITIES:
+- <specific missed opportunity>
+RECOMMENDATIONS:
+- <specific, actionable fix>
+- <specific, actionable fix>
+REASONING: <2-4 sentences of expert reasoning explaining the score, referencing the actual caption text>`,
+      needsImage:false
+    },
+    {
+      id:'visual', name:'Visual Creative Analyst', icon:'◈',
+      system: `You are a senior visual creative director specializing in Instagram feed and thumbnail performance. You are conducting a BRUTALLY HONEST, high-standards review of an uploaded screenshot of an Instagram post. The client's goal is to DRIVE CLICKS AND CONVERSIONS.
+
+Look directly at the image provided. Evaluate: scroll-stopping power in a fast feed, visual hierarchy, text legibility and overlay quality (if any), composition, color contrast, branding consistency, thumb-stopping first impression, and how well the visual supports a conversion action. Reference specific things you actually see in the image (colors, layout, text placement, subjects).
+
+Do not use JSON or markdown code fences. Respond ONLY in this exact plain-text format:
+
+SCORE: <integer 0-100>
+VERDICT: <one punchy sentence verdict>
+STRENGTHS:
+- <specific visual strength you observed>
+- <specific visual strength you observed>
+WEAKNESSES:
+- <specific visual weakness you observed, brutally honest>
+- <specific visual weakness you observed, brutally honest>
+MISSED_OPPORTUNITIES:
+- <specific missed visual opportunity>
+RECOMMENDATIONS:
+- <specific, actionable visual fix>
+- <specific, actionable visual fix>
+REASONING: <2-4 sentences explaining the score, referencing specific visual details from the image>`,
+      needsImage:true
+    },
+    {
+      id:'conversion', name:'Conversion Strategist', icon:'▲',
+      system: `You are a senior direct-response conversion strategist who optimizes social posts for click-through and sales funnels. You are conducting a BRUTALLY HONEST, high-standards review. The client's explicit goal is DRIVING CLICKS/CONVERSIONS (link in bio, sales, signups) from an Instagram post.
+
+Using the caption text (and the screenshot if useful context), evaluate: friction in the path to conversion, believability/trust signals, urgency and specificity (vague hype like "you won't believe" vs concrete offers), whether the CTA is clear and singular, objection handling, and overall persuasion craft. Be skeptical of generic engagement-bait phrasing — call it out directly if present.
+
+Do not use JSON or markdown code fences. Respond ONLY in this exact plain-text format:
+
+SCORE: <integer 0-100>
+VERDICT: <one punchy sentence verdict>
+STRENGTHS:
+- <specific strength>
+- <specific strength>
+WEAKNESSES:
+- <specific weakness, brutally honest>
+- <specific weakness, brutally honest>
+MISSED_OPPORTUNITIES:
+- <specific missed opportunity>
+RECOMMENDATIONS:
+- <specific, actionable fix>
+- <specific, actionable fix>
+REASONING: <2-4 sentences of expert reasoning explaining the score>`,
+      needsImage:false
+    },
+    {
+      id:'algorithm', name:'Platform Algorithm Specialist', icon:'◎',
+      system: `You are a senior Instagram platform growth specialist who tracks algorithm distribution mechanics closely. You are conducting a BRUTALLY HONEST, high-standards review. The client's goal is DRIVING CLICKS/CONVERSIONS.
+
+Evaluate the post's fit with how Instagram currently distributes content: format choice signals, caption length and structure for retention, hashtag/keyword strategy, likely save/share/comment triggers, off-platform link handling risk (Instagram's known bias against sending traffic away from the app), and any practices that could suppress reach (engagement bait phrasing, over-hashtagging, generic captions).
+
+Do not use JSON or markdown code fences. Respond ONLY in this exact plain-text format:
+
+SCORE: <integer 0-100>
+VERDICT: <one punchy sentence verdict>
+STRENGTHS:
+- <specific strength>
+- <specific strength>
+WEAKNESSES:
+- <specific weakness, brutally honest>
+- <specific weakness, brutally honest>
+MISSED_OPPORTUNITIES:
+- <specific missed opportunity>
+RECOMMENDATIONS:
+- <specific, actionable fix>
+- <specific, actionable fix>
+REASONING: <2-4 sentences of expert reasoning explaining the score>`,
+      needsImage:false
+    }
+  ];
+
+  const SYNTH_SYSTEM = `You are the lead content strategist synthesizing a full multi-specialist review panel into one final, brutally honest executive report for an Instagram post whose goal is DRIVING CLICKS/CONVERSIONS. You have been given the individual scores and notes from four specialist reviewers (hook/copy, visual creative, conversion strategy, platform algorithm fit), plus the original caption and the screenshot image. Do not soften real problems. Be decisive and specific.
+
+Do not use JSON or markdown code fences. Respond ONLY in this exact plain-text format, with these exact ALL-CAPS field names:
+
+OVERALL_SCORE: <integer 0-100, your own holistic judgment, not just an average>
+OVERALL_VERDICT: <one sharp sentence summarizing the post's current state>
+EXECUTIVE_SUMMARY: <3-5 sentences, direct and specific, referencing the actual content>
+HEALTH_REPORT: <3-5 sentences describing overall content health across hook, visual, conversion craft, and algorithm fit>
+TOP_IMPROVEMENTS:
+- <highest-impact fix, most important first>
+- <second highest-impact fix>
+- <third highest-impact fix>
+PREDICTED_PERFORMANCE: <2-4 sentences giving a qualitative, honest performance estimate relative to typical posts in this niche, explicitly framed as an AI estimate, not a guarantee>
+BEFORE_CAPTION: <the original caption text, verbatim>
+AFTER_CAPTION: <a fully rewritten, publish-ready caption applying the panel's key recommendations, matching Instagram conventions, optimized for the stated conversion goal>
+ALT_HOOKS:
+- <alternative opening hook 1>
+- <alternative opening hook 2>
+- <alternative opening hook 3>
+PUBLISHING_CHECKLIST:
+- <concrete pre-publish checklist item>
+- <concrete pre-publish checklist item>
+- <concrete pre-publish checklist item>
+- <concrete pre-publish checklist item>
+- <concrete pre-publish checklist item>
+DEEPER_PROMPTS:
+- <a specific follow-up prompt the user could paste into an AI assistant for deeper optimization on one dimension>
+- <another specific deeper-optimization follow-up prompt>
+- <another specific deeper-optimization follow-up prompt>`;
+
+  /* ---------------- API CALL ---------------- */
+  async function callClaude(systemPrompt, userText, includeImage, retries){
+    retries = typeof retries === 'number' ? retries : 2;
+    const content = [];
+    if(includeImage && imageData){
+      content.push({ type:'image', source:{ type:'base64', media_type: imageData.mediaType, data: imageData.base64 } });
+    }
+    content.push({ type:'text', text: userText });
+
+    const body = {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1600,
+      system: systemPrompt,
+      messages: [ { role:'user', content: content } ]
+    };
+
+    let lastErr = null;
+    for(let attempt=0; attempt<=retries; attempt++){
+      try{
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify(body)
+        });
+        if(!res.ok){
+          const errText = await res.text().catch(()=> '');
+          throw new Error('API error ' + res.status + (errText ? (': ' + errText.slice(0,200)) : ''));
+        }
+        const data = await res.json();
+        const textParts = (data.content || []).filter(b=>b.type==='text').map(b=>b.text);
+        const text = textParts.join('\n').trim();
+        if(!text) throw new Error('Empty response from model.');
+        return text;
+      }catch(err){
+        lastErr = err;
+        if(attempt < retries){
+          await new Promise(r=>setTimeout(r, 700 * (attempt+1)));
+          continue;
+        }
+      }
+    }
+    throw lastErr || new Error('Unknown error calling API.');
+  }
+
+  /* ---------------- TEXT PROTOCOL PARSER ---------------- */
+  function section(text, key){
+    const re = new RegExp(key + '\\s*:\\s*([\\s\\S]*?)(?=\\n[A-Z][A-Z0-9_]{2,40}\\s*:|$)', 'i');
+    const m = text.match(re);
+    return m ? m[1].trim() : '';
+  }
+  function listSection(text, key){
+    const raw = section(text, key);
+    if(!raw) return [];
+    return raw.split('\n')
+      .map(l=>l.trim())
+      .filter(l=>l.startsWith('-') || l.startsWith('*'))
+      .map(l=>l.replace(/^[-*]\s*/, '').trim())
+      .filter(Boolean);
+  }
+  function intField(text, key, fallback){
+    const raw = section(text, key);
+    const n = parseInt(raw.replace(/[^\d]/g,''), 10);
+    return isNaN(n) ? fallback : Math.max(0, Math.min(100, n));
+  }
+
+  function parseReviewer(text){
+    return {
+      score: intField(text, 'SCORE', 60),
+      verdict: section(text, 'VERDICT') || '—',
+      strengths: listSection(text, 'STRENGTHS'),
+      weaknesses: listSection(text, 'WEAKNESSES'),
+      missed: listSection(text, 'MISSED_OPPORTUNITIES'),
+      recommendations: listSection(text, 'RECOMMENDATIONS'),
+      reasoning: section(text, 'REASONING') || text,
+      raw: text
+    };
+  }
+  function parseSynth(text){
+    return {
+      score: intField(text, 'OVERALL_SCORE', 60),
+      verdict: section(text, 'OVERALL_VERDICT') || '—',
+      execSummary: section(text, 'EXECUTIVE_SUMMARY') || text,
+      health: section(text, 'HEALTH_REPORT') || '',
+      topImprovements: listSection(text, 'TOP_IMPROVEMENTS'),
+      predicted: section(text, 'PREDICTED_PERFORMANCE') || '',
+      before: section(text, 'BEFORE_CAPTION') || '',
+      after: section(text, 'AFTER_CAPTION') || '',
+      altHooks: listSection(text, 'ALT_HOOKS'),
+      checklist: listSection(text, 'PUBLISHING_CHECKLIST'),
+      deeperPrompts: listSection(text, 'DEEPER_PROMPTS'),
+      raw: text
+    };
+  }
+
+  /* ---------------- LOGGING & PIPELINE UI ---------------- */
+  const pipelineSection = document.getElementById('pipelineSection');
+  const pipelineEl = document.getElementById('pipeline');
+  const logBox = document.getElementById('logBox');
+
+  function buildPipelineUI(){
+    pipelineEl.innerHTML = '';
+    const all = REVIEWERS.concat([{id:'synth', name:'Brutal Editor (Synthesis)', icon:'✦'}]);
+    all.forEach(r=>{
+      const node = document.createElement('div');
+      node.className = 'pnode';
+      node.id = 'node-' + r.id;
+      node.innerHTML = '<div class="connector"></div><div class="circle">'+r.icon+'</div><div class="pname">'+r.name+'</div><div class="pstate">Pending</div>';
+      pipelineEl.appendChild(node);
+    });
+  }
+
+  function setNodeState(id, state){
+    const node = document.getElementById('node-' + id);
+    if(!node) return;
+    node.classList.remove('active','done','error');
+    const stateEl = node.querySelector('.pstate');
+    const conn = node.querySelector('.connector');
+    if(state === 'active'){ node.classList.add('active'); stateEl.textContent = 'Analyzing…'; }
+    else if(state === 'done'){ node.classList.add('done'); stateEl.textContent = 'Complete'; if(conn) conn.classList.add('done'); }
+    else if(state === 'error'){ node.classList.add('error'); stateEl.textContent = 'Failed'; }
+    else { stateEl.textContent = 'Pending'; }
+  }
+
+  function log(msg, cls){
+    const line = document.createElement('div');
+    line.className = 'line' + (cls ? ' ' + cls : '');
+    const t = new Date().toLocaleTimeString();
+    line.innerHTML = '<span class="t">' + t + '</span>' + msg;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  /* ---------------- RENDER RESULTS ---------------- */
+  const resultsSection = document.getElementById('resultsSection');
+  const scoreHero = document.getElementById('scoreHero');
+  const categorySection = document.getElementById('categorySection');
+  const catGrid = document.getElementById('catGrid');
+  const finalSection = document.getElementById('finalSection');
+  const baSection = document.getElementById('baSection');
+  const checklistSection = document.getElementById('checklistSection');
+  const promptSection = document.getElementById('promptSection');
+
+  function scoreColor(score){
+    if(score >= 75) return 'var(--accent)';
+    if(score >= 50) return 'var(--warn)';
+    return 'var(--danger)';
+  }
+
+  function renderGauge(score){
+    const r = 70, c = 2*Math.PI*r;
+    const pct = Math.max(0,Math.min(100,score))/100;
+    const offset = c * (1-pct);
+    const col = scoreColor(score);
+    scoreHero.innerHTML = `
+      <div class="gauge-wrap">
+        <svg width="170" height="170" viewBox="0 0 170 170">
+          <circle cx="85" cy="85" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="12"/>
+          <circle cx="85" cy="85" r="${r}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="${c}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 1.2s ease;"/>
+        </svg>
+        <div class="gauge-label"><div class="num" style="color:${col}">${score}</div><div class="of">/ 100</div></div>
+      </div>
+      <div class="score-meta">
+        <div class="verdict" id="heroVerdict"></div>
+        <p id="heroSummary"></p>
+      </div>`;
+  }
+
+  function renderCategoryCard(reviewer, parsed){
+    const col = scoreColor(parsed.score);
+    const card = document.createElement('div');
+    card.className = 'card fade-in';
+    card.innerHTML = `
+      <div class="card-head">
+        <h3>${reviewer.icon} ${reviewer.name}</h3>
+        <div class="card-score" style="color:${col}">${parsed.score}</div>
+      </div>
+      <div class="card-verdict">${escapeHtml(parsed.verdict)}</div>
+      <div class="bar"><div class="bar-fill" style="width:${parsed.score}%;background:${col};"></div></div>
+      ${listBlock('Strengths', parsed.strengths, 'strength')}
+      ${listBlock('Weaknesses', parsed.weaknesses, 'weak')}
+      ${listBlock('Missed opportunities', parsed.missed, 'miss')}
+      ${listBlock('Recommendations', parsed.recommendations, 'reco')}
+      <details class="reason"><summary>AI reasoning</summary><div class="reason-body">${escapeHtml(parsed.reasoning)}</div></details>
+    `;
+    catGrid.appendChild(card);
+  }
+
+  function listBlock(title, items, cls){
+    if(!items || !items.length) return '';
+    return `<div class="taglist ${cls}"><h4>${title}</h4><ul>${items.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul></div>`;
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function renderFinal(synth){
+    document.getElementById('heroVerdict').textContent = synth.verdict;
+    document.getElementById('heroSummary').textContent = synth.execSummary.slice(0,220) + (synth.execSummary.length>220 ? '…' : '');
+    document.getElementById('execSummary').textContent = synth.execSummary;
+    document.getElementById('healthReport').textContent = synth.health;
+    document.getElementById('predictText').textContent = synth.predicted;
+
+    const impactList = document.getElementById('impactList');
+    impactList.innerHTML = '';
+    synth.topImprovements.forEach((item,i)=>{
+      const el = document.createElement('div');
+      el.className = 'impact-item';
+      el.innerHTML = `<div class="impact-rank">${i+1}</div><p>${escapeHtml(item)}</p>`;
+      impactList.appendChild(el);
+    });
+
+    const hooksRow = document.getElementById('hooksRow');
+    hooksRow.innerHTML = '';
+    synth.altHooks.forEach(h=>{
+      const el = document.createElement('div');
+      el.className = 'hook-item';
+      el.innerHTML = `<span>${escapeHtml(h)}</span>`;
+      const btn = document.createElement('button');
+      btn.className = 'copy-mini'; btn.textContent = 'Copy';
+      btn.addEventListener('click', ()=>{ navigator.clipboard.writeText(h); toast('Hook copied'); });
+      el.appendChild(btn);
+      hooksRow.appendChild(el);
+    });
+
+    document.getElementById('beforeTxt').textContent = synth.before;
+    document.getElementById('afterTxt').textContent = synth.after;
+    document.getElementById('copyAfter').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(synth.after); toast('Rewritten caption copied');
+    });
+
+    const checklistBox = document.getElementById('checklistBox');
+    checklistBox.innerHTML = '';
+    synth.checklist.forEach((item,i)=>{
+      const label = document.createElement('label');
+      label.className = 'check-item';
+      label.innerHTML = `<input type="checkbox" id="chk${i}"><span>${escapeHtml(item)}</span>`;
+      const input = label.querySelector('input');
+      input.addEventListener('change', ()=> label.classList.toggle('checked', input.checked));
+      checklistBox.appendChild(label);
+    });
+
+    const promptList = document.getElementById('promptList');
+    promptList.innerHTML = '';
+    synth.deeperPrompts.forEach(p=>{
+      const btn = document.createElement('button');
+      btn.className = 'prompt-chip';
+      btn.textContent = '“' + p + '”';
+      btn.addEventListener('click', ()=>{ navigator.clipboard.writeText(p); toast('Prompt copied'); });
+      promptList.appendChild(btn);
+    });
+
+    finalSection.style.display = 'block';
+    baSection.style.display = 'block';
+    checklistSection.style.display = 'block';
+    promptSection.style.display = 'block';
+  }
+
+  /* ---------------- MAIN RUN ---------------- */
+  runBtn.addEventListener('click', runAnalysis);
+
+  async function runAnalysis(){
+    const captionText = captionInput.value.trim();
+    if(!captionText){ toast('Please add caption text first.'); return; }
+    if(!imageData){ toast('Please upload a screenshot of the post.'); return; }
+
+    runBtn.disabled = true;
+    runHint.textContent = 'Running pipeline…';
+    pipelineSection.style.display = 'block';
+    resultsSection.style.display = 'none';
+    categorySection.style.display = 'none';
+    finalSection.style.display = 'none';
+    baSection.style.display = 'none';
+    checklistSection.style.display = 'none';
+    promptSection.style.display = 'none';
+    logBox.innerHTML = '';
+    catGrid.innerHTML = '';
+    buildPipelineUI();
+    pipelineSection.scrollIntoView({behavior:'smooth', block:'start'});
+
+    log('Initializing review panel for Instagram · Conversion goal · Brutal honesty mode.');
+
+    const reviewerResults = [];
+
+    for(const reviewer of REVIEWERS){
+      setNodeState(reviewer.id, 'active');
+      log('Dispatching to <b style="color:var(--text)">' + reviewer.name + '</b>…');
+      try{
+        const userText = `CAPTION TEXT:\n"""\n${captionText}\n"""\n\n${reviewer.needsImage ? 'The screenshot of the Instagram post is attached as an image. Analyze it directly.' : 'Focus your review on the caption text above.'}\n\nConduct your specialist review now, following the exact output format from your instructions.`;
+        const raw = await callClaude(reviewer.system, userText, reviewer.needsImage);
+        const parsed = parseReviewer(raw);
+        reviewerResults.push({ reviewer, parsed });
+        setNodeState(reviewer.id, 'done');
+        log(reviewer.name + ' complete — score <span class="ok-l">' + parsed.score + '/100</span>.', 'ok-l');
+        categorySection.style.display = 'block';
+        renderCategoryCard(reviewer, parsed);
+      }catch(err){
+        setNodeState(reviewer.id, 'error');
+        log('<span class="warn-l">Error in ' + reviewer.name + ': ' + escapeHtml(err.message) + '</span>', 'warn-l');
+        reviewerResults.push({ reviewer, parsed: null, error: err.message });
+        showStageError(reviewer, captionText);
+      }
+    }
+
+    // Synthesis stage
+    setNodeState('synth', 'active');
+    log('Synthesizing panel findings into final executive report…');
+    try{
+      const panelSummary = reviewerResults.map(r=>{
+        if(!r.parsed) return r.reviewer.name + ': REVIEW FAILED';
+        return r.reviewer.name + ' — Score ' + r.parsed.score + '/100. Verdict: ' + r.parsed.verdict +
+          '\nStrengths: ' + r.parsed.strengths.join('; ') +
+          '\nWeaknesses: ' + r.parsed.weaknesses.join('; ') +
+          '\nRecommendations: ' + r.parsed.recommendations.join('; ');
+      }).join('\n\n');
+
+      const userText = `ORIGINAL CAPTION:\n"""\n${captionText}\n"""\n\nSPECIALIST PANEL FINDINGS:\n${panelSummary}\n\nThe original screenshot is attached for your reference. Produce the final synthesis now, following the exact output format from your instructions.`;
+      const raw = await callClaude(SYNTH_SYSTEM, userText, true);
+      const synth = parseSynth(raw);
+      setNodeState('synth', 'done');
+      log('Synthesis complete — overall score <span class="ok-l">' + synth.score + '/100</span>.', 'ok-l');
+
+      resultsSection.style.display = 'block';
+      renderGauge(synth.score);
+      renderFinal(synth);
+      resultsSection.scrollIntoView({behavior:'smooth', block:'start'});
+    }catch(err){
+      setNodeState('synth', 'error');
+      log('<span class="warn-l">Error during synthesis: ' + escapeHtml(err.message) + '</span>', 'warn-l');
+      const errBox = document.createElement('div');
+      errBox.className = 'err-box';
+      errBox.innerHTML = '<span>Synthesis failed: ' + escapeHtml(err.message) + '</span>';
+      const retryBtn = document.createElement('button');
+      retryBtn.textContent = 'Retry synthesis';
+      retryBtn.addEventListener('click', runAnalysis);
+      errBox.appendChild(retryBtn);
+      pipelineEl.parentNode.appendChild(errBox);
+    }
+
+    runBtn.disabled = false;
+    runHint.textContent = 'Analysis complete · run again to re-review';
+  }
+
+  function showStageError(reviewer, captionText){
+    const box = document.createElement('div');
+    box.className = 'err-box fade-in';
+    box.style.marginTop = '10px';
+    box.innerHTML = '<span>' + escapeHtml(reviewer.name) + ' failed to respond. You can retry just this stage.</span>';
+    const btn = document.createElement('button');
+    btn.textContent = 'Retry';
+    btn.addEventListener('click', async ()=>{
+      box.remove();
+      setNodeState(reviewer.id, 'active');
+      log('Retrying ' + reviewer.name + '…');
+      try{
+        const userText = `CAPTION TEXT:\n"""\n${captionText}\n"""\n\n${reviewer.needsImage ? 'The screenshot of the Instagram post is attached as an image. Analyze it directly.' : 'Focus your review on the caption text above.'}\n\nConduct your specialist review now, following the exact output format from your instructions.`;
+        const raw = await callClaude(reviewer.system, userText, reviewer.needsImage);
+        const parsed = parseReviewer(raw);
+        setNodeState(reviewer.id, 'done');
+        log(reviewer.name + ' complete on retry — score ' + parsed.score + '/100.', 'ok-l');
+        categorySection.style.display = 'block';
+        renderCategoryCard(reviewer, parsed);
+      }catch(err){
+        setNodeState(reviewer.id, 'error');
+        log('<span class="warn-l">Retry failed for ' + reviewer.name + ': ' + escapeHtml(err.message) + '</span>', 'warn-l');
+        showStageError(reviewer, captionText);
+      }
+    });
+    box.appendChild(btn);
+    logBox.parentNode.appendChild(box);
+  }
+
+})();
+</script>
+</body>
+</html>
