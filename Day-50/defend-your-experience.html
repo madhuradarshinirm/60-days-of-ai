@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Defend Your Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF8;
+  --surface:#FFFFFF;
+  --surface-sunken:#F3F2EF;
+  --ink:#1B1B1A;
+  --ink-soft:#5A5A57;
+  --ink-faint:#9A9A96;
+  --border:#E4E2DD;
+  --border-strong:#D2D0C9;
+  --accent:#33455C;
+  --accent-soft:#EEF1F4;
+  --defended:#3E6B52;
+  --defended-bg:#EAF2ED;
+  --weak:#B4472E;
+  --weak-bg:#FBEDE9;
+  --pending:#B3862E;
+  --pending-bg:#FBF3E4;
+  --radius:3px;
+  --shadow-card: 0 1px 2px rgba(20,20,18,0.04), 0 1px 1px rgba(20,20,18,0.03);
+  --shadow-pop: 0 12px 32px rgba(20,20,18,0.12), 0 2px 8px rgba(20,20,18,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+::selection{background:#D9E0E8;}
+h1,h2,h3,h4{font-family:'Source Serif 4',serif; font-weight:600; margin:0; letter-spacing:-0.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit;}
+button{font-family:inherit; cursor:pointer;}
+textarea, input{font-family:inherit;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+
+/* ---------- App shell ---------- */
+#app{min-height:100vh; display:flex; flex-direction:column;}
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 28px; border-bottom:1px solid var(--border);
+  background:var(--surface);
+  position:sticky; top:0; z-index:40;
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:26px; height:26px; border:1.5px solid var(--ink); border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+  transform:rotate(-4deg);
+}
+.brand-name{font-family:'Source Serif 4',serif; font-weight:600; font-size:17px;}
+.brand-sub{font-size:11px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.04em; text-transform:uppercase; margin-left:8px; padding-left:8px; border-left:1px solid var(--border);}
+
+.topbar-right{display:flex; align-items:center; gap:14px;}
+.readiness-pill{
+  display:flex; align-items:center; gap:8px;
+  padding:6px 12px; border:1px solid var(--border); border-radius:20px;
+  font-size:12.5px; color:var(--ink-soft); background:var(--surface-sunken);
+}
+.readiness-dot{width:8px; height:8px; border-radius:50%; background:var(--ink-faint); transition:background 0.3s;}
+.icon-btn{
+  border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
+  padding:7px 12px; font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;
+  transition:all .15s;
+}
+.icon-btn:hover{border-color:var(--border-strong); color:var(--ink); background:var(--surface-sunken);}
+
+.main-wrap{flex:1; display:flex; min-height:0;}
+
+/* ---------- Empty / onboarding state ---------- */
+.onboard{
+  max-width:760px; margin:0 auto; padding:64px 24px 100px; width:100%;
+}
+.onboard-eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.onboard-eyebrow::before{content:''; width:20px; height:1px; background:var(--border-strong);}
+.onboard h1{font-size:38px; line-height:1.15; margin-bottom:16px; max-width:600px;}
+.onboard p.lead{color:var(--ink-soft); font-size:16px; max-width:560px; margin-bottom:36px;}
+
+.upload-zone{
+  border:1.5px dashed var(--border-strong); border-radius:var(--radius);
+  background:var(--surface); padding:28px; transition:all .18s; position:relative;
+}
+.upload-zone.drag{border-color:var(--accent); background:var(--accent-soft);}
+.upload-zone-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.upload-zone-head h3{font-size:14px; font-family:'Inter',sans-serif; font-weight:600;}
+.upload-zone-head .file-hint{font-size:11.5px; color:var(--ink-faint);}
+textarea#resumeText{
+  width:100%; min-height:220px; resize:vertical; border:1px solid var(--border); border-radius:2px;
+  padding:14px; font-size:13.5px; line-height:1.6; color:var(--ink); background:var(--surface-sunken);
+}
+textarea#resumeText:focus{outline:2px solid var(--accent); outline-offset:1px; background:var(--surface);}
+.upload-actions{display:flex; align-items:center; gap:12px; margin-top:16px; flex-wrap:wrap;}
+.file-input-label{
+  border:1px solid var(--border-strong); padding:9px 14px; border-radius:var(--radius); font-size:13px;
+  display:inline-flex; align-items:center; gap:8px; color:var(--ink-soft); background:var(--surface);
+}
+.file-input-label:hover{background:var(--surface-sunken);}
+input[type=file]{display:none;}
+
+.btn-primary{
+  background:var(--ink); color:var(--surface); border:none; padding:11px 20px; border-radius:var(--radius);
+  font-size:13.5px; font-weight:600; letter-spacing:0.01em; display:inline-flex; align-items:center; gap:8px;
+  transition:all .15s;
+}
+.btn-primary:hover{background:#000;}
+.btn-primary:disabled{background:var(--border-strong); color:var(--ink-faint); cursor:not-allowed;}
+.btn-ghost{
+  background:transparent; border:1px solid var(--border-strong); color:var(--ink-soft);
+  padding:10px 18px; border-radius:var(--radius); font-size:13.5px;
+}
+.btn-ghost:hover{background:var(--surface-sunken); color:var(--ink);}
+
+.style-pick{margin-top:44px; padding-top:32px; border-top:1px solid var(--border);}
+.style-pick h3{font-size:13px; text-transform:uppercase; letter-spacing:0.08em; font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); font-weight:500; margin-bottom:14px;}
+
+.session-history{margin-top:40px;}
+.session-history h3{font-size:13px; text-transform:uppercase; letter-spacing:0.08em; font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); font-weight:500; margin-bottom:12px;}
+.hist-item{
+  display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:8px; background:var(--surface); font-size:13px; cursor:pointer;
+}
+.hist-item:hover{border-color:var(--border-strong); background:var(--surface-sunken);}
+.hist-item .h-name{font-weight:600;}
+.hist-item .h-meta{color:var(--ink-faint); font-size:11.5px; font-family:'IBM Plex Mono',monospace;}
+
+/* ---------- Extraction loading ---------- */
+.extracting{max-width:640px; margin:100px auto; text-align:center; padding:0 24px;}
+.extracting .spin{
+  width:34px; height:34px; border:2px solid var(--border); border-top-color:var(--ink); border-radius:50%;
+  margin:0 auto 22px; animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.extracting h3{font-size:18px; margin-bottom:8px;}
+.extracting p{color:var(--ink-soft); font-size:13.5px;}
+
+/* ---------- Interview layout ---------- */
+.interview-shell{display:flex; width:100%; min-height:0;}
+.sidebar{
+  width:300px; min-width:300px; border-right:1px solid var(--border); background:var(--surface);
+  padding:20px 16px 40px; overflow-y:auto; max-height:calc(100vh - 57px);
+}
+.sidebar-title{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--ink-faint); margin-bottom:6px; padding:0 4px;
+}
+.case-name{font-family:'Source Serif 4',serif; font-size:16px; font-weight:600; margin-bottom:4px; padding:0 4px;}
+.case-role{font-size:12px; color:var(--ink-soft); margin-bottom:18px; padding:0 4px;}
+
+.gauge-wrap{
+  border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:20px; background:var(--surface-sunken);
+}
+.gauge-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+.gauge-top .g-label{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.06em; font-family:'IBM Plex Mono',monospace;}
+.gauge-top .g-num{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600;}
+.gauge-bar{height:6px; background:var(--border); border-radius:3px; overflow:hidden;}
+.gauge-fill{height:100%; background:var(--accent); transition:width .5s ease, background .3s;}
+.gauge-sub{font-size:11px; color:var(--ink-faint); margin-top:8px;}
+
+.exhibit-list{display:flex; flex-direction:column; gap:6px;}
+.exhibit{
+  border:1px solid var(--border); border-radius:var(--radius); padding:10px 11px; cursor:pointer;
+  transition:all .15s; background:var(--surface); position:relative;
+}
+.exhibit:hover{border-color:var(--border-strong);}
+.exhibit.active{border-color:var(--ink); box-shadow:0 0 0 1px var(--ink);}
+.exhibit-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; gap:8px;}
+.exhibit-tag{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-faint);}
+.stamp{
+  font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  padding:2px 6px; border-radius:2px; white-space:nowrap;
+}
+.stamp.defended{background:var(--defended-bg); color:var(--defended);}
+.stamp.weak{background:var(--weak-bg); color:var(--weak);}
+.stamp.pending{background:var(--pending-bg); color:var(--pending);}
+.stamp.open{background:var(--surface-sunken); color:var(--ink-faint); border:1px solid var(--border);}
+.exhibit-text{font-size:12px; color:var(--ink); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+
+.sidebar-actions{margin-top:20px; display:flex; flex-direction:column; gap:8px;}
+
+/* ---------- Transcript / main deposition area ---------- */
+.deposition{flex:1; display:flex; flex-direction:column; min-height:0; max-height:calc(100vh - 57px);}
+.dep-header{
+  padding:16px 32px; border-bottom:1px solid var(--border); background:var(--surface);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.dep-header .claim-current{max-width:640px;}
+.dep-header .exhibit-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;}
+.dep-header .claim-text{font-family:'Source Serif 4',serif; font-size:16px; font-style:italic; color:var(--ink);}
+.dep-controls{display:flex; gap:8px; align-items:center;}
+
+.transcript{flex:1; overflow-y:auto; padding:28px 32px; display:flex; flex-direction:column; gap:18px;}
+.msg{max-width:680px; animation:rise .3s ease;}
+@keyframes rise{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.msg-interviewer{align-self:flex-start;}
+.msg-user{align-self:flex-end;}
+.msg-label{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-faint); margin-bottom:5px;}
+.msg-user .msg-label{text-align:right;}
+.bubble{padding:13px 16px; border-radius:var(--radius); font-size:14px; line-height:1.6;}
+.msg-interviewer .bubble{background:var(--surface); border:1px solid var(--border); border-left:2px solid var(--ink);}
+.msg-user .bubble{background:var(--accent-soft); border:1px solid #DCE3EA; color:var(--ink);}
+.feedback-note{
+  margin-top:8px; padding:10px 13px; border-radius:var(--radius); font-size:12.5px; line-height:1.55;
+  display:flex; gap:9px; align-items:flex-start;
+}
+.feedback-note.pos{background:var(--defended-bg); color:#2E523F;}
+.feedback-note.neg{background:var(--weak-bg); color:#8E3822;}
+.feedback-note.neutral{background:var(--pending-bg); color:#8A6323;}
+.feedback-icon{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; flex-shrink:0; margin-top:1px;}
+
+.typing{display:flex; gap:5px; align-items:center; padding:13px 16px; background:var(--surface); border:1px solid var(--border); border-left:2px solid var(--ink); border-radius:var(--radius); width:fit-content;}
+.typing span{width:6px; height:6px; background:var(--ink-faint); border-radius:50%; animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.15s;} .typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0); opacity:.5;} 30%{transform:translateY(-4px); opacity:1;}}
+
+.composer{border-top:1px solid var(--border); padding:16px 32px 20px; background:var(--surface);}
+.composer-inner{display:flex; gap:10px; align-items:flex-end; max-width:760px;}
+textarea#answerInput{
+  flex:1; border:1px solid var(--border-strong); border-radius:var(--radius); padding:11px 14px;
+  font-size:14px; resize:none; min-height:46px; max-height:160px; line-height:1.5;
+}
+textarea#answerInput:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.composer-hint{font-size:11px; color:var(--ink-faint); margin-top:8px; max-width:760px;}
+.err-banner{
+  background:var(--weak-bg); color:#8E3822; border:1px solid #F0C6BA; border-radius:var(--radius);
+  padding:10px 14px; font-size:12.5px; margin:0 32px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.err-banner button{background:#8E3822; color:#fff; border:none; padding:6px 12px; border-radius:2px; font-size:11.5px;}
+
+/* ---------- Report ---------- */
+.report{max-width:880px; margin:0 auto; padding:48px 24px 100px;}
+.report-head{margin-bottom:32px;}
+.report-head .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); margin-bottom:10px;}
+.report-head h1{font-size:32px;}
+.score-band{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border);
+  border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin:28px 0;
+}
+.score-cell{background:var(--surface); padding:18px 16px;}
+.score-cell .sc-num{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600;}
+.score-cell .sc-label{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;}
+.report-section{margin-bottom:34px;}
+.report-section h2{font-size:15px; text-transform:uppercase; letter-spacing:0.06em; font-family:'IBM Plex Mono',monospace; font-weight:600; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border);}
+.report-claim{border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px;}
+.report-claim-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:8px;}
+.report-claim-text{font-family:'Source Serif 4',serif; font-style:italic; font-size:14.5px; line-height:1.5;}
+.report-claim-advice{font-size:13px; color:var(--ink-soft); margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);}
+.report-actions{display:flex; gap:10px; margin-top:36px; flex-wrap:wrap;}
+
+.confidence-chip{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-faint); white-space:nowrap;}
+
+.empty-hint{color:var(--ink-faint); font-size:13px; text-align:center; padding:60px 20px;}
+
+@media (max-width: 860px){
+  .sidebar{position:fixed; left:-320px; top:57px; height:calc(100vh - 57px); z-index:30; transition:left .2s; box-shadow:var(--shadow-pop);}
+  .sidebar.open{left:0;}
+  .dep-header{padding:14px 16px;}
+  .transcript{padding:20px 16px;}
+  .composer{padding:12px 16px 16px;}
+  .err-banner{margin:0 16px 14px;}
+  .score-band{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">DX</div>
+      <div class="brand-name">Defend Your Experience</div>
+      <div class="brand-sub" id="brandSub">New Case</div>
+    </div>
+    <div class="topbar-right" id="topbarRight" style="display:none;">
+      <button class="icon-btn" id="menuToggle" style="display:none;">☰ Exhibits</button>
+      <div class="readiness-pill">
+        <span class="readiness-dot" id="readinessDot"></span>
+        <span id="readinessLabel">Not started</span>
+      </div>
+      <button class="icon-btn" id="reportBtn">Defense Report</button>
+      <button class="icon-btn" id="restartBtn">New Case</button>
+    </div>
+  </div>
+
+  <div class="main-wrap" id="mainWrap"></div>
+
+</div>
+
+<script>
+/* =========================================================
+   DEFEND YOUR EXPERIENCE — application state & logic
+   ========================================================= */
+const APP_KEY = 'dye_sessions_v1';
+const state = {
+  screen: 'onboard', // onboard | extracting | interview | report
+  resumeText: '',
+  role: '',
+  claims: [],       // {id, tag, text, category, riskLevel, status, confidence, rounds:[{q,a,feedback,verdict}], questionCount}
+  activeClaimId: null,
+  sessions: [],      // history list {id,name,date,claims,resumeText,role}
+  currentSessionId: null,
+  apiError: null,
+  isTyping: false
+};
+
+const RESUME_SEED = `MADHURADARSHINI R M
+Karnataka, India | 9591254093 | madhuradarshinirm@gmail.com
+LinkedIn: linkedin.com/in/madhuradarshinirm | GitHub: github.com/madhuradarshinirm
+
+PROFESSIONAL SUMMARY
+Computer Science Engineering student (AI/ML focus) with hands-on experience building AI-powered applications, Machine Learning models, and REST APIs using Python. Exposure to Generative AI through the Google Cloud Gen AI Academy program, with a track record of delivering data-driven projects in agriculture, healthcare, and cybersecurity domains. Proven ability to collaborate across teams, participate in 5+ hackathons, and manage GitHub repositories. Strong problem-solving, communication, and time-management skills with a keen interest in growing into Generative AI and LLM-based application development.
+
+SKILLS
+Programming & Core CS: Python, Object-Oriented concepts, Machine Learning, DBMS
+AI / Generative AI: Machine Learning, Generative AI fundamentals (Google Cloud Gen AI Academy), Data Preprocessing & Analysis
+Web & API: HTML, CSS, Bootstrap, REST API Development (Honeypot API project)
+Database: MySQL, SQL, DBMS
+Tools & Platforms: Git & GitHub, VS Code, Firebase, Power BI
+Soft Skills: Communication, Teamwork, Problem Solving, Time Management
+
+EXPERIENCE
+Microsoft Power BI Virtual Internship | Online
+- Completed a virtual internship focused on dashboard creation and data visualization.
+- Developed interactive reports using Power BI.
+- Learned data cleaning and business analytics concepts, strengthening data preprocessing and model evaluation fundamentals relevant to AI/ML workflows.
+
+PROJECTS
+SkySense AI - Pest Outbreak Prediction System | Python, Machine Learning, Data Analysis
+- Developed an AI-based crop pest prediction system using weather and environmental data, applying machine learning and data preprocessing techniques.
+- Supported early detection and preventive agricultural decision-making through model-driven insights.
+
+AI Powered Health Monitoring System | Python, Data Processing
+- Built a healthcare monitoring system for health data analysis and risk prediction using Python-based data processing.
+- Processed and analyzed health data, applying feature engineering concepts to generate actionable insights.
+
+Honeypot API - Cybersecurity Monitoring System | Python, REST API Development, Cybersecurity
+- Developed a Honeypot REST API to detect and monitor suspicious activities.
+- Implemented cybersecurity and API monitoring concepts, gaining practical experience integrating AI/backend services via APIs.
+
+Healthy Food Recommendation System | Python, Recommendation System
+- Developed a personalized food recommendation system using Python.
+- Generated recommendations based on user preferences and nutritional factors, applying core ML/data-analysis techniques.
+
+EDUCATION
+Bachelor of Engineering - Computer Science Engineering | Vidya Vikas Institute of Engineering and Technology
+- Currently in 6th Semester | Expected Graduation: 2027
+- CGPA: 8.5
+
+CERTIFICATIONS
+Microsoft Power BI Virtual Internship - Dashboard creation, data visualization, and business analytics fundamentals.
+Google Cloud Gen AI Academy 1.0 - Completed Generative AI codelabs; earned a Codelab Completion Certificate covering Generative AI fundamentals.
+
+ACHIEVEMENTS
+Participated in 5+ Hackathons, including national-level events, applying Python, Machine Learning, and problem-solving skills under time constraints.
+Completed multiple virtual internship and certification programs to build applied AI/ML and data analytics skills.`;
+
+const INTERVIEWER_PERSONA = `You are a skeptical senior software engineer peer-interviewing a mid-level Software Engineering candidate (frontend/backend/full-stack). You have deep hands-on technical experience. You are not hostile, but you do not accept vague claims, buzzwords, or unverified impact statements. You push for: specific technical decisions, tradeoffs considered and rejected, concrete numbers/scale, debugging stories, what the candidate personally did vs. their team, and what they'd do differently now. You ask ONE focused, sharp question at a time. Keep questions concise (1-3 sentences), conversational but pointed, like a real interview — never a template.`;
+
+function loadSessions(){
+  try{ state.sessions = JSON.parse(localStorage.getItem(APP_KEY) || '[]'); }catch(e){ state.sessions = []; }
+}
+function persistSession(){
+  if(!state.currentSessionId) return;
+  const idx = state.sessions.findIndex(s=>s.id===state.currentSessionId);
+  const payload = {
+    id: state.currentSessionId,
+    name: (state.resumeText.split('\n')[0] || 'Untitled Case').slice(0,60),
+    date: new Date().toISOString(),
+    role: state.role,
+    resumeText: state.resumeText,
+    claims: state.claims
+  };
+  if(idx>-1) state.sessions[idx] = payload; else state.sessions.unshift(payload);
+  localStorage.setItem(APP_KEY, JSON.stringify(state.sessions));
+}
+function deleteSession(id){
+  state.sessions = state.sessions.filter(s=>s.id!==id);
+  localStorage.setItem(APP_KEY, JSON.stringify(state.sessions));
+}
+
+/* ---------------- Claude API bridge ---------------- */
+async function callClaude(system, userContent, {json=false, maxRetries=2}={}){
+  let attempt = 0;
+  while(true){
+    try{
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: system,
+          messages: [{role:"user", content: userContent}]
+        })
+      });
+      if(res.status === 429 || res.status === 529){
+        throw {retryable:true, message:"The interviewer's line is busy (rate limited). Retrying..."};
+      }
+      if(!res.ok){
+        throw {retryable:false, message:"Something went wrong reaching the interviewer (HTTP "+res.status+")."};
+      }
+      const data = await res.json();
+      const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+      if(json){
+        let clean = text.replace(/```json/gi,'').replace(/```/g,'').trim();
+        const first = clean.indexOf('{'); const firstArr = clean.indexOf('[');
+        let start = -1;
+        if(first>-1 && (firstArr===-1 || first<firstArr)) start = first; else start = firstArr;
+        if(start>0) clean = clean.slice(start);
+        return JSON.parse(clean);
+      }
+      return text;
+    }catch(err){
+      attempt++;
+      const retryable = err && err.retryable;
+      if(retryable && attempt <= maxRetries){
+        await new Promise(r=>setTimeout(r, 900*attempt));
+        continue;
+      }
+      if(err instanceof SyntaxError && attempt <= maxRetries){
+        await new Promise(r=>setTimeout(r, 500));
+        continue;
+      }
+      throw (err && err.message) ? err : {message:"Unexpected error contacting the interviewer."};
+    }
+  }
+}
+
+/* ---------------- Claim extraction ---------------- */
+async function extractClaims(resumeText){
+  const sys = `You extract individually defensible claims from a resume for a mock technical interview. Respond ONLY with a raw JSON array, no prose, no markdown fences. Each item: {"tag":"EX-01","text":"<the specific claim, rewritten as a crisp first-person statement of what they say they did>","category":"<one of: Technical Decision, Impact/Metric, Ownership, Collaboration, Tooling/Skill, Learning/Growth>","riskLevel":"<one of: strong, needs-evidence, vague>"}. Extract 6 to 10 claims that are specific and testable (skip generic soft-skill filler unless it's the only content). Number tags sequentially EX-01, EX-02, etc. Base riskLevel on how much concrete evidence/detail the resume already gives for that claim (vague = buzzwordy with no specifics, needs-evidence = plausible but unproven, strong = has some concrete detail already).`;
+  const claims = await callClaude(sys, `Resume:\n"""\n${resumeText}\n"""`, {json:true});
+  return claims.map((c,i)=>({
+    id: 'c'+i+'_'+Date.now(),
+    tag: c.tag || ('EX-'+String(i+1).padStart(2,'0')),
+    text: c.text,
+    category: c.category || 'Technical Decision',
+    riskLevel: c.riskLevel || 'needs-evidence',
+    status: 'open', // open | pending | defended | weak
+    confidence: c.riskLevel === 'strong' ? 45 : c.riskLevel === 'vague' ? 15 : 25,
+    rounds: [],
+    questionCount: 0
+  }));
+}
+
+/* ---------------- Question / evaluation generation ---------------- */
+async function generateOpeningQuestion(claim){
+  const sys = INTERVIEWER_PERSONA + `\nYou are opening the cross-examination of ONE specific resume claim. Ask your first, sharpest question about it — go straight for the most testable/specific part. Respond with plain text only: just the question, no preamble.`;
+  const q = await callClaude(sys, `The claim under examination:\n"${claim.text}"\n\nFull resume for context:\n"""${state.resumeText}"""\n\nAsk your opening question.`);
+  return q.trim();
+}
+
+async function evaluateAnswer(claim){
+  const transcript = claim.rounds.map((r,i)=>`Q${i+1}: ${r.q}\nA${i+1}: ${r.a}`).join('\n\n');
+  const sys = INTERVIEWER_PERSONA + `\nYou just heard the candidate's latest answer about this claim. Evaluate it and decide what happens next. Respond ONLY with raw JSON, no markdown fences:
+{
+ "verdict": "<one of: strong, adequate, weak>",
+ "feedback": "<1-2 sentences, direct, specific to what they actually said — praise real specificity, call out vagueness, unverified numbers, or dodged tradeoffs>",
+ "confidenceDelta": <integer between -20 and +20 reflecting how much this answer should move their defense confidence for this claim>,
+ "finished": <true if this claim has now been probed enough (2-3 solid exchanges, or answer was strong and further digging adds little) else false>,
+ "nextQuestion": "<if finished is false, the next sharper/deeper follow-up question digging into a gap, tradeoff, or specific they haven't addressed yet. If finished is true, an empty string.>"
+}
+Never let a vague or unverified answer count as "strong". Push at least once on any impact/metric claim for a real number or method. Cap at 3 total exchanges per claim (this is exchange number ${claim.rounds.length} just completed).`;
+  const evaluation = await callClaude(sys, `Claim under examination:\n"${claim.text}"\n\nExchange so far:\n${transcript}\n\nEvaluate the latest answer and decide next step.`, {json:true});
+  return evaluation;
+}
+
+async function generateFinalReport(){
+  const sys = `You are a skeptical senior software engineer peer who just finished cross-examining a mid-level SWE candidate about their resume claims. Write a concise, honest Defense Report. Respond ONLY with raw JSON, no markdown fences:
+{
+ "overallReadiness": <integer 0-100>,
+ "headline": "<one sharp sentence summarizing overall readiness>",
+ "claimAdvice": [ {"tag":"EX-01", "advice":"<1-2 sentence specific, actionable advice for strengthening how they'd defend this exact claim in a real interview>"} , ... one entry per claim tag provided ... ]
+}
+Be specific to what was actually said in each transcript, not generic advice.`;
+  const claimsSummary = state.claims.map(c=>{
+    const transcript = c.rounds.map((r,i)=>`Q${i+1}: ${r.q}\nA${i+1}: ${r.a}\nVerdict: ${r.verdict}`).join('\n');
+    return `[${c.tag}] Claim: ${c.text}\nStatus: ${c.status} | Confidence: ${c.confidence}\n${transcript || '(not yet examined)'}`;
+  }).join('\n\n---\n\n');
+  return await callClaude(sys, claimsSummary, {json:true});
+}
+
+/* =========================================================
+   RENDERING
+   ========================================================= */
+const mainWrap = document.getElementById('mainWrap');
+const topbarRight = document.getElementById('topbarRight');
+const brandSub = document.getElementById('brandSub');
+const readinessDot = document.getElementById('readinessDot');
+const readinessLabel = document.getElementById('readinessLabel');
+
+function overallConfidence(){
+  if(!state.claims.length) return 0;
+  const sum = state.claims.reduce((a,c)=>a+c.confidence,0);
+  return Math.round(sum/state.claims.length);
+}
+function updateTopbar(){
+  if(state.screen==='onboard' || state.screen==='extracting'){
+    topbarRight.style.display='none';
+    brandSub.textContent = 'New Case';
+    return;
+  }
+  topbarRight.style.display='flex';
+  brandSub.textContent = state.role || 'Software Engineering';
+  const oc = overallConfidence();
+  readinessLabel.textContent = oc===0 ? 'Not started' : oc<40 ? 'Shaky ('+oc+'%)' : oc<70 ? 'Building ('+oc+'%)' : 'Interview-ready ('+oc+'%)';
+  readinessDot.style.background = oc===0 ? 'var(--ink-faint)' : oc<40 ? 'var(--weak)' : oc<70 ? 'var(--pending)' : 'var(--defended)';
+  document.getElementById('menuToggle').style.display = window.innerWidth<=860 && state.screen==='interview' ? 'inline-flex' : 'none';
+}
+
+function render(){
+  updateTopbar();
+  if(state.screen==='onboard') renderOnboard();
+  else if(state.screen==='extracting') renderExtracting();
+  else if(state.screen==='interview') renderInterview();
+  else if(state.screen==='report') renderReport();
+}
+
+/* ---------- Onboard ---------- */
+function renderOnboard(){
+  loadSessions();
+  const historyHtml = state.sessions.length ? `
+    <div class="session-history">
+      <h3>Previous cases</h3>
+      ${state.sessions.map(s=>`
+        <div class="hist-item" data-open-session="${s.id}">
+          <div>
+            <div class="h-name">${escapeHtml(s.name)}</div>
+            <div class="h-meta">${new Date(s.date).toLocaleDateString()} &middot; ${s.claims.length} exhibits &middot; avg ${Math.round((s.claims.reduce((a,c)=>a+c.confidence,0)/(s.claims.length||1)))}% confidence</div>
+          </div>
+          <button class="icon-btn" data-delete-session="${s.id}" style="border:none; background:none;">✕</button>
+        </div>`).join('')}
+    </div>` : '';
+
+  mainWrap.innerHTML = `
+  <div class="onboard">
+    <div class="onboard-eyebrow">Mid-level &middot; Software Engineering &middot; Skeptical peer interviewer</div>
+    <h1>Every claim on your resume needs a witness. Let's find out if you're ready to be that witness.</h1>
+    <p class="lead">This isn't resume feedback. Paste or upload the resume you're defending, and a skeptical senior engineer will cross-examine every claim — pushing for specifics, tradeoffs, and real numbers — until you can defend it cold.</p>
+
+    <div class="upload-zone" id="dropZone">
+      <div class="upload-zone-head">
+        <h3>Your resume / experience</h3>
+        <span class="file-hint">Drag a .txt file here, or paste text below</span>
+      </div>
+      <textarea id="resumeText" placeholder="Paste your resume text here...">${escapeHtml(state.resumeText || RESUME_SEED)}</textarea>
+      <div class="upload-actions">
+        <label class="file-input-label" for="fileInput">⇧ Upload .txt file</label>
+        <input type="file" id="fileInput" accept=".txt,text/plain">
+        <span style="flex:1"></span>
+        <button class="btn-primary" id="beginBtn">Begin cross-examination →</button>
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-faint); margin-top:10px;">PDF/DOCX detected in chat has been pre-loaded as text below — edit freely before starting. For new files, plain text works best; for PDF/DOCX, paste the extracted text.</div>
+    </div>
+
+    ${historyHtml}
+  </div>`;
+
+  const dropZone = document.getElementById('dropZone');
+  ['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt, e=>{e.preventDefault(); dropZone.classList.add('drag');}));
+  ['dragleave','drop'].forEach(evt=>dropZone.addEventListener(evt, e=>{e.preventDefault(); dropZone.classList.remove('drag');}));
+  dropZone.addEventListener('drop', e=>{
+    const file = e.dataTransfer.files[0];
+    if(file) readTextFile(file);
+  });
+  document.getElementById('fileInput').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(file) readTextFile(file);
+  });
+  document.getElementById('beginBtn').addEventListener('click', startExtraction);
+  mainWrap.querySelectorAll('[data-open-session]').forEach(el=>{
+    el.addEventListener('click', ()=>openSession(el.getAttribute('data-open-session')));
+  });
+  mainWrap.querySelectorAll('[data-delete-session]').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); deleteSession(el.getAttribute('data-delete-session')); renderOnboard(); });
+  });
+}
+
+function readTextFile(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{ document.getElementById('resumeText').value = reader.result; };
+  reader.readAsText(file);
+}
+
+function openSession(id){
+  const s = state.sessions.find(x=>x.id===id);
+  if(!s) return;
+  state.currentSessionId = s.id;
+  state.resumeText = s.resumeText;
+  state.role = s.role;
+  state.claims = s.claims;
+  state.activeClaimId = state.claims.find(c=>c.status==='open')?.id || state.claims[0]?.id || null;
+  state.screen = 'interview';
+  render();
+  if(state.activeClaimId){
+    const c = getActiveClaim();
+    if(c && c.rounds.length===0) beginClaimExamination(c);
+  }
+}
+
+/* ---------- Extraction ---------- */
+async function startExtraction(){
+  const text = document.getElementById('resumeText').value.trim();
+  if(!text){ alert('Paste or upload some resume text first.'); return; }
+  state.resumeText = text;
+  state.role = 'Software Engineering (Mid-level)';
+  state.currentSessionId = 'sess_'+Date.now();
+  state.screen = 'extracting';
+  render();
+  try{
+    const claims = await extractClaims(text);
+    state.claims = claims;
+    state.activeClaimId = claims[0]?.id || null;
+    persistSession();
+    state.screen = 'interview';
+    render();
+    if(claims[0]) beginClaimExamination(claims[0]);
+  }catch(err){
+    renderExtracting(err.message || 'Could not analyze the resume. Please try again.', true);
+  }
+}
+
+function renderExtracting(errorMsg, showRetry){
+  mainWrap.innerHTML = `
+    <div class="extracting">
+      ${errorMsg ? `
+        <h3 style="color:var(--weak);">Analysis failed</h3>
+        <p>${escapeHtml(errorMsg)}</p>
+        <button class="btn-primary" id="retryExtract" style="margin-top:20px;">Try again</button>
+      ` : `
+        <div class="spin"></div>
+        <h3>Reviewing exhibits...</h3>
+        <p>Extracting every claim in your resume that a skeptical interviewer would test.</p>
+      `}
+    </div>`;
+  if(showRetry){
+    document.getElementById('retryExtract').addEventListener('click', startExtraction);
+  }
+}
+
+/* ---------- Interview ---------- */
+function getActiveClaim(){ return state.claims.find(c=>c.id===state.activeClaimId); }
+
+function statusStamp(c){
+  if(c.status==='defended') return {cls:'defended', label:'Defended'};
+  if(c.status==='weak') return {cls:'weak', label:'Unresolved'};
+  if(c.status==='pending') return {cls:'pending', label:'In session'};
+  return {cls:'open', label:'Not started'};
+}
+
+function renderInterview(){
+  const claim = getActiveClaim();
+  mainWrap.innerHTML = `
+    <div class="interview-shell">
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">Case file</div>
+        <div class="case-name">${escapeHtml((state.resumeText.split('\\n')[0]||'Untitled').slice(0,40))}</div>
+        <div class="case-role">${escapeHtml(state.role)}</div>
+        <div class="gauge-wrap">
+          <div class="gauge-top"><span class="g-label">Overall Confidence</span><span class="g-num">${overallConfidence()}%</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" style="width:${overallConfidence()}%; background:${gaugeColor(overallConfidence())};"></div></div>
+          <div class="gauge-sub">${state.claims.filter(c=>c.status==='defended').length} defended &middot; ${state.claims.filter(c=>c.status==='weak').length} unresolved &middot; ${state.claims.filter(c=>c.status==='open').length} untouched</div>
+        </div>
+        <div class="sidebar-title">Exhibits (${state.claims.length})</div>
+        <div class="exhibit-list">
+          ${state.claims.map(c=>{
+            const s = statusStamp(c);
+            return `<div class="exhibit ${c.id===state.activeClaimId?'active':''}" data-claim="${c.id}">
+              <div class="exhibit-top">
+                <span class="exhibit-tag">${c.tag}</span>
+                <span class="stamp ${s.cls}">${s.label}</span>
+              </div>
+              <div class="exhibit-text">${escapeHtml(c.text)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="sidebar-actions">
+          <button class="btn-ghost" id="viewReportBtnSb">View Defense Report</button>
+        </div>
+      </div>
+
+      <div class="deposition">
+        <div class="dep-header">
+          <div class="claim-current">
+            ${claim ? `<div class="exhibit-label">${claim.tag} &middot; ${claim.category}</div><div class="claim-text">"${escapeHtml(claim.text)}"</div>` : '<div class="exhibit-label">No exhibit selected</div>'}
+          </div>
+          <div class="dep-controls">
+            ${claim ? `<span class="confidence-chip">Confidence ${claim.confidence}%</span>` : ''}
+          </div>
+        </div>
+        <div class="transcript" id="transcript"></div>
+        <div id="errArea"></div>
+        <div class="composer">
+          <div class="composer-inner">
+            <textarea id="answerInput" placeholder="Type your answer... be specific." rows="1"></textarea>
+            <button class="btn-primary" id="sendAnswerBtn">Answer →</button>
+          </div>
+          <div class="composer-hint">This peer expects specifics: numbers, tradeoffs, what YOU did. Vague answers get pushed on.</div>
+        </div>
+      </div>
+    </div>`;
+
+  mainWrap.querySelectorAll('[data-claim]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.getAttribute('data-claim');
+      state.activeClaimId = id;
+      render();
+      const c = getActiveClaim();
+      if(c && c.rounds.length===0) beginClaimExamination(c);
+      document.getElementById('sidebar')?.classList.remove('open');
+    });
+  });
+  document.getElementById('viewReportBtnSb').addEventListener('click', ()=>{ state.screen='report'; renderReportLoading(); generateAndShowReport(); });
+  document.getElementById('reportBtn').onclick = ()=>{ state.screen='report'; renderReportLoading(); generateAndShowReport(); };
+  document.getElementById('restartBtn').onclick = ()=>{
+    if(confirm('Start a new case? Current progress is saved to history.')){
+      state.screen='onboard'; state.resumeText=''; state.claims=[]; state.activeClaimId=null; state.currentSessionId=null;
+      render();
+    }
+  };
+  const menuToggle = document.getElementById('menuToggle');
+  if(menuToggle) menuToggle.onclick = ()=> document.getElementById('sidebar').classList.toggle('open');
+
+  renderTranscript();
+  wireComposer();
+}
+
+function gaugeColor(v){
+  if(v<40) return 'var(--weak)';
+  if(v<70) return 'var(--pending)';
+  return 'var(--defended)';
+}
+
+function renderTranscript(){
+  const claim = getActiveClaim();
+  const el = document.getElementById('transcript');
+  if(!el) return;
+  if(!claim){ el.innerHTML = `<div class="empty-hint">Select an exhibit on the left to begin.</div>`; return; }
+  let html = '';
+  claim.rounds.forEach((r,i)=>{
+    html += `<div class="msg msg-interviewer"><div class="msg-label">Interviewer</div><div class="bubble">${escapeHtml(r.q)}</div></div>`;
+    html += `<div class="msg msg-user"><div class="msg-label">You</div><div class="bubble">${escapeHtml(r.a)}</div></div>`;
+    if(r.feedback){
+      const cls = r.verdict==='strong' ? 'pos' : r.verdict==='weak' ? 'neg' : 'neutral';
+      const icon = r.verdict==='strong' ? '✓' : r.verdict==='weak' ? '!' : '~';
+      html += `<div class="feedback-note ${cls}" style="max-width:680px;"><span class="feedback-icon">${icon}</span><span>${escapeHtml(r.feedback)}</span></div>`;
+    }
+  });
+  if(claim.pendingQuestion){
+    html += `<div class="msg msg-interviewer"><div class="msg-label">Interviewer</div><div class="bubble">${escapeHtml(claim.pendingQuestion)}</div></div>`;
+  }
+  if(state.isTyping){
+    html += `<div class="msg msg-interviewer"><div class="msg-label">Interviewer</div><div class="typing"><span></span><span></span><span></span></div></div>`;
+  }
+  if(claim.status==='defended' || claim.status==='weak'){
+    const closingMsg = claim.status==='defended' ? 'This exhibit is well defended. Move to the next one.' : 'This exhibit still has gaps. You can revisit it any time before generating your report.';
+    html += `<div class="empty-hint" style="padding:16px 0; text-align:left;">${closingMsg}</div>`;
+  }
+  el.innerHTML = html;
+  el.scrollTop = el.scrollHeight;
+}
+
+function showErr(msg, retryFn){
+  const area = document.getElementById('errArea');
+  if(!area) return;
+  area.innerHTML = `<div class="err-banner"><span>⚠ ${escapeHtml(msg)}</span><button id="errRetryBtn">Retry</button></div>`;
+  document.getElementById('errRetryBtn').onclick = ()=>{ area.innerHTML=''; retryFn(); };
+}
+function clearErr(){ const area = document.getElementById('errArea'); if(area) area.innerHTML=''; }
+
+async function beginClaimExamination(claim){
+  claim.status = 'pending';
+  state.isTyping = true;
+  renderTranscript();
+  try{
+    const q = await generateOpeningQuestion(claim);
+    claim.pendingQuestion = q;
+    state.isTyping = false;
+    clearErr();
+    renderTranscript();
+    render(); // update sidebar stamp
+  }catch(err){
+    state.isTyping = false;
+    renderTranscript();
+    showErr(err.message || 'Could not reach the interviewer.', ()=>beginClaimExamination(claim));
+  }
+}
+
+function wireComposer(){
+  const input = document.getElementById('answerInput');
+  const btn = document.getElementById('sendAnswerBtn');
+  if(!input) return;
+  input.addEventListener('input', ()=>{ input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,160)+'px'; });
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); submitAnswer(); }
+  });
+  btn.addEventListener('click', submitAnswer);
+}
+
+async function submitAnswer(){
+  const claim = getActiveClaim();
+  if(!claim || !claim.pendingQuestion) return;
+  const input = document.getElementById('answerInput');
+  const answer = input.value.trim();
+  if(!answer) return;
+  const question = claim.pendingQuestion;
+  claim.rounds.push({q: question, a: answer, feedback:null, verdict:null});
+  claim.pendingQuestion = null;
+  claim.questionCount++;
+  input.value = ''; input.style.height='auto';
+  clearErr();
+  state.isTyping = true;
+  renderTranscript();
+  try{
+    const evalRes = await evaluateAnswer(claim);
+    const last = claim.rounds[claim.rounds.length-1];
+    last.feedback = evalRes.feedback;
+    last.verdict = evalRes.verdict;
+    claim.confidence = Math.max(0, Math.min(100, claim.confidence + (evalRes.confidenceDelta||0)));
+    const forcedFinish = claim.rounds.length >= 3;
+    if(evalRes.finished || forcedFinish){
+      claim.status = claim.confidence >= 55 ? 'defended' : 'weak';
+      claim.pendingQuestion = null;
+    } else {
+      claim.pendingQuestion = evalRes.nextQuestion;
+    }
+    state.isTyping = false;
+    clearErr();
+    persistSession();
+    renderTranscript();
+    render();
+    if(claim.status !== 'pending'){
+      const next = state.claims.find(c=>c.status==='open');
+      if(next){
+        setTimeout(()=>{
+          const proceed = confirm('Exhibit resolved. Move to the next exhibit: '+next.tag+'?');
+          if(proceed){ state.activeClaimId = next.id; render(); beginClaimExamination(next); }
+        }, 250);
+      }
+    }
+  }catch(err){
+    state.isTyping = false;
+    renderTranscript();
+    showErr(err.message || 'The interviewer could not respond. Your answer was saved — retry to continue.', ()=>retryEvaluate(claim));
+  }
+}
+
+async function retryEvaluate(claim){
+  clearErr();
+  state.isTyping = true;
+  renderTranscript();
+  try{
+    const evalRes = await evaluateAnswer(claim);
+    const last = claim.rounds[claim.rounds.length-1];
+    last.feedback = evalRes.feedback;
+    last.verdict = evalRes.verdict;
+    claim.confidence = Math.max(0, Math.min(100, claim.confidence + (evalRes.confidenceDelta||0)));
+    const forcedFinish = claim.rounds.length >= 3;
+    if(evalRes.finished || forcedFinish){
+      claim.status = claim.confidence >= 55 ? 'defended' : 'weak';
+    } else {
+      claim.pendingQuestion = evalRes.nextQuestion;
+    }
+    state.isTyping = false;
+    persistSession();
+    renderTranscript();
+    render();
+  }catch(err){
+    state.isTyping = false;
+    renderTranscript();
+    showErr(err.message || 'Still failing — please try again shortly.', ()=>retryEvaluate(claim));
+  }
+}
+
+/* ---------- Report ---------- */
+function renderReportLoading(){
+  mainWrap.innerHTML = `<div class="extracting"><div class="spin"></div><h3>Compiling your Defense Report...</h3><p>Reviewing every exhibit and transcript from this session.</p></div>`;
+}
+async function generateAndShowReport(){
+  try{
+    const report = await generateFinalReport();
+    renderReport(report);
+    render();
+  }catch(err){
+    mainWrap.innerHTML = `<div class="extracting"><h3 style="color:var(--weak);">Report failed</h3><p>${escapeHtml(err.message||'Could not generate report.')}</p><button class="btn-primary" id="retryReport" style="margin-top:20px;">Try again</button></div>`;
+    document.getElementById('retryReport').addEventListener('click', ()=>{ renderReportLoading(); generateAndShowReport(); });
+  }
+}
+
+function renderReport(report){
+  const defended = state.claims.filter(c=>c.status==='defended');
+  const weak = state.claims.filter(c=>c.status==='weak');
+  const untouched = state.claims.filter(c=>c.status==='open' || c.status==='pending');
+  const adviceMap = {};
+  (report && report.claimAdvice || []).forEach(a=>{ adviceMap[a.tag] = a.advice; });
+  const overall = report ? report.overallReadiness : overallConfidence();
+
+  function claimBlock(c){
+    const s = statusStamp(c);
+    return `<div class="report-claim">
+      <div class="report-claim-top">
+        <div>
+          <span class="exhibit-tag">${c.tag}</span>
+          <div class="report-claim-text">"${escapeHtml(c.text)}"</div>
+        </div>
+        <span class="stamp ${s.cls}">${s.label} &middot; ${c.confidence}%</span>
+      </div>
+      ${adviceMap[c.tag] ? `<div class="report-claim-advice">→ ${escapeHtml(adviceMap[c.tag])}</div>` : ''}
+    </div>`;
+  }
+
+  mainWrap.innerHTML = `
+    <div class="report">
+      <div class="report-head">
+        <div class="eyebrow">Defense Report &middot; ${new Date().toLocaleDateString()}</div>
+        <h1>${report ? escapeHtml(report.headline) : 'Your defense summary'}</h1>
+      </div>
+      <div class="score-band">
+        <div class="score-cell"><div class="sc-num" style="color:${gaugeColor(overall)}">${overall}%</div><div class="sc-label">Overall readiness</div></div>
+        <div class="score-cell"><div class="sc-num" style="color:var(--defended)">${defended.length}</div><div class="sc-label">Defended</div></div>
+        <div class="score-cell"><div class="sc-num" style="color:var(--weak)">${weak.length}</div><div class="sc-label">Unresolved</div></div>
+        <div class="score-cell"><div class="sc-num" style="color:var(--ink-faint)">${untouched.length}</div><div class="sc-label">Untouched</div></div>
+      </div>
+
+      ${weak.length ? `<div class="report-section"><h2>Needs work before your real interview</h2>${weak.map(claimBlock).join('')}</div>` : ''}
+      ${untouched.length ? `<div class="report-section"><h2>Not yet examined</h2>${untouched.map(claimBlock).join('')}</div>` : ''}
+      ${defended.length ? `<div class="report-section"><h2>Well defended</h2>${defended.map(claimBlock).join('')}</div>` : ''}
+
+      <div class="report-actions">
+        <button class="btn-primary" id="exportBtn">Export report (.txt)</button>
+        <button class="btn-ghost" id="backToInterviewBtn">← Back to interview</button>
+        <button class="btn-ghost" id="printBtn">Print</button>
+      </div>
+    </div>`;
+
+  document.getElementById('backToInterviewBtn').addEventListener('click', ()=>{ state.screen='interview'; render(); });
+  document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('exportBtn').addEventListener('click', ()=>exportReport(report));
+}
+
+function exportReport(report){
+  let out = `DEFEND YOUR EXPERIENCE — DEFENSE REPORT\n${new Date().toLocaleString()}\nRole: ${state.role}\n\n`;
+  out += `Overall readiness: ${report ? report.overallReadiness : overallConfidence()}%\n${report ? report.headline : ''}\n\n`;
+  state.claims.forEach(c=>{
+    out += `[${c.tag}] (${statusStamp(c).label}, ${c.confidence}%)\n"${c.text}"\n`;
+    c.rounds.forEach((r,i)=>{
+      out += `  Q${i+1}: ${r.q}\n  A${i+1}: ${r.a}\n  Verdict: ${r.verdict || ''} — ${r.feedback || ''}\n`;
+    });
+    const advice = (report && report.claimAdvice||[]).find(a=>a.tag===c.tag);
+    if(advice) out += `  Advice: ${advice.advice}\n`;
+    out += '\n';
+  });
+  const blob = new Blob([out], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'defense-report.txt'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+window.addEventListener('resize', updateTopbar);
+
+/* init */
+loadSessions();
+render();
+</script>
+</body>
+</html>
